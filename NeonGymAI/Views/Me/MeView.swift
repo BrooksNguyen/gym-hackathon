@@ -47,6 +47,10 @@ struct MeView: View {
                             TextField("Name", text: $profile.name)
                                 .font(Theme.heroText)
                                 .multilineTextAlignment(.center)
+                                .padding(12)
+                                .background(Color.gray.opacity(0.1))
+                                .cornerRadius(12)
+                                .padding(.horizontal, 40)
                         }
                         .padding(.top, 24)
                         
@@ -65,6 +69,7 @@ struct MeView: View {
                                         .keyboardType(.numberPad)
                                         .font(Theme.primaryText)
                                         .multilineTextAlignment(.trailing)
+                                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
                                 }
                                 
                                 Divider().background(Color.gray.opacity(0.2))
@@ -92,31 +97,29 @@ struct MeView: View {
                                 .font(Theme.tertiaryText)
                                 .foregroundColor(.secondary)
                             
-                            VStack(spacing: 24) {
-                                VStack(spacing: 12) {
-                                    HStack {
-                                        Text("Height (cm)")
-                                            .font(Theme.secondaryText)
-                                        Spacer()
-                                        Text("\(Int(profile.height))")
-                                            .font(Theme.numberFont(size: 24))
-                                    }
-                                    Slider(value: $profile.height, in: 100...220, step: 1)
-                                        .tint(Theme.secondaryAccent(for: colorScheme))
+                            VStack(spacing: 16) {
+                                HStack {
+                                    Text("Height (cm)")
+                                        .font(Theme.secondaryText)
+                                    Spacer()
+                                    TextField("Height", value: $profile.height, format: .number)
+                                        .keyboardType(.numberPad)
+                                        .font(Theme.primaryText)
+                                        .multilineTextAlignment(.trailing)
+                                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
                                 }
                                 
                                 Divider().background(Color.gray.opacity(0.2))
                                 
-                                VStack(spacing: 12) {
-                                    HStack {
-                                        Text("Weight (kg)")
-                                            .font(Theme.secondaryText)
-                                        Spacer()
-                                        Text("\(Int(profile.weight))")
-                                            .font(Theme.numberFont(size: 24))
-                                    }
-                                    Slider(value: $profile.weight, in: 40...150, step: 1)
-                                        .tint(Theme.primaryAccent(for: colorScheme))
+                                HStack {
+                                    Text("Weight (kg)")
+                                        .font(Theme.secondaryText)
+                                    Spacer()
+                                    TextField("Weight", value: $profile.weight, format: .number)
+                                        .keyboardType(.decimalPad)
+                                        .font(Theme.primaryText)
+                                        .multilineTextAlignment(.trailing)
+                                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
                                 }
                             }
                             .padding()

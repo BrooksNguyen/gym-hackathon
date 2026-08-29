@@ -94,13 +94,7 @@ struct MetricsInductionStep: View {
                 manager.nextStep()
             }) {
                 Text("Next")
-                    .font(Theme.primaryText)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 20)
-                    .background(Theme.primaryAccent(for: colorScheme))
-                    .foregroundColor(.white)
-                    .clipShape(Capsule())
-                    .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.4), radius: 15, y: 8)
+                    .metallicButton(scheme: colorScheme, isPrimary: true)
             }
             .padding(.bottom, 40)
             .disabled(manager.name.isEmpty)
@@ -146,6 +140,7 @@ struct GoalsCommitmentStep: View {
                             }
                         }
                         .padding(20)
+                        .background(manager.selectedGoal == goal ? Theme.primaryAccent(for: colorScheme).opacity(colorScheme == .dark ? 0.3 : 0.1) : Color.clear)
                         .glassCard(cornerRadius: 16, scheme: colorScheme)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
@@ -189,13 +184,7 @@ struct GoalsCommitmentStep: View {
                     manager.completeOnboarding()
                 }) {
                     Text("Start Journey")
-                        .font(Theme.primaryText)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 20)
-                        .background(Theme.primaryAccent(for: colorScheme))
-                        .foregroundColor(.white)
-                        .clipShape(Capsule())
-                        .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.4), radius: 15, y: 8)
+                        .metallicButton(scheme: colorScheme, isPrimary: true)
                 }
                 .padding(.bottom, 40)
             }

@@ -95,6 +95,9 @@ struct HomeView: View {
                                         Text(healthState.statusText())
                                             .font(Theme.tertiaryText)
                                             .foregroundColor(healthState.statusColor(for: colorScheme))
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.8)
+                                            .fixedSize(horizontal: true, vertical: false)
                                     }
                                     
                                     Spacer()

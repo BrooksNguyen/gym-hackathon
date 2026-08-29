@@ -21,6 +21,14 @@ struct Theme {
     
     // Metallic Gold for Stars
     static let metallicGold = Color(red: 0.85, green: 0.65, blue: 0.2)
+
+    // Compatibility colors used by the original camera and tracking screens.
+    // Keep these aliases while those screens migrate to the semantic theme API.
+    static let trueBlack = Color.black
+    static let neonCyan = Color(red: 0.10, green: 0.90, blue: 0.95)
+    static let neonGreen = Color(red: 0.45, green: 1.00, blue: 0.40)
+    static let digitalFont = Font.system(.body, design: .monospaced)
+    static let titleFont = Font.system(.title, design: .monospaced).bold()
     
     // Typography
     static let heroText = Font.system(size: 34, weight: .heavy, design: .default)

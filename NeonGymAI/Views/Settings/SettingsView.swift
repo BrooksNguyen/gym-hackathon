@@ -172,8 +172,7 @@ struct SettingsView: View {
                             Image("AppLogo")
                                 .resizable()
                                 .scaledToFit()
-                                .frame(width: 40, height: 40)
-                                .cornerRadius(10)
+                                .frame(width: 50, height: 50)
                             
                             Text("founded by 2 freaking excellent minds")
                                 .font(.caption)

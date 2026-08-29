@@ -30,6 +30,28 @@ struct MeView: View {
         )
     }
     
+    // MARK: - BMI Calculation
+    private var bmi: Double {
+        let heightInMeters = profile.height / 100
+        guard heightInMeters > 0 else { return 0 }
+        return profile.weight / (heightInMeters * heightInMeters)
+    }
+    
+    private var bmiStatus: (text: String, color: Color) {
+        let value = bmi
+        if value < 18.5 {
+            return ("Underweight", .blue)
+        } else if value < 25 {
+            return ("Normal Weight", .green)
+        } else if value < 30 {
+            return ("Overweight", .yellow)
+        } else {
+            return ("Obese", .red)
+        }
+    }
+    
+    @State private var showBMIInfo = false
+    
     var body: some View {
         NavigationStack {
             ZStack {
@@ -91,35 +113,110 @@ struct MeView: View {
                             .glassCard(cornerRadius: 16, scheme: colorScheme)
                         }
                         
-                        // Body Metrics Section
+                        // BMI & Body Metrics Section
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Body Metrics")
+                            Text("Health Overview")
                                 .font(Theme.tertiaryText)
                                 .foregroundColor(.secondary)
                             
-                            VStack(spacing: 16) {
-                                HStack {
-                                    Text("Height (cm)")
+                            VStack(spacing: 24) {
+                                // Header: BMI Number & Status Tag
+                                HStack(alignment: .firstTextBaseline) {
+                                    Text("BMI")
                                         .font(Theme.secondaryText)
+                                        .foregroundColor(.secondary)
+                                    
+                                    Button(action: { showBMIInfo.toggle() }) {
+                                        Image(systemName: "info.circle")
+                                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                    }
+                                    .alert(isPresented: $showBMIInfo) {
+                                        Alert(
+                                            title: Text("About BMI"),
+                                            message: Text("BMI is a general reference. If you have high muscle mass, this metric may not accurately reflect your body fat percentage."),
+                                            dismissButton: .default(Text("Got it"))
+                                        )
+                                    }
+                                    
                                     Spacer()
-                                    TextField("Height", value: $profile.height, format: .number)
-                                        .keyboardType(.numberPad)
-                                        .font(Theme.primaryText)
-                                        .multilineTextAlignment(.trailing)
-                                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                    
+                                    Text(String(format: "%.1f", bmi))
+                                        .font(Theme.heroText)
+                                        .foregroundColor(.primary)
+                                    
+                                    Text(bmiStatus.text)
+                                        .font(.caption)
+                                        .fontWeight(.bold)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 4)
+                                        .background(bmiStatus.color.opacity(0.2))
+                                        .foregroundColor(bmiStatus.color)
+                                        .cornerRadius(8)
                                 }
+                                
+                                // BMI Scale Bar
+                                GeometryReader { geometry in
+                                    let width = geometry.size.width
+                                    let maxBMI: Double = 40.0
+                                    let minBMI: Double = 15.0
+                                    let clampedBMI = max(min(bmi, maxBMI), minBMI)
+                                    // Calculate percentage (0.0 to 1.0)
+                                    let percentage = (clampedBMI - minBMI) / (maxBMI - minBMI)
+                                    
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        // The marker
+                                        VStack(spacing: 2) {
+                                            Text("You")
+                                                .font(.caption2)
+                                                .fontWeight(.bold)
+                                                .foregroundColor(.secondary)
+                                            Image(systemName: "arrowtriangle.down.fill")
+                                                .font(.caption2)
+                                                .foregroundColor(.primary)
+                                        }
+                                        .offset(x: max(0, min(width * CGFloat(percentage) - 10, width - 20))) // Safe bounds
+                                        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: bmi)
+                                        
+                                        // The colored bar
+                                        HStack(spacing: 0) {
+                                            Rectangle().fill(Color.blue).frame(width: width * ((18.5 - 15.0) / (40.0 - 15.0)))
+                                            Rectangle().fill(Color.green).frame(width: width * ((25.0 - 18.5) / (40.0 - 15.0)))
+                                            Rectangle().fill(Color.yellow).frame(width: width * ((30.0 - 25.0) / (40.0 - 15.0)))
+                                            Rectangle().fill(Color.red)
+                                        }
+                                        .frame(height: 12)
+                                        .cornerRadius(6)
+                                    }
+                                }
+                                .frame(height: 50)
                                 
                                 Divider().background(Color.gray.opacity(0.2))
                                 
-                                HStack {
-                                    Text("Weight (kg)")
-                                        .font(Theme.secondaryText)
-                                    Spacer()
-                                    TextField("Weight", value: $profile.weight, format: .number)
-                                        .keyboardType(.decimalPad)
-                                        .font(Theme.primaryText)
-                                        .multilineTextAlignment(.trailing)
-                                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                // Quick Edit: Height & Weight
+                                VStack(spacing: 16) {
+                                    HStack {
+                                        Text("Height (cm)")
+                                            .font(Theme.secondaryText)
+                                        Spacer()
+                                        TextField("Height", value: $profile.height, format: .number)
+                                            .keyboardType(.numberPad)
+                                            .font(Theme.primaryText)
+                                            .multilineTextAlignment(.trailing)
+                                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                    }
+                                    
+                                    Divider().background(Color.gray.opacity(0.1))
+                                    
+                                    HStack {
+                                        Text("Weight (kg)")
+                                            .font(Theme.secondaryText)
+                                        Spacer()
+                                        TextField("Weight", value: $profile.weight, format: .number)
+                                            .keyboardType(.decimalPad)
+                                            .font(Theme.primaryText)
+                                            .multilineTextAlignment(.trailing)
+                                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                    }
                                 }
                             }
                             .padding()

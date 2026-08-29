@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     var body: some View {
         TabView {
             HomeView()
@@ -22,6 +24,6 @@ struct MainTabView: View {
                     Label("Setting", systemImage: "gearshape.fill")
                 }
         }
-        .tint(Theme.neonCyan)
+        .tint(Theme.primaryAccent(for: colorScheme))
     }
 }

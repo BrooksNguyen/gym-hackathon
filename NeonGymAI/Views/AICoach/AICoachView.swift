@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct AICoachView: View {
+    @Environment(\.colorScheme) var colorScheme
     @State private var messageText = ""
     @State private var messages: [Message] = [
         Message(text: "Hello! I am your AI Coach. How can I help you today?", isUser: false)
@@ -15,7 +16,7 @@ struct AICoachView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.trueBlack.edgesIgnoringSafeArea(.all)
+                Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
                 
                 VStack {
                     ScrollView {
@@ -26,17 +27,17 @@ struct AICoachView: View {
                                         Spacer()
                                         Text(message.text)
                                             .padding()
-                                            .background(Color.gray.opacity(0.3))
+                                            .background(Theme.primaryAccent(for: colorScheme))
                                             .foregroundColor(.white)
                                             .cornerRadius(16)
                                     } else {
                                         HStack(alignment: .bottom) {
                                             Image(systemName: "desktopcomputer")
-                                                .foregroundColor(Theme.neonCyan)
+                                                .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                                             Text(message.text)
                                                 .padding()
-                                                .background(Theme.neonCyan.opacity(0.2))
-                                                .foregroundColor(Theme.neonCyan)
+                                                .background(Theme.secondaryAccent(for: colorScheme).opacity(0.2))
+                                                .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                                                 .cornerRadius(16)
                                         }
                                         Spacer()
@@ -52,17 +53,16 @@ struct AICoachView: View {
                     HStack {
                         TextField("Ask about workout/nutrition...", text: $messageText)
                             .padding(12)
-                            .background(Color.gray.opacity(0.2))
+                            .background(Theme.cardColor(for: colorScheme))
                             .cornerRadius(20)
-                            .foregroundColor(.white)
-                            .font(Theme.digitalFont)
+                            .font(Theme.body)
                         
                         Button(action: {
                             // TODO: Speech to text dictation
                         }) {
                             Image(systemName: "mic.fill")
                                 .font(.title2)
-                                .foregroundColor(Theme.neonCyan)
+                                .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                         }
                         
                         Button(action: {
@@ -74,7 +74,7 @@ struct AICoachView: View {
                         }) {
                             Image(systemName: "paperplane.fill")
                                 .font(.title2)
-                                .foregroundColor(Theme.neonCyan)
+                                .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                         }
                     }
                     .padding()

@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @Environment(\.colorScheme) var colorScheme
     @State private var isDarkMode = true
     @State private var selectedLanguage = "English"
     @State private var audioCoachEnabled = true
@@ -10,17 +11,16 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.trueBlack.edgesIgnoringSafeArea(.all)
+                Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
                 
                 Form {
-                    Section(header: Text("Appearance").foregroundColor(Theme.neonCyan)) {
+                    Section(header: Text("Appearance").foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
                         Toggle("Dark Mode", isOn: $isDarkMode)
-                            .tint(Theme.neonCyan)
+                            .tint(Theme.primaryAccent(for: colorScheme))
                     }
-                    .listRowBackground(Color.gray.opacity(0.1))
-                    .foregroundColor(.white)
+                    .listRowBackground(Theme.cardColor(for: colorScheme))
                     
-                    Section(header: Text("Preferences").foregroundColor(Theme.neonCyan)) {
+                    Section(header: Text("Preferences").foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
                         Picker("Language", selection: $selectedLanguage) {
                             ForEach(languages, id: \.self) { language in
                                 Text(language).tag(language)
@@ -29,18 +29,17 @@ struct SettingsView: View {
                         .pickerStyle(MenuPickerStyle())
                         
                         Toggle("Audio Coach", isOn: $audioCoachEnabled)
-                            .tint(Theme.neonCyan)
+                            .tint(Theme.primaryAccent(for: colorScheme))
                     }
-                    .listRowBackground(Color.gray.opacity(0.1))
-                    .foregroundColor(.white)
+                    .listRowBackground(Theme.cardColor(for: colorScheme))
                     
-                    Section(header: Text("Support").foregroundColor(Theme.neonCyan)) {
+                    Section(header: Text("Support").foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
                         Button("Report / Feedback") {
                             // Action
                         }
-                        .foregroundColor(Theme.neonCyan)
+                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
                     }
-                    .listRowBackground(Color.gray.opacity(0.1))
+                    .listRowBackground(Theme.cardColor(for: colorScheme))
                 }
                 .scrollContentBackground(.hidden)
             }

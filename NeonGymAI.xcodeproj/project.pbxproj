@@ -12,8 +12,10 @@
 		22DFFA344BB7BA3EF0F8FE73 /* AICoachView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 395CBF15B74D68C1CF4BDA59 /* AICoachView.swift */; };
 		24FCC2F88260F7231B96E3E4 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 270D20095189CE05074855D4 /* HomeView.swift */; };
 		280CD2840E3CD1F1A1FC653F /* MeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 059977922AA618AB6235E5BB /* MeView.swift */; };
+		315302DDA07204626F22527E /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CDD2E320BB8F3B16BE4ED12 /* OnboardingView.swift */; };
 		421E619FF4C186D42D117C10 /* LLMNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2475EE2D4B584C2AA85C52A1 /* LLMNetworkManager.swift */; };
 		43BB0186EFE4C9DF27E363B5 /* ScanMachineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35FB7556A7400DD5B063820 /* ScanMachineView.swift */; };
+		5202999A5489B2A869F4A346 /* OnboardingStepViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49E9AB326C9545974662F6D7 /* OnboardingStepViews.swift */; };
 		62233547E7206F0946732275 /* NeonGymAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE21483CCE25A3204118A87 /* NeonGymAIApp.swift */; };
 		8075FCDE70EF85BCEB39DE96 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F872B95F3420BAD39F8D0843 /* Theme.swift */; };
 		859670BB4CAD1A1C215C2134 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207C44DEE9ECFD15802A799A /* SettingsView.swift */; };
@@ -21,12 +23,14 @@
 		9BF0417AC461EED0098EF6E3 /* VisionTrackingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F27CC1F00F1602AA26A9BFD6 /* VisionTrackingManager.swift */; };
 		D0B4F91526A121E30D3938BE /* MathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D44F8B05081194DC19ACD99 /* MathUtils.swift */; };
 		EA049F4E5C571B99DEAF07E3 /* ActiveTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7B371A6A50D99E45ED75FF /* ActiveTrackingView.swift */; };
+		EAB3F02923A092C18DFF1295 /* OnboardingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C5B69897B96A3F985DB6322 /* OnboardingManager.swift */; };
 		F7997957706C9E5DD2CE20C1 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34446B3202D88C74B2760B57 /* CameraManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		059977922AA618AB6235E5BB /* MeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeView.swift; sourceTree = "<group>"; };
 		0BE21483CCE25A3204118A87 /* NeonGymAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeonGymAIApp.swift; sourceTree = "<group>"; };
+		1CDD2E320BB8F3B16BE4ED12 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		1D44F8B05081194DC19ACD99 /* MathUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtils.swift; sourceTree = "<group>"; };
 		1E7B371A6A50D99E45ED75FF /* ActiveTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveTrackingView.swift; sourceTree = "<group>"; };
 		207C44DEE9ECFD15802A799A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -36,6 +40,8 @@
 		34446B3202D88C74B2760B57 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		37593491E232419A4DD9BD9C /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		395CBF15B74D68C1CF4BDA59 /* AICoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICoachView.swift; sourceTree = "<group>"; };
+		49E9AB326C9545974662F6D7 /* OnboardingStepViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingStepViews.swift; sourceTree = "<group>"; };
+		6C5B69897B96A3F985DB6322 /* OnboardingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingManager.swift; sourceTree = "<group>"; };
 		A35FB7556A7400DD5B063820 /* ScanMachineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanMachineView.swift; sourceTree = "<group>"; };
 		C4678ADFC7DC25FBEBACA56D /* NeonGymAI.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NeonGymAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E580D63B463C70C32B24D9CC /* SquatTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquatTracker.swift; sourceTree = "<group>"; };
@@ -52,6 +58,15 @@
 			path = AICoach;
 			sourceTree = "<group>";
 		};
+		0693FE8E0FDD7849AC955ABC /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				49E9AB326C9545974662F6D7 /* OnboardingStepViews.swift */,
+				1CDD2E320BB8F3B16BE4ED12 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		0B91C4AED116D25A4A2B7859 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -59,6 +74,7 @@
 				0359C86C6CA254FB431B67CB /* AICoach */,
 				79472D36C83F64C666001D82 /* Home */,
 				99D2124C55217023AD1F4CB0 /* Me */,
+				0693FE8E0FDD7849AC955ABC /* Onboarding */,
 				912CC8E035BD74DAE37E88B9 /* Settings */,
 			);
 			path = Views;
@@ -140,6 +156,7 @@
 				34446B3202D88C74B2760B57 /* CameraManager.swift */,
 				2475EE2D4B584C2AA85C52A1 /* LLMNetworkManager.swift */,
 				1D44F8B05081194DC19ACD99 /* MathUtils.swift */,
+				6C5B69897B96A3F985DB6322 /* OnboardingManager.swift */,
 				E580D63B463C70C32B24D9CC /* SquatTracker.swift */,
 				F27CC1F00F1602AA26A9BFD6 /* VisionTrackingManager.swift */,
 			);
@@ -211,6 +228,9 @@
 				D0B4F91526A121E30D3938BE /* MathUtils.swift in Sources */,
 				280CD2840E3CD1F1A1FC653F /* MeView.swift in Sources */,
 				62233547E7206F0946732275 /* NeonGymAIApp.swift in Sources */,
+				EAB3F02923A092C18DFF1295 /* OnboardingManager.swift in Sources */,
+				5202999A5489B2A869F4A346 /* OnboardingStepViews.swift in Sources */,
+				315302DDA07204626F22527E /* OnboardingView.swift in Sources */,
 				43BB0186EFE4C9DF27E363B5 /* ScanMachineView.swift in Sources */,
 				859670BB4CAD1A1C215C2134 /* SettingsView.swift in Sources */,
 				90CDAE840C3EAEC30E652AF9 /* SquatTracker.swift in Sources */,

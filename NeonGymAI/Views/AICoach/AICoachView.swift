@@ -26,6 +26,7 @@ struct AICoachView: View {
                                     if message.isUser {
                                         Spacer()
                                         Text(message.text)
+                                            .font(Theme.secondaryText)
                                             .padding()
                                             .background(Theme.primaryAccent(for: colorScheme))
                                             .foregroundColor(.white)
@@ -35,6 +36,7 @@ struct AICoachView: View {
                                             Image(systemName: "desktopcomputer")
                                                 .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                                             Text(message.text)
+                                                .font(Theme.secondaryText)
                                                 .padding()
                                                 .background(Theme.secondaryAccent(for: colorScheme).opacity(0.2))
                                                 .foregroundColor(Theme.secondaryAccent(for: colorScheme))
@@ -44,6 +46,7 @@ struct AICoachView: View {
                                     }
                                 }
                                 .padding(.horizontal)
+                                .transition(.scale.combined(with: .opacity))
                             }
                         }
                         .padding(.top)
@@ -55,7 +58,7 @@ struct AICoachView: View {
                             .padding(12)
                             .background(Theme.cardColor(for: colorScheme))
                             .cornerRadius(20)
-                            .font(Theme.body)
+                            .font(Theme.secondaryText)
                         
                         Button(action: {
                             // TODO: Speech to text dictation
@@ -67,8 +70,10 @@ struct AICoachView: View {
                         
                         Button(action: {
                             if !messageText.isEmpty {
-                                messages.append(Message(text: messageText, isUser: true))
-                                messageText = ""
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                    messages.append(Message(text: messageText, isUser: true))
+                                    messageText = ""
+                                }
                                 // TODO: Call LLM Chat
                             }
                         }) {

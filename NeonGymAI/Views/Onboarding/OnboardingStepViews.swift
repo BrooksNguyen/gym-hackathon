@@ -8,15 +8,15 @@ struct MetricsStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 30) {
             Text("Let's get to know you")
-                .font(Theme.largeTitle)
+                .font(Theme.primaryText)
                 .padding(.top, 60)
             
             VStack(alignment: .leading, spacing: 10) {
                 Text("What's your name?")
-                    .font(Theme.headline)
+                    .font(Theme.secondaryText)
                     .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                 TextField("Nguyễn Phúc Bách", text: $manager.name)
-                    .font(Theme.title)
+                    .font(Theme.primaryText)
                     .padding()
                     .background(Theme.cardColor(for: colorScheme))
                     .cornerRadius(12)
@@ -25,7 +25,7 @@ struct MetricsStepView: View {
             HStack(spacing: 20) {
                 VStack(alignment: .leading) {
                     Text("Age")
-                        .font(Theme.caption)
+                        .font(Theme.tertiaryText)
                         .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                     Picker("Age", selection: $manager.age) {
                         ForEach(10..<100) { age in
@@ -39,7 +39,7 @@ struct MetricsStepView: View {
                 
                 VStack(alignment: .leading) {
                     Text("Weight (kg)")
-                        .font(Theme.caption)
+                        .font(Theme.tertiaryText)
                         .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                     Picker("Weight", selection: $manager.weight) {
                         ForEach(30..<150) { w in
@@ -53,7 +53,7 @@ struct MetricsStepView: View {
                 
                 VStack(alignment: .leading) {
                     Text("Height (cm)")
-                        .font(Theme.caption)
+                        .font(Theme.tertiaryText)
                         .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                     Picker("Height", selection: $manager.height) {
                         ForEach(100..<220) { h in
@@ -72,7 +72,7 @@ struct MetricsStepView: View {
                 manager.nextStep()
             }) {
                 Text("Continue")
-                    .font(Theme.headline)
+                    .font(Theme.primaryText)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(Theme.primaryAccent(for: colorScheme))
@@ -95,11 +95,11 @@ struct GoalsStepView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 30) {
             Text("Chào mừng, \(manager.name.isEmpty ? "bạn" : manager.name)!")
-                .font(Theme.largeTitle)
+                .font(Theme.primaryText)
                 .padding(.top, 60)
             
             Text("Mục tiêu của bạn là gì?")
-                .font(Theme.headline)
+                .font(Theme.secondaryText)
                 .foregroundColor(Theme.secondaryAccent(for: colorScheme))
             
             VStack(spacing: 16) {
@@ -109,7 +109,7 @@ struct GoalsStepView: View {
                     }) {
                         HStack {
                             Text(goal)
-                                .font(Theme.body)
+                                .font(Theme.secondaryText)
                             Spacer()
                             if manager.selectedGoal == goal {
                                 Image(systemName: "checkmark.circle.fill")
@@ -135,7 +135,7 @@ struct GoalsStepView: View {
                     manager.nextStep()
                 }) {
                     Text("Next")
-                        .font(Theme.headline)
+                        .font(Theme.primaryText)
                         .frame(maxWidth: .infinity)
                         .padding()
                         .background(Theme.primaryAccent(for: colorScheme))
@@ -159,7 +159,7 @@ struct CoachStatusStepView: View {
             Spacer()
             
             Text("Bạn đã có Huấn luyện viên (Coach) chưa?")
-                .font(Theme.title)
+                .font(Theme.primaryText)
                 .multilineTextAlignment(.center)
             
             VStack(spacing: 20) {
@@ -168,7 +168,7 @@ struct CoachStatusStepView: View {
                     manager.nextStep()
                 }) {
                     Text("Rồi, tôi đã có Coach")
-                        .font(Theme.headline)
+                        .font(Theme.secondaryText)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 20)
                         .background(Theme.cardColor(for: colorScheme))
@@ -182,7 +182,7 @@ struct CoachStatusStepView: View {
                     manager.nextStep()
                 }) {
                     Text("Chưa, tôi tự tập")
-                        .font(Theme.headline)
+                        .font(Theme.secondaryText)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 20)
                         .background(Theme.primaryAccent(for: colorScheme))
@@ -206,11 +206,11 @@ struct UploadScheduleStepView: View {
     var body: some View {
         VStack(spacing: 30) {
             Text("Upload Your Schedule")
-                .font(Theme.largeTitle)
+                .font(Theme.primaryText)
                 .padding(.top, 60)
             
             Text("Tuyệt vời! Hãy tải lên lịch tập từ Coach của bạn.")
-                .font(Theme.body)
+                .font(Theme.secondaryText)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
             
@@ -221,7 +221,7 @@ struct UploadScheduleStepView: View {
                     Image(systemName: "doc.badge.plus")
                         .font(.system(size: 40))
                     Text("Tải file lịch tập")
-                        .font(Theme.headline)
+                        .font(Theme.secondaryText)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 60)
@@ -242,7 +242,7 @@ struct UploadScheduleStepView: View {
                 manager.completeOnboarding()
             }) {
                 Text("Finish")
-                    .font(Theme.headline)
+                    .font(Theme.primaryText)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(Theme.primaryAccent(for: colorScheme))
@@ -269,10 +269,10 @@ struct AIIntroStepView: View {
                 .foregroundColor(Theme.primaryAccent(for: colorScheme))
             
             Text("Để AI Coach lo!")
-                .font(Theme.largeTitle)
+                .font(Theme.primaryText)
             
             Text("Hãy chụp lại các máy tập xung quanh bạn, AI sẽ thiết kế bài tập dựa trên mục tiêu, \(manager.weight)kg và \(manager.height)cm của bạn.")
-                .font(Theme.headline)
+                .font(Theme.secondaryText)
                 .multilineTextAlignment(.center)
                 .foregroundColor(.secondary)
                 .padding(.horizontal)
@@ -287,7 +287,7 @@ struct AIIntroStepView: View {
                     Image(systemName: "camera.viewfinder")
                         .font(.title2)
                     Text("Scan Gym Equipment Now")
-                        .font(Theme.headline)
+                        .font(Theme.primaryText)
                 }
                 .frame(maxWidth: .infinity)
                 .padding()

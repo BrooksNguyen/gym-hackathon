@@ -3,29 +3,32 @@ import SwiftUI
 struct ScanMachineView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
-    @State private var isBlurred = false
-    @State private var showBottomSheet = false
+    @StateObject private var energyManager = EnergyManager.shared
+    @State private var isScanning = false
+    @State private var showResultSheet = false
+    @State private var analysisResult: MachineAnalysisResponse?
     
     var body: some View {
         ZStack {
+            Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
+            
             // Mock Camera View
-            Rectangle()
-                .fill(Color.gray.opacity(0.3))
-                .ignoresSafeArea()
-                .overlay(
-                    VStack {
-                        Image(systemName: "viewfinder")
-                            .font(.system(size: 100, weight: .ultraLight))
-                            .foregroundColor(Theme.primaryAccent(for: colorScheme).opacity(0.5))
-                        Text("Align machine in frame")
-                            .font(Theme.headline)
-                            .foregroundColor(.white)
-                            .padding(.top)
-                    }
-                )
-                // Glassmorphism blur effect
-                .blur(radius: isBlurred ? 20 : 0)
-                .animation(.easeInOut(duration: 0.5), value: isBlurred)
+            VStack {
+                Spacer()
+                Image(systemName: "camera.viewfinder")
+                    .font(.system(size: 150))
+                    .foregroundColor(Theme.secondaryAccent(for: colorScheme).opacity(0.3))
+                Spacer()
+            }
+            
+            if isScanning {
+                Color.black.opacity(0.4).edgesIgnoringSafeArea(.all)
+                    .blur(radius: 20)
+                    .transition(.opacity)
+                
+                ProgressView("Analyzing Machine...")
+                    .foregroundColor(.white)
+            }
             
             VStack {
                 HStack {
@@ -33,90 +36,84 @@ struct ScanMachineView: View {
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.largeTitle)
-                            .foregroundColor(.white)
-                            .padding()
+                            .font(.title)
+                            .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                     }
                     Spacer()
                 }
+                .padding()
+                
                 Spacer()
                 
-                if !isBlurred {
+                if !isScanning {
                     Button(action: {
-                        isBlurred = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            showBottomSheet = true
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            isScanning = true
+                        }
+                        
+                        // Pass energy constraints to LLM
+                        LLMNetworkManager.shared.scanMachine(imageData: Data(), currentEnergy: energyManager.currentEnergyLevel, fatiguedMuscles: energyManager.fatiguedMuscles) { result in
+                            withAnimation {
+                                isScanning = false
+                            }
+                            switch result {
+                            case .success(let response):
+                                analysisResult = response
+                                showResultSheet = true
+                            case .failure(let error):
+                                print("Error: \(error)")
+                            }
                         }
                     }) {
-                        Circle()
-                            .stroke(Color.white, lineWidth: 4)
-                            .frame(width: 70, height: 70)
-                            .overlay(
-                                Circle().fill(Color.white).frame(width: 54, height: 54)
-                            )
+                        Image(systemName: "largecircle.fill.circle")
+                            .font(.system(size: 80))
+                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
                     }
                     .padding(.bottom, 40)
                 }
             }
         }
-        .sheet(isPresented: $showBottomSheet, onDismiss: {
-            presentationMode.wrappedValue.dismiss()
-        }) {
-            ScanResultSheet()
-                .presentationDetents([.medium, .large])
-                .presentationDragIndicator(.visible)
-        }
-    }
-}
-
-struct ScanResultSheet: View {
-    @Environment(\.colorScheme) var colorScheme
-    
-    var body: some View {
-        ZStack {
-            Theme.backgroundColor(for: colorScheme).ignoresSafeArea()
-            
-            VStack(alignment: .leading, spacing: 20) {
-                Text("Machine Identified")
-                    .font(Theme.caption)
-                    .foregroundColor(Theme.secondaryAccent(for: colorScheme))
-                    .textCase(.uppercase)
-                
-                Text("Leg Extension")
-                    .font(Theme.largeTitle)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Target Muscles")
-                        .font(Theme.headline)
-                    Text("Quadriceps")
-                        .font(Theme.body)
-                        .foregroundColor(.secondary)
-                }
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Recommendation")
-                        .font(Theme.headline)
-                    Text("3 sets of 12 reps")
-                        .font(Theme.body)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-                
-                Button(action: {
-                    // Start workout logic
-                }) {
-                    Text("Start Workout")
-                        .font(Theme.headline)
-                        .frame(maxWidth: .infinity)
+        .sheet(isPresented: $showResultSheet) {
+            if let result = analysisResult {
+                VStack(spacing: 20) {
+                    Text(result.exerciseName)
+                        .font(Theme.primaryText)
+                    
+                    Text("Targets: \(result.targetMuscles.joined(separator: ", "))")
+                        .font(Theme.secondaryText)
+                    
+                    Text("Recommended Reps: \(result.recommendedReps)")
+                        .font(Theme.tertiaryText)
+                    
+                    // Display Coach Advice directly derived from energy
+                    Text("Coach says:")
+                        .font(Theme.secondaryText)
+                        .padding(.top)
+                    Text(result.coachAdvice)
+                        .font(Theme.secondaryText)
+                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                        .multilineTextAlignment(.center)
                         .padding()
-                        .background(Theme.primaryAccent(for: colorScheme))
-                        .foregroundColor(.white)
-                        .cornerRadius(16)
+                        .background(Theme.cardColor(for: colorScheme))
+                        .cornerRadius(12)
+                    
+                    Button(action: {
+                        showResultSheet = false
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Start Workout")
+                            .font(Theme.primaryText)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Theme.primaryAccent(for: colorScheme))
+                            .foregroundColor(.white)
+                            .cornerRadius(16)
+                    }
+                    .padding(.top, 20)
                 }
-                .padding(.bottom)
+                .padding(24)
+                .presentationDetents([.medium, .large])
             }
-            .padding(24)
         }
     }
 }

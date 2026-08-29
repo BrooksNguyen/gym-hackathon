@@ -27,12 +27,12 @@ struct MeView: View {
                 Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
                 
                 Form {
-                    Section(header: Text("Basic Info").font(Theme.caption).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
+                    Section(header: Text("Basic Info").font(Theme.tertiaryText).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
                         TextField("Name", text: $name)
-                            .font(Theme.body)
+                            .font(Theme.secondaryText)
                         TextField("Age", text: $age)
                             .keyboardType(.numberPad)
-                            .font(Theme.body)
+                            .font(Theme.secondaryText)
                         Picker("Gender", selection: $selectedGender) {
                             ForEach(Gender.allCases, id: \.self) { gender in
                                 Text(gender.rawValue).tag(gender)
@@ -41,12 +41,12 @@ struct MeView: View {
                     }
                     .listRowBackground(Theme.cardColor(for: colorScheme))
                     
-                    Section(header: Text("Body Metrics").font(Theme.caption).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
+                    Section(header: Text("Body Metrics").font(Theme.tertiaryText).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
                         VStack(spacing: 12) {
                             HStack {
                                 Text("Height (cm)")
                                 Spacer()
-                                Text("\(Int(height))").font(Theme.headline)
+                                Text("\(Int(height))").font(Theme.primaryText)
                             }
                             Slider(value: $height, in: 100...220, step: 1)
                                 .accentColor(Theme.primaryAccent(for: colorScheme))
@@ -57,7 +57,7 @@ struct MeView: View {
                             HStack {
                                 Text("Weight (kg)")
                                 Spacer()
-                                Text("\(Int(weight))").font(Theme.headline)
+                                Text("\(Int(weight))").font(Theme.primaryText)
                             }
                             Slider(value: $weight, in: 40...150, step: 1)
                                 .accentColor(Theme.primaryAccent(for: colorScheme))
@@ -66,7 +66,7 @@ struct MeView: View {
                     }
                     .listRowBackground(Theme.cardColor(for: colorScheme))
                     
-                    Section(header: Text("Goals").font(Theme.caption).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
+                    Section(header: Text("Goals").font(Theme.tertiaryText).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
                         Picker("Goal", selection: $selectedGoal) {
                             ForEach(Goal.allCases, id: \.self) { goal in
                                 Text(goal.rawValue).tag(goal)

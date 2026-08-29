@@ -2,6 +2,7 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(\.colorScheme) var colorScheme
+    @StateObject private var energyManager = EnergyManager.shared
     @State private var showScanMachine = false
     @State private var showTracking = false
     
@@ -12,30 +13,48 @@ struct HomeView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 24) {
-                        // Header with Clock
+                        // Header with Clock and Battery
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
                                 TimelineView(.everyMinute) { context in
                                     Text(context.date.formatted(.dateTime.weekday().month().day().hour().minute()))
-                                        .font(Theme.caption)
-                                        .foregroundColor(.secondary)
+                                        .font(Theme.tertiaryText)
+                                        .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                                 }
                                 Text("Ready to crush it?")
-                                    .font(Theme.largeTitle)
+                                    .font(Theme.primaryText)
                             }
                             Spacer()
+                            
+                            // Energy Battery Ring
+                            ZStack {
+                                Circle()
+                                    .stroke(Color.gray.opacity(0.3), lineWidth: 4)
+                                Circle()
+                                    .trim(from: 0, to: CGFloat(energyManager.currentEnergyLevel) / 100)
+                                    .stroke(energyManager.energyColor(for: colorScheme), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                                    .rotationEffect(.degrees(-90))
+                                    .animation(.spring(), value: energyManager.currentEnergyLevel)
+                                
+                                Text("\(energyManager.currentEnergyLevel)%")
+                                    .font(Theme.numberFont(size: 12))
+                                    .foregroundColor(.primary)
+                            }
+                            .frame(width: 40, height: 40)
                         }
                         .padding(.top, 20)
                         
                         // Hero Button
                         Button(action: {
-                            showScanMachine = true
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                showScanMachine = true
+                            }
                         }) {
                             HStack {
                                 Image(systemName: "camera.viewfinder")
-                                    .font(.title)
+                                    .font(.title2)
                                 Text("Scan Machine")
-                                    .font(Theme.headline)
+                                    .font(Theme.primaryText)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
@@ -52,13 +71,15 @@ struct HomeView: View {
                         
                         // Secondary Button
                         Button(action: {
-                            showTracking = true
+                            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                showTracking = true
+                            }
                         }) {
                             HStack {
                                 Image(systemName: "figure.run")
-                                    .font(.title)
+                                    .font(.title2)
                                 Text("Start Tracking")
-                                    .font(Theme.headline)
+                                    .font(Theme.primaryText)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 20)
@@ -80,16 +101,16 @@ struct HomeView: View {
                         // Recent Activity
                         VStack(alignment: .leading, spacing: 16) {
                             Text("Recent Activity")
-                                .font(Theme.title)
+                                .font(Theme.primaryText)
                             
                             ScrollView(.horizontal, showsIndicators: false) {
                                 HStack(spacing: 16) {
                                     ForEach(0..<5) { i in
                                         VStack(alignment: .leading, spacing: 4) {
                                             Text("Squat")
-                                                .font(Theme.headline)
+                                                .font(Theme.secondaryText)
                                             Text("4 sets x 12 reps")
-                                                .font(Theme.caption)
+                                                .font(Theme.tertiaryText)
                                                 .foregroundColor(.secondary)
                                         }
                                         .padding()

@@ -1,72 +1,100 @@
 import SwiftUI
 
 struct ActiveTrackingView: View {
-    @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
-    @State private var repCount = 0
-    @State private var formStatus = "Good Form"
-    @State private var isGoodForm = true
+    @StateObject private var energyManager = EnergyManager.shared
+    @State private var reps = 0
+    @State private var showFinishAlert = false
+    @State private var navigateToAnalytics = false
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         ZStack {
-            // Mock Camera Feed
-            Rectangle()
-                .fill(Color.black)
-                .ignoresSafeArea()
-                .overlay(
-                    // Mock Skeleton
-                    Path { path in
-                        path.move(to: CGPoint(x: 200, y: 300))
-                        path.addLine(to: CGPoint(x: 200, y: 500))
-                        path.addLine(to: CGPoint(x: 250, y: 650))
-                    }
-                    .stroke(isGoodForm ? Theme.secondaryAccent(for: .dark) : Theme.primaryAccent(for: .dark), style: StrokeStyle(lineWidth: 6, lineCap: .round, lineJoin: .round))
-                    .shadow(color: isGoodForm ? Theme.secondaryAccent(for: .dark) : Theme.primaryAccent(for: .dark), radius: 10)
-                )
+            Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
+            
+            // Mock Camera View
+            VStack {
+                Spacer()
+                Image(systemName: "figure.run")
+                    .font(.system(size: 150))
+                    .foregroundColor(Theme.secondaryAccent(for: colorScheme).opacity(0.3))
+                Spacer()
+            }
             
             VStack {
                 // Floating Metrics Card
-                HStack(spacing: 40) {
-                    VStack {
-                        Text("REPS")
-                            .font(Theme.caption)
-                            .foregroundColor(.gray)
-                        Text("\(repCount)")
-                            .font(.system(size: 48, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
+                HStack(spacing: 20) {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("SQUAT")
+                            .font(Theme.tertiaryText)
+                            .foregroundColor(.secondary)
+                        Text("\(reps) Reps")
+                            .font(Theme.numberFont(size: 32))
+                            .foregroundColor(.primary)
                     }
                     
-                    VStack {
-                        Text("FORM")
-                            .font(Theme.caption)
-                            .foregroundColor(.gray)
-                        Text(formStatus)
-                            .font(Theme.headline)
-                            .foregroundColor(isGoodForm ? Theme.secondaryAccent(for: .dark) : Theme.primaryAccent(for: .dark))
+                    Spacer()
+                    
+                    // Energy Battery Ring
+                    ZStack {
+                        Circle()
+                            .stroke(Color.gray.opacity(0.3), lineWidth: 4)
+                        Circle()
+                            .trim(from: 0, to: CGFloat(energyManager.currentEnergyLevel) / 100)
+                            .stroke(energyManager.energyColor(for: colorScheme), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                            .animation(.spring(), value: energyManager.currentEnergyLevel)
+                        
+                        Text("\(energyManager.currentEnergyLevel)%")
+                            .font(Theme.numberFont(size: 12))
+                            .foregroundColor(.primary)
                     }
+                    .frame(width: 40, height: 40)
                 }
-                .padding(.horizontal, 32)
-                .padding(.vertical, 16)
+                .padding()
                 .background(.ultraThinMaterial)
-                .cornerRadius(24)
-                .padding(.top, 40)
+                .cornerRadius(20)
+                .padding(.horizontal, 24)
+                .padding(.top, 20)
                 
                 Spacer()
                 
-                // Finish Session Pill
+                // Finish Session Button
                 Button(action: {
-                    presentationMode.wrappedValue.dismiss()
+                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                        navigateToAnalytics = true
+                    }
                 }) {
                     Text("Finish Session")
-                        .font(Theme.headline)
-                        .padding(.horizontal, 32)
-                        .padding(.vertical, 16)
-                        .background(Color.red) // Destructive action
+                        .font(Theme.primaryText)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(Theme.primaryAccent(for: colorScheme))
                         .foregroundColor(.white)
                         .clipShape(Capsule())
-                        .shadow(color: Color.red.opacity(0.5), radius: 10, y: 5)
+                        .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.4), radius: 10, y: 5)
                 }
+                .padding(.horizontal, 40)
                 .padding(.bottom, 40)
+            }
+        }
+        .fullScreenCover(isPresented: $navigateToAnalytics, onDismiss: {
+            presentationMode.wrappedValue.dismiss() // Dismiss back to Home when Analytics finishes
+        }) {
+            AnalyticsDashboardView()
+        }
+        .onAppear {
+            // Mock incrementing reps
+            Timer.scheduledTimer(withTimeInterval: 2.0, repeats: true) { timer in
+                if reps < 12 {
+                    reps += 1
+                    energyManager.decreaseEnergy(by: 2)
+                    if reps == 10 {
+                        energyManager.addFatiguedMuscle("Quadriceps")
+                    }
+                } else {
+                    timer.invalidate()
+                }
             }
         }
     }

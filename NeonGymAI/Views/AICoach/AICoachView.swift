@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AICoachView: View {
     @Environment(\.colorScheme) var colorScheme
+    @StateObject private var energyManager = EnergyManager.shared
     @State private var messageText = ""
     @State private var messages: [Message] = [
         Message(text: "Hello! I am your AI Coach. How can I help you today?", isUser: false)
@@ -19,6 +20,40 @@ struct AICoachView: View {
                 Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
                 
                 VStack {
+                    // Header with Health Battery
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Coach Monitor")
+                                .font(Theme.primaryText)
+                            Text("Health Status: \(energyManager.currentEnergyLevel >= 80 ? "Optimal" : (energyManager.currentEnergyLevel >= 40 ? "Fatigued" : "Exhausted"))")
+                                .font(Theme.tertiaryText)
+                                .foregroundColor(Theme.secondaryAccent(for: colorScheme))
+                        }
+                        
+                        Spacer()
+                        
+                        // Energy Battery Ring
+                        ZStack {
+                            Circle()
+                                .stroke(Color.gray.opacity(0.3), lineWidth: 4)
+                            Circle()
+                                .trim(from: 0, to: CGFloat(energyManager.currentEnergyLevel) / 100)
+                                .stroke(energyManager.energyColor(for: colorScheme), style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                                .rotationEffect(.degrees(-90))
+                                .animation(.spring(), value: energyManager.currentEnergyLevel)
+                            
+                            Text("\(energyManager.currentEnergyLevel)%")
+                                .font(Theme.numberFont(size: 12))
+                                .foregroundColor(.primary)
+                        }
+                        .frame(width: 40, height: 40)
+                    }
+                    .padding()
+                    .background(Theme.cardColor(for: colorScheme))
+                    .cornerRadius(16)
+                    .padding(.horizontal)
+                    .padding(.top, 8)
+                    
                     ScrollView {
                         VStack(spacing: 12) {
                             ForEach(messages) { message in

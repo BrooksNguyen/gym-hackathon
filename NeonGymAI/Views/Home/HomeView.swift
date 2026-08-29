@@ -24,23 +24,6 @@ struct HomeView: View {
                                 Text("Ready to crush it?")
                                     .font(Theme.primaryText)
                             }
-                            Spacer()
-                            
-                            // Energy Battery Ring
-                            ZStack {
-                                Circle()
-                                    .stroke(Color.gray.opacity(0.3), lineWidth: 4)
-                                Circle()
-                                    .trim(from: 0, to: CGFloat(energyManager.currentEnergyLevel) / 100)
-                                    .stroke(energyManager.energyColor(for: colorScheme), style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                                    .rotationEffect(.degrees(-90))
-                                    .animation(.spring(), value: energyManager.currentEnergyLevel)
-                                
-                                Text("\(energyManager.currentEnergyLevel)%")
-                                    .font(Theme.numberFont(size: 12))
-                                    .foregroundColor(.primary)
-                            }
-                            .frame(width: 40, height: 40)
                         }
                         .padding(.top, 20)
                         

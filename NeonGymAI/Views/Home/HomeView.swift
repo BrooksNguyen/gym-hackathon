@@ -73,20 +73,30 @@ struct HomeView: View {
                                     .font(Theme.secondaryText)
                                     .foregroundColor(.secondary)
                                 
-                                HStack(spacing: 16) {
-                                    ForEach(1...5, id: \.self) { index in
-                                        Image(systemName: "star.fill")
-                                            .font(.system(size: 32))
-                                            .foregroundColor(starColor(for: index))
-                                            .scaleEffect(healthState.starRating >= index ? 1.1 : 1.0)
-                                            .onTapGesture {
-                                                let impactMed = UIImpactFeedbackGenerator(style: .medium)
-                                                impactMed.impactOccurred()
-                                                withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
-                                                    healthState.starRating = index
-                                                    generatedWorkout = nil // Reset when stars change
+                                HStack {
+                                    HStack(spacing: 16) {
+                                        ForEach(1...5, id: \.self) { index in
+                                            Image(systemName: "star.fill")
+                                                .font(.system(size: 32))
+                                                .foregroundColor(starColor(for: index))
+                                                .scaleEffect(healthState.starRating >= index ? 1.1 : 1.0)
+                                                .onTapGesture {
+                                                    let impactMed = UIImpactFeedbackGenerator(style: .medium)
+                                                    impactMed.impactOccurred()
+                                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                                                        healthState.starRating = index
+                                                        generatedWorkout = nil // Reset when stars change
+                                                    }
                                                 }
-                                            }
+                                        }
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    if healthState.starRating > 0 {
+                                        Text(healthState.statusText())
+                                            .font(Theme.tertiaryText)
+                                            .foregroundColor(healthState.statusColor(for: colorScheme))
                                     }
                                 }
                             }

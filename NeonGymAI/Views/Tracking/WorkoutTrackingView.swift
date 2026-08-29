@@ -29,9 +29,6 @@ struct WorkoutTrackingView: View {
             VStack(spacing: 0) {
                 topBar
                 
-                metricsPanel
-                    .padding(.top, 24)
-                
                 Spacer()
                 
                 feedbackPanel
@@ -93,20 +90,6 @@ struct WorkoutTrackingView: View {
             
             Spacer()
             
-            Text("CHECK FORM: \(tracker.metrics.exercise?.rawValue.uppercased() ?? "SQUAT")")
-                .font(.system(size: 14, weight: .bold))
-                .foregroundColor(.white)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(Color.white.opacity(0.1))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                )
-                .cornerRadius(8)
-            
-            Spacer()
-            
             Button {
                 // sound toggle logic placeholder
             } label: {
@@ -123,34 +106,7 @@ struct WorkoutTrackingView: View {
         }
     }
 
-    private var trackingTitle: String {
-        if let exercise = tracker.metrics.exercise {
-            return "\(exercise.rawValue) LOCKED"
-        }
-        if let candidate = tracker.metrics.candidate {
-            return "DETECTING \(candidate.rawValue)"
-        }
-        return "AUTO TRACKING"
-    }
 
-    private var metricsPanel: some View {
-        VStack(alignment: .leading, spacing: -4) {
-            Text("REPS")
-                .font(Theme.secondaryText)
-                .foregroundColor(.white.opacity(0.6))
-            
-            HStack(alignment: .firstTextBaseline, spacing: 12) {
-                Text("\(tracker.metrics.reps)")
-                    .font(.system(size: 96, weight: .bold, design: .rounded))
-                    .foregroundColor(.white)
-                
-                Text(tracker.metrics.phase.rawValue.uppercased())
-                    .font(Theme.primaryText)
-                    .foregroundColor(Theme.primaryAccent(for: .dark))
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
 
     private var feedbackPanel: some View {
         let isPositiveFeedback = tracker.metrics.feedback.contains("Good")

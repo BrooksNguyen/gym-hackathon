@@ -47,7 +47,6 @@ struct Theme {
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
-                .edgesIgnoringSafeArea(.all)
                 
                 // Texture overlays using radial gradients to simulate brushed metal sheen
                 RadialGradient(
@@ -59,7 +58,6 @@ struct Theme {
                     startRadius: 10,
                     endRadius: 500
                 )
-                .edgesIgnoringSafeArea(.all)
                 
                 RadialGradient(
                     gradient: Gradient(colors: [
@@ -70,8 +68,9 @@ struct Theme {
                     startRadius: 10,
                     endRadius: 400
                 )
-                .edgesIgnoringSafeArea(.all)
             }
+            .ignoresSafeArea()
+            .drawingGroup()
         }
     }
 }

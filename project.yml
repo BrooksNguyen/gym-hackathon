@@ -1,0 +1,22 @@
+name: NeonGymAI
+options:
+  bundleIdPrefix: com.brooksnguyen
+  deploymentTarget:
+    iOS: "17.0"
+targets:
+  NeonGymAI:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [NeonGymAI]
+    settings:
+      base:
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_NSCameraUsageDescription: "We need access to the camera to scan gym machines and perform 360-degree pose tracking."
+        INFOPLIST_KEY_NSMicrophoneUsageDescription: "We need access to the microphone for AI Coach voice commands."
+        INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "We need access to speech recognition for the AI Coach."
+        SWIFT_VERSION: 5.0
+        TARGETED_DEVICE_FAMILY: "1"
+        DEVELOPMENT_ASSET_PATHS: '"NeonGymAI/Preview Content"'
+        ENABLE_PREVIEWS: YES

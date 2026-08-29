@@ -10,6 +10,10 @@ struct ActiveTrackingView: View {
     @State private var navigateToAnalytics = false
     @Environment(\.presentationMode) var presentationMode
     
+    // Rest Timer State
+    @State private var showRestTimer = false
+    @State private var restSeconds = 60
+    
     // Breathing animation state
     @State private var isBreathing = false
     
@@ -76,7 +80,10 @@ struct ActiveTrackingView: View {
                 // Bottom Action Buttons
                 HStack(spacing: 16) {
                     Button(action: {
-                        // Take a break action
+                        withAnimation {
+                            restSeconds = 60
+                            showRestTimer = true
+                        }
                     }) {
                         Text("Take a break")
                             .metallicButton(scheme: colorScheme, isPrimary: false) // Metallic Silver
@@ -155,6 +162,45 @@ struct ActiveTrackingView: View {
                             hasSeenTrackingTutorial = true
                         }
                     }
+                }
+                
+                if showRestTimer {
+                    ZStack {
+                        Color.black.opacity(0.85).edgesIgnoringSafeArea(.all)
+                        
+                        VStack(spacing: 40) {
+                            Text("REST")
+                                .font(Theme.primaryText)
+                                .foregroundColor(Theme.secondaryAccent(for: colorScheme))
+                            
+                            Text(String(format: "%02d:%02d", restSeconds / 60, restSeconds % 60))
+                                .font(.system(size: 80, weight: .heavy, design: .rounded))
+                                .foregroundColor(.white)
+                            
+                            Button(action: {
+                                withAnimation {
+                                    showRestTimer = false
+                                }
+                            }) {
+                                Text("Skip Rest")
+                                    .metallicButton(scheme: colorScheme, isPrimary: true)
+                            }
+                            .padding(.horizontal, 40)
+                        }
+                    }
+                    .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
+                        if showRestTimer {
+                            if restSeconds > 0 {
+                                restSeconds -= 1
+                            } else {
+                                withAnimation {
+                                    showRestTimer = false
+                                }
+                            }
+                        }
+                    }
+                    .transition(.opacity)
+                    .zIndex(1) // Ensure it stays on top of tutorial if both happen to be true
                 }
             }
         )

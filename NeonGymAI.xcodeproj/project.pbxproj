@@ -66,7 +66,7 @@
 		93C90F87E29510F62C5E007F /* WorkoutSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSummaryView.swift; sourceTree = "<group>"; };
 		A35FB7556A7400DD5B063820 /* ScanMachineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanMachineView.swift; sourceTree = "<group>"; };
 		ABCDAC8EDE95C88334AD0A65 /* AnalyticsDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsDashboardView.swift; sourceTree = "<group>"; };
-		C4678ADFC7DC25FBEBACA56D /* NeonGymAI.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NeonGymAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C4678ADFC7DC25FBEBACA56D /* NeonGymAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NeonGymAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DD1B7FDBE7AF6DF4F1C96942 /* WorkoutTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTrackingView.swift; sourceTree = "<group>"; };
 		E580D63B463C70C32B24D9CC /* SquatTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquatTracker.swift; sourceTree = "<group>"; };
 		F27CC1F00F1602AA26A9BFD6 /* VisionTrackingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionTrackingManager.swift; sourceTree = "<group>"; };
@@ -268,8 +268,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 3083F663A74FD3FC0949C902 /* Build configuration list for PBXProject "NeonGymAI" */;
 			developmentRegion = en;
@@ -348,6 +346,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"NeonGymAI/Preview Content\"";
+				DEVELOPMENT_TEAM = 485SZ2RQ6T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
@@ -433,6 +432,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"NeonGymAI/Preview Content\"";
+				DEVELOPMENT_TEAM = 485SZ2RQ6T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;

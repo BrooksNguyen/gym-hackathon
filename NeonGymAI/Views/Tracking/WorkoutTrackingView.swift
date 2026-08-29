@@ -76,8 +76,7 @@ struct WorkoutTrackingView: View {
                 flashRep = newReps
                 
                 let fb = tracker.metrics.feedback.lowercased()
-                let isBad = fb.contains("upright") || fb.contains("hips in line") || fb.contains("straight") || fb.contains("lower") || fb.contains("finish") || fb.contains("hold")
-                flashIsGood = !isBad
+                flashIsGood = fb.contains("good") || fb.contains("locked")
                 
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                     showFlash = true

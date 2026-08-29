@@ -115,7 +115,7 @@ struct MetallicButtonModifier: ViewModifier {
                         lineWidth: 1
                     )
             )
-            .shadow(color: isPrimary ? Theme.primaryAccent(for: scheme).opacity(0.5) : Color.black.opacity(0.2), radius: 6, x: 0, y: 4)
+            .shadow(color: Color.black.opacity(0.25), radius: 4, x: 0, y: 2)
     }
 }
 

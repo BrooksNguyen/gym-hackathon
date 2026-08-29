@@ -89,7 +89,7 @@ struct MeView: View {
                                     Spacer()
                                     Picker("Age", selection: $profile.age) {
                                         ForEach(12...100, id: \.self) { a in
-                                            Text("\(a)").tag(a)
+                                            Text("\(a)").font(.headline).tag(a)
                                         }
                                     }
                                     .pickerStyle(.wheel)
@@ -152,7 +152,7 @@ struct MeView: View {
                                         .fontWeight(.bold)
                                         .padding(.horizontal, 10)
                                         .padding(.vertical, 4)
-                                        .background(bmiStatus.color.opacity(0.2))
+                                        .background(Color.gray.opacity(0.15))
                                         .foregroundColor(bmiStatus.color)
                                         .cornerRadius(8)
                                 }
@@ -207,7 +207,7 @@ struct MeView: View {
                                             set: { profile.height = Double($0) }
                                         )) {
                                             ForEach(100...220, id: \.self) { h in
-                                                Text("\(h)").tag(h)
+                                                Text("\(h)").font(.headline).tag(h)
                                             }
                                         }
                                         .pickerStyle(.wheel)
@@ -227,7 +227,7 @@ struct MeView: View {
                                             set: { profile.weight = Double($0) }
                                         )) {
                                             ForEach(40...150, id: \.self) { w in
-                                                Text("\(w)").tag(w)
+                                                Text("\(w)").font(.headline).tag(w)
                                             }
                                         }
                                         .pickerStyle(.wheel)
@@ -249,12 +249,20 @@ struct MeView: View {
                                 .font(Theme.tertiaryText)
                                 .foregroundColor(.secondary)
                             
-                            Picker("Goal", selection: goalBinding) {
-                                ForEach(Goal.allCases, id: \.self) { goal in
-                                    Text(goal.rawValue).tag(goal)
-                                }
-                            }
-                            .pickerStyle(.segmented)
+                            HStack(spacing: 8) {
+                                        ForEach(Goal.allCases, id: \.self) { goal in
+                                            Button(action: { profile.goal = goal.rawValue }) {
+                                                Text(goal.rawValue)
+                                                    .font(Theme.secondaryText)
+                                                    .padding(.vertical, 10)
+                                                    .padding(.horizontal, 4)
+                                                    .frame(maxWidth: .infinity)
+                                                    .background(profile.goal == goal.rawValue ? Theme.primaryAccent(for: colorScheme) : Color.gray.opacity(0.15))
+                                                    .foregroundColor(profile.goal == goal.rawValue ? .white : .primary)
+                                                    .cornerRadius(8)
+                                            }
+                                        }
+                                    }
                             .padding()
                             .glassCard(cornerRadius: 16, scheme: colorScheme)
                         }

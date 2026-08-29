@@ -1,4 +1,5 @@
 import SwiftUI
+import FoundationModels
 
 struct AICoachView: View {
     @Environment(\.colorScheme) var colorScheme
@@ -8,12 +9,13 @@ struct AICoachView: View {
     @State private var isSending = false
     @State private var showingVoiceHint = false
     @State private var messages: [Message] = [
-        Message(text: "Hello! I'm your local AI Coach. Based on your current profile (Normal BMI, \(ProfileManager.shared.goal) goal), how can I help you today?", isUser: false)
+        Message(text: "Hello! I'm your on-device AI Coach powered by Apple Intelligence. How can I help you today?", isUser: false)
     ]
 
     private let quickPrompts = ["How do I squat?", "Build me a leg day", "Check my form"]
     @State private var isAnimating = false
     @State private var isGenerating = false
+    @State private var session: LanguageModelSession?
     
     struct Message: Identifiable {
         let id = UUID()
@@ -25,6 +27,33 @@ struct AICoachView: View {
         let heightInMeters = profile.height / 100
         guard heightInMeters > 0 else { return 0 }
         return profile.weight / (heightInMeters * heightInMeters)
+    }
+    
+    private var systemPrompt: String {
+        """
+        You are an expert AI Gym Coach inside a fitness app called Gymini. You run on-device via Apple Intelligence.
+        
+        USER PROFILE:
+        - Name: \(profile.name.isEmpty ? "Athlete" : profile.name)
+        - Age: \(profile.age)
+        - Weight: \(profile.weight) kg
+        - Height: \(profile.height) cm
+        - BMI: \(String(format: "%.1f", bmi))
+        - Goal: \(profile.goal)
+        - Gender: \(profile.gender)
+        - Sessions/week: \(profile.sessionsPerWeek)
+        - Today's target muscle: \(healthState.selectedMuscle)
+        - Current condition rating: \(healthState.starRating)/5
+        
+        RULES:
+        - Give concise, actionable fitness advice (2-4 sentences max).
+        - Personalize answers using the user's BMI, weight, goal, and condition.
+        - For exercise form questions, give step-by-step cues.
+        - For workout plans, tailor volume to their condition rating and goal.
+        - Be encouraging but honest. Use a coach tone, not overly formal.
+        - If asked about nutrition, factor in their BMI and goal.
+        - Respond in the same language the user writes in.
+        """
     }
     
     var body: some View {
@@ -188,32 +217,6 @@ struct AICoachView: View {
                                     proxy.scrollTo("typingIndicator", anchor: .bottom)
                                 }
                             }
-
-                            if messages.count == 1 {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("TRY ASKING")
-                                        .font(.caption.weight(.bold))
-                                        .tracking(1.2)
-                                        .foregroundColor(.gray)
-                                    ScrollView(.horizontal, showsIndicators: false) {
-                                        HStack(spacing: 8) {
-                                            ForEach(quickPrompts, id: \.self) { prompt in
-                                                Button(prompt) {
-                                                    messageText = prompt
-                                                    sendMessage()
-                                                }
-                                                .font(.caption.monospaced())
-                                                .foregroundColor(Theme.neonCyan)
-                                                .padding(.horizontal, 12)
-                                                .padding(.vertical, 9)
-                                                .background(Theme.neonCyan.opacity(0.12), in: Capsule())
-                                            }
-                                        }
-                                    }
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal)
-                            }
                         }
                     }
                     
@@ -301,25 +304,75 @@ struct AICoachView: View {
             } message: {
                 Text("Voice transcription will connect to the coach pipeline next. You can type a question for this demo.")
             }
+            .onAppear {
+                initializeSession()
+                withAnimation(.linear(duration: 4).repeatForever(autoreverses: false)) {
+                    isAnimating = true
+                }
+            }
         }
+    }
+    
+    private func initializeSession() {
+        guard SystemLanguageModel.default.isAvailable else { return }
+        session = LanguageModelSession(instructions: systemPrompt)
     }
 
     private func sendMessage() {
         let prompt = messageText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !prompt.isEmpty, !isSending else { return }
 
-        messages.append(Message(text: prompt, isUser: true))
+        withAnimation {
+            messages.append(Message(text: prompt, isUser: true))
+        }
         messageText = ""
         isSending = true
-
-        // Keeps the UI demonstrable before Dev1's network client is connected.
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) {
-            messages.append(Message(text: coachReply(for: prompt), isUser: false))
-            isSending = false
+        
+        withAnimation {
+            isGenerating = true
+        }
+        
+        // Use Apple Intelligence Foundation Model
+        Task {
+            do {
+                if session == nil {
+                    initializeSession()
+                }
+                
+                guard let activeSession = session else {
+                    // Fallback if model not available
+                    await MainActor.run {
+                        withAnimation {
+                            messages.append(Message(text: fallbackReply(for: prompt), isUser: false))
+                            isGenerating = false
+                            isSending = false
+                        }
+                    }
+                    return
+                }
+                
+                let response = try await activeSession.respond(to: prompt)
+                
+                await MainActor.run {
+                    withAnimation {
+                        messages.append(Message(text: response.content, isUser: false))
+                        isGenerating = false
+                        isSending = false
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    withAnimation {
+                        messages.append(Message(text: fallbackReply(for: prompt), isUser: false))
+                        isGenerating = false
+                        isSending = false
+                    }
+                }
+            }
         }
     }
 
-    private func coachReply(for prompt: String) -> String {
+    private func fallbackReply(for prompt: String) -> String {
         let lowercased = prompt.lowercased()
         if lowercased.contains("squat") || lowercased.contains("form") {
             return "For a strong squat: brace your core, keep your knees tracking over your toes, and drive through the mid-foot. I will watch your basic form in Tracking."
@@ -327,7 +380,7 @@ struct AICoachView: View {
         if lowercased.contains("leg") {
             return "Try 4 rounds: 12 squats, 10 reverse lunges per side, and a 30-second wall sit. Rest 60 seconds between rounds."
         }
-        return "Start with a controlled tempo and stop if your form breaks down. Scan a machine or open Tracking when you are ready."
+        return "Apple Intelligence is not available on this device. Please try on a supported device (A17 Pro or M1+)."
     }
 }
 

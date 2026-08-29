@@ -18,6 +18,7 @@
 		421E619FF4C186D42D117C10 /* LLMNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2475EE2D4B584C2AA85C52A1 /* LLMNetworkManager.swift */; };
 		43BB0186EFE4C9DF27E363B5 /* ScanMachineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35FB7556A7400DD5B063820 /* ScanMachineView.swift */; };
 		62233547E7206F0946732275 /* NeonGymAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE21483CCE25A3204118A87 /* NeonGymAIApp.swift */; };
+		66143B9D7FB15B40B97A88A1 /* MachineInstructionStoryboardSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502E9B43C9DAE2C0F19F573E /* MachineInstructionStoryboardSupport.swift */; };
 		73489BFBFD1260CCFADB216F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45E0F4B9212C90FD90810049 /* Assets.xcassets */; };
 		7CDAB62E5E3CE98EEB6F392F /* HealthStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0999DA6F0157C8EB07DFAEF0 /* HealthStateManager.swift */; };
 		8075FCDE70EF85BCEB39DE96 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F872B95F3420BAD39F8D0843 /* Theme.swift */; };
@@ -29,7 +30,6 @@
 		A3F6A92CB727FFFAA67E60CF /* SkeletonOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2756B838D8AC693F80EFA0C3 /* SkeletonOverlay.swift */; };
 		AACAE372A4F5ED5432D8067E /* AppleFoundationModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E97A588DD5BF7390C2AF029 /* AppleFoundationModelManager.swift */; };
 		D0B4F91526A121E30D3938BE /* MathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D44F8B05081194DC19ACD99 /* MathUtils.swift */; };
-		D50000000000000000000001 /* MachineInstructionStoryboardSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = D60000000000000000000001 /* MachineInstructionStoryboardSupport.swift */; };
 		D739EC42359C12D72307DABD /* GyminiIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E5D12CD03270AB18DA50580 /* GyminiIntents.swift */; };
 		D9F346128AD0412A63B046CC /* MachineScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4826B6EA4D0B163A7C56AD4A /* MachineScanView.swift */; };
 		E69256D4E3799DD26DABFB2F /* WorkoutTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD1B7FDBE7AF6DF4F1C96942 /* WorkoutTrackingView.swift */; };
@@ -60,6 +60,7 @@
 		45E0F4B9212C90FD90810049 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		4826B6EA4D0B163A7C56AD4A /* MachineScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MachineScanView.swift; sourceTree = "<group>"; };
 		500A30D77FE12318D497F86D /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
+		502E9B43C9DAE2C0F19F573E /* MachineInstructionStoryboardSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MachineInstructionStoryboardSupport.swift; sourceTree = "<group>"; };
 		5E97A588DD5BF7390C2AF029 /* AppleFoundationModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleFoundationModelManager.swift; sourceTree = "<group>"; };
 		6621231B334E67A0A16E1ACA /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
 		6C5B69897B96A3F985DB6322 /* OnboardingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingManager.swift; sourceTree = "<group>"; };
@@ -68,7 +69,7 @@
 		A35FB7556A7400DD5B063820 /* ScanMachineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanMachineView.swift; sourceTree = "<group>"; };
 		ABCDAC8EDE95C88334AD0A65 /* AnalyticsDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsDashboardView.swift; sourceTree = "<group>"; };
 		C4678ADFC7DC25FBEBACA56D /* NeonGymAI.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NeonGymAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		D60000000000000000000001 /* MachineInstructionStoryboardSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MachineInstructionStoryboardSupport.swift; sourceTree = "<group>"; };
+		DD1B7FDBE7AF6DF4F1C96942 /* WorkoutTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTrackingView.swift; sourceTree = "<group>"; };
 		E580D63B463C70C32B24D9CC /* SquatTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquatTracker.swift; sourceTree = "<group>"; };
 		F27CC1F00F1602AA26A9BFD6 /* VisionTrackingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionTrackingManager.swift; sourceTree = "<group>"; };
 		F872B95F3420BAD39F8D0843 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
@@ -215,7 +216,7 @@
 				34446B3202D88C74B2760B57 /* CameraManager.swift */,
 				0999DA6F0157C8EB07DFAEF0 /* HealthStateManager.swift */,
 				2475EE2D4B584C2AA85C52A1 /* LLMNetworkManager.swift */,
-				D60000000000000000000001 /* MachineInstructionStoryboardSupport.swift */,
+				502E9B43C9DAE2C0F19F573E /* MachineInstructionStoryboardSupport.swift */,
 				1D44F8B05081194DC19ACD99 /* MathUtils.swift */,
 				6C5B69897B96A3F985DB6322 /* OnboardingManager.swift */,
 				500A30D77FE12318D497F86D /* ProfileManager.swift */,
@@ -270,6 +271,8 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+				};
 			};
 			buildConfigurationList = 3083F663A74FD3FC0949C902 /* Build configuration list for PBXProject "NeonGymAI" */;
 			developmentRegion = en;
@@ -318,7 +321,8 @@
 				7CDAB62E5E3CE98EEB6F392F /* HealthStateManager.swift in Sources */,
 				24FCC2F88260F7231B96E3E4 /* HomeView.swift in Sources */,
 				421E619FF4C186D42D117C10 /* LLMNetworkManager.swift in Sources */,
-				D50000000000000000000001 /* MachineInstructionStoryboardSupport.swift in Sources */,
+				66143B9D7FB15B40B97A88A1 /* MachineInstructionStoryboardSupport.swift in Sources */,
+				D9F346128AD0412A63B046CC /* MachineScanView.swift in Sources */,
 				0E8101094DB11C7D6FC79182 /* MainTabView.swift in Sources */,
 				D0B4F91526A121E30D3938BE /* MathUtils.swift in Sources */,
 				280CD2840E3CD1F1A1FC653F /* MeView.swift in Sources */,
@@ -348,7 +352,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"NeonGymAI/Preview Content\"";
-				DEVELOPMENT_TEAM = 485SZ2RQ6T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
@@ -358,7 +361,7 @@
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need access to speech recognition for the AI Coach.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -416,7 +419,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -434,7 +437,6 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"NeonGymAI/Preview Content\"";
-				DEVELOPMENT_TEAM = 485SZ2RQ6T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
@@ -444,7 +446,7 @@
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need access to speech recognition for the AI Coach.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -508,7 +510,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

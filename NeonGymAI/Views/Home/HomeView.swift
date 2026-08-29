@@ -203,17 +203,19 @@ struct HomeView: View {
                                 VStack(spacing: 6) {
                                     ZStack {
                                         Image(systemName: "camera.viewfinder")
-                                            .font(.system(size: 28))
+                                            .font(.system(size: 30))
                                         Image(systemName: "dumbbell.fill")
                                             .font(.system(size: 10))
                                     }
                                     .frame(height: 36)
                                     Text("Scan Machine")
                                         .font(Theme.secondaryText)
-                                    Text("Discover workouts for any machine")
+                                    Text("Find workouts for any machine")
                                         .font(.system(size: 10, weight: .bold, design: .default))
                                         .opacity(0.8)
                                         .multilineTextAlignment(.center)
+                                        .lineLimit(2)
+                                        .frame(height: 28, alignment: .top)
                                 }
                                 .padding(.horizontal, 4)
                                 .metallicButton(scheme: colorScheme, isPrimary: true, cornerRadius: 24)
@@ -235,6 +237,8 @@ struct HomeView: View {
                                         .font(.system(size: 10, weight: .bold, design: .default))
                                         .opacity(0.8)
                                         .multilineTextAlignment(.center)
+                                        .lineLimit(2)
+                                        .frame(height: 28, alignment: .top)
                                 }
                                 .padding(.horizontal, 4)
                                 .metallicButton(scheme: colorScheme, isPrimary: false, cornerRadius: 24)

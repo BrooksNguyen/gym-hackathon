@@ -50,7 +50,7 @@ struct WorkoutTrackingView: View {
                         .shadow(color: Theme.primaryAccent(for: .dark).opacity(0.8), radius: 30)
                     
                     Text(flashIsGood ? "GOOD" : "BAD")
-                        .font(.system(size: 250, weight: .black, design: .rounded))
+                        .font(.system(size: 225, weight: .black, design: .rounded))
                         .foregroundColor(flashIsGood ? Theme.neonGreen : .red)
                         .shadow(color: (flashIsGood ? Theme.neonGreen : Color.red).opacity(0.8), radius: 30)
                         .minimumScaleFactor(0.3)
@@ -64,7 +64,11 @@ struct WorkoutTrackingView: View {
         .onChange(of: tracker.metrics.reps) { newReps in
             if newReps > 0 {
                 flashRep = newReps
-                flashIsGood = tracker.metrics.feedback.contains("Good") || tracker.metrics.feedback.contains("locked")
+                
+                let fb = tracker.metrics.feedback.lowercased()
+                let isBad = fb.contains("upright") || fb.contains("hips in line") || fb.contains("straight")
+                flashIsGood = !isBad
+                
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                     showFlash = true
                 }

@@ -23,14 +23,9 @@ struct WorkoutTrackingView: View {
             } else {
                 VStack(spacing: 14) {
                     Image(systemName: "figure.run")
-                        .font(.system(size: 48))
-                        .foregroundColor(Theme.neonGreen)
-                    Text(camera.errorMessage ?? "Camera access is required for tracking")
-                        .font(Theme.digitalFont)
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
+                        .font(.system(size: 120))
+                        .foregroundColor(.white.opacity(0.05))
                 }
-                .padding(28)
             }
 
             VStack(spacing: 0) {
@@ -38,9 +33,11 @@ struct WorkoutTrackingView: View {
                 Spacer()
                 metricsPanel
                 feedbackPanel
+                bottomBar
+                    .padding(.top, 16)
             }
-            .padding(.horizontal, 18)
-            .padding(.top, 12)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 20)
         }
         .preferredColorScheme(.dark)
         .onAppear {
@@ -56,56 +53,45 @@ struct WorkoutTrackingView: View {
     }
 
     private var topBar: some View {
-        HStack(alignment: .top) {
+        HStack {
             Button {
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
-                    .font(.headline)
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.white)
-                    .padding(12)
-                    .background(.black.opacity(0.7), in: Circle())
+                    .frame(width: 40, height: 40)
+                    .background(Color.white.opacity(0.2), in: Circle())
             }
-
+            
             Spacer()
-
-            HStack(spacing: 10) {
-                Button {
-                    cameraPosition = cameraPosition == .front ? .back : .front
-                    tracker.recalibrateForCameraChange()
-                    camera.start(position: cameraPosition)
-                } label: {
-                    Image(systemName: "camera.rotate.fill")
-                        .font(.headline)
-                        .foregroundColor(.white)
-                        .padding(12)
-                        .background(.black.opacity(0.7), in: Circle())
-                }
-
-                Button {
-                    tracker.resetWorkout()
-                } label: {
-                    Image(systemName: "arrow.counterclockwise")
-                        .font(.headline)
-                        .foregroundColor(Theme.neonGreen)
-                        .padding(12)
-                        .background(.black.opacity(0.7), in: Circle())
-                }
-
-                VStack(alignment: .trailing, spacing: 5) {
-                    Text(trackingTitle)
-                        .font(.caption.weight(.bold))
-                        .tracking(1.5)
-                        .foregroundColor(Theme.neonGreen)
-                    HStack(spacing: 6) {
-                        Circle()
-                            .fill(tracker.isTracking ? Theme.neonGreen : .orange)
-                            .frame(width: 8, height: 8)
-                        Text(tracker.isTracking ? "POSE LOCKED" : "SEARCHING")
-                            .font(.caption2.monospaced())
-                            .foregroundColor(.white.opacity(0.8))
-                    }
-                }
+            
+            Text("CHECK FORM: \(tracker.metrics.exercise?.rawValue.uppercased() ?? "SQUAT")")
+                .font(.system(size: 14, weight: .bold))
+                .foregroundColor(.white)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Color.white.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+                .cornerRadius(8)
+            
+            Spacer()
+            
+            Button {
+                // sound toggle logic placeholder
+            } label: {
+                Image(systemName: "speaker.wave.2.fill")
+                    .font(.system(size: 18))
+                    .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                    .frame(width: 44, height: 44)
+                    .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
             }
         }
     }
@@ -176,5 +162,37 @@ struct WorkoutTrackingView: View {
         .padding(14)
         .background(.black.opacity(0.82), in: RoundedRectangle(cornerRadius: 14))
         .padding(.vertical, 14)
+    }
+
+    private var bottomBar: some View {
+        HStack(spacing: 16) {
+            Button {
+                // Pause logic placeholder
+            } label: {
+                Text("Take a break")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 52)
+                    .background(Color.white.opacity(0.15))
+                    .cornerRadius(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                    )
+            }
+            
+            Button {
+                dismiss()
+            } label: {
+                Text("Finish")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 52)
+                    .background(Color(red: 0.95, green: 0.25, blue: 0.3)) // Matches the red in screenshot
+                    .cornerRadius(10)
+            }
+        }
     }
 }

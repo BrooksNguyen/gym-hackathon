@@ -6,6 +6,8 @@ struct WorkoutTrackingView: View {
     @StateObject private var camera = CameraManager()
     @StateObject private var tracker = VisionTrackingManager()
     @State private var cameraPosition: AVCaptureDevice.Position = .front
+    @State private var flashRep: Int? = nil
+    @State private var showFlash: Bool = false
 
     var body: some View {
         ZStack {
@@ -15,10 +17,6 @@ struct WorkoutTrackingView: View {
                 CameraPreviewView(session: camera.session,
                                   videoGravity: .resizeAspect,
                                   mirrored: cameraPosition == .front)
-                    .ignoresSafeArea()
-                SkeletonOverlay(points: tracker.points,
-                                mirrored: cameraPosition == .front,
-                                videoGravity: .resizeAspect)
                     .ignoresSafeArea()
             } else {
                 VStack(spacing: 14) {
@@ -43,8 +41,32 @@ struct WorkoutTrackingView: View {
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 20)
+            
+            // Flashing Rep Overlay
+            if showFlash, let rep = flashRep {
+                Text("\(rep)")
+                    .font(.system(size: 250, weight: .black, design: .rounded))
+                    .foregroundColor(.white)
+                    .shadow(color: Theme.primaryAccent(for: .dark).opacity(0.8), radius: 30)
+                    .transition(.scale(scale: 0.5).combined(with: .opacity))
+                    .zIndex(2)
+            }
         }
         .preferredColorScheme(.dark)
+        .onChange(of: tracker.metrics.reps) { newReps in
+            if newReps > 0 {
+                flashRep = newReps
+                withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                    showFlash = true
+                }
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    withAnimation(.easeOut(duration: 0.2)) {
+                        showFlash = false
+                    }
+                }
+            }
+        }
         .onAppear {
             camera.onFrame = { sampleBuffer in
                 tracker.processFrame(sampleBuffer)

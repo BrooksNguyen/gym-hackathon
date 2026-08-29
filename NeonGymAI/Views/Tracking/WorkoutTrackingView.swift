@@ -30,11 +30,16 @@ struct WorkoutTrackingView: View {
 
             VStack(spacing: 0) {
                 topBar
-                Spacer()
+                
                 metricsPanel
+                    .padding(.top, 24)
+                
+                Spacer()
+                
                 feedbackPanel
+                    .padding(.bottom, 24)
+                
                 bottomBar
-                    .padding(.top, 16)
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 20)
@@ -107,61 +112,41 @@ struct WorkoutTrackingView: View {
     }
 
     private var metricsPanel: some View {
-        GeometryReader { geometry in
-            HStack(spacing: 12) {
-                metric(value: "\(tracker.metrics.reps)",
-                       label: "REPS",
-                       color: Theme.neonGreen,
-                       valueFontSize: 72)
-                    .frame(width: geometry.size.width * 0.5)
-
-                metric(value: tracker.metrics.phase.rawValue,
-                       label: "PHASE",
-                       color: Theme.neonCyan)
-                metric(value: "4 x 12", label: "TARGET", color: .white)
+        VStack(alignment: .leading, spacing: -4) {
+            Text("REPS")
+                .font(Theme.secondaryText)
+                .foregroundColor(.white.opacity(0.6))
+            
+            HStack(alignment: .firstTextBaseline, spacing: 12) {
+                Text("\(tracker.metrics.reps)")
+                    .font(.system(size: 96, weight: .bold, design: .rounded))
+                    .foregroundColor(.white)
+                
+                Text(tracker.metrics.phase.rawValue.uppercased())
+                    .font(Theme.primaryText)
+                    .foregroundColor(Theme.primaryAccent(for: .dark))
             }
         }
-        .frame(height: 132)
-    }
-
-    private func metric(value: String,
-                        label: String,
-                        color: Color,
-                        valueFontSize: CGFloat = 24) -> some View {
-        VStack(spacing: 6) {
-            Text(value)
-                .font(.system(size: valueFontSize, weight: .bold, design: .monospaced))
-                .foregroundColor(color)
-                .minimumScaleFactor(0.6)
-            Text(label)
-                .font(.caption2.weight(.bold))
-                .foregroundColor(.white.opacity(0.65))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
-        .background(.black.opacity(0.75), in: RoundedRectangle(cornerRadius: 14))
-        .overlay {
-            RoundedRectangle(cornerRadius: 14)
-                .stroke(color.opacity(0.35), lineWidth: 1)
-        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var feedbackPanel: some View {
         let isPositiveFeedback = tracker.metrics.feedback.contains("Good")
             || tracker.metrics.feedback.contains("locked")
 
-        return HStack(spacing: 10) {
+        return HStack(spacing: 8) {
             Image(systemName: isPositiveFeedback ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                .foregroundColor(isPositiveFeedback ? Theme.neonGreen : .orange)
+                .foregroundColor(isPositiveFeedback ? .green : .orange)
             Text(tracker.metrics.feedback)
-                .font(Theme.digitalFont)
+                .font(Theme.secondaryText)
                 .foregroundColor(.white)
-                .lineLimit(2)
-            Spacer(minLength: 0)
         }
-        .padding(14)
-        .background(.black.opacity(0.82), in: RoundedRectangle(cornerRadius: 14))
-        .padding(.vertical, 14)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .background(Color.black.opacity(0.7), in: Capsule())
+        .overlay(
+            Capsule().stroke(Color.white.opacity(0.15), lineWidth: 1)
+        )
     }
 
     private var bottomBar: some View {

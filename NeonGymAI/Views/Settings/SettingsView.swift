@@ -82,20 +82,7 @@ struct SettingsView: View {
                                 .tint(Theme.primaryAccent(for: colorScheme))
                                 .onChange(of: notificationsEnabled) { newValue in
                                     if newValue {
-                                        UNUserNotificationCenter.current().getNotificationSettings { settings in
-                                            DispatchQueue.main.async {
-                                                if settings.authorizationStatus == .notDetermined {
-                                                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, _ in
-                                                        DispatchQueue.main.async {
-                                                            if !success { notificationsEnabled = false }
-                                                        }
-                                                    }
-                                                } else if settings.authorizationStatus == .denied {
-                                                    showSettingsAlert = true
-                                                    notificationsEnabled = false
-                                                }
-                                            }
-                                        }
+                                        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { _, _ in }
                                     }
                                 }
                         }

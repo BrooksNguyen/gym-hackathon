@@ -130,7 +130,7 @@ struct SettingsView: View {
                             }
                         }
                         
-                        Text("Made with ❤️ for Hackathon")
+                        Text("by 2 freaking excellent founders")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .padding(.top, 8)

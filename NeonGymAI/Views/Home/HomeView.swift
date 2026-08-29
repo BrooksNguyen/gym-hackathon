@@ -91,22 +91,7 @@ struct HomeView: View {
                                 }
                             }
                             
-                            if healthState.starRating > 0 {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text("Quick AI Suggestion")
-                                        .font(Theme.tertiaryText)
-                                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
-                                    
-                                    Text(quickRecommendation)
-                                        .font(Theme.secondaryText)
-                                        .foregroundColor(.primary)
-                                }
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Color.white.opacity(0.05))
-                                .cornerRadius(12)
-                                .transition(.opacity)
-                            }
+
                             
                             if healthState.starRating > 0 && generatedWorkout == nil {
                                 Button(action: {
@@ -131,14 +116,30 @@ struct HomeView: View {
                             }
                             
                             if let workout = generatedWorkout {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text(workout.title)
-                                        .font(Theme.primaryText)
-                                        .foregroundColor(workout.isActiveRecovery ? Color.orange : .primary)
+                                VStack(alignment: .leading, spacing: 16) {
+                                    // 1. Detailed Workout
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text(workout.title)
+                                            .font(Theme.primaryText)
+                                            .foregroundColor(workout.isActiveRecovery ? Color.orange : .primary)
+                                        
+                                        Text(workout.summary)
+                                            .font(Theme.secondaryText)
+                                            .foregroundColor(.secondary)
+                                    }
                                     
-                                    Text(workout.summary)
-                                        .font(Theme.secondaryText)
-                                        .foregroundColor(.secondary)
+                                    Divider()
+                                    
+                                    // 2. Quick AI Suggestion
+                                    VStack(alignment: .leading, spacing: 8) {
+                                        Text("Quick AI Suggestion")
+                                            .font(Theme.tertiaryText)
+                                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                        
+                                        Text(quickRecommendation)
+                                            .font(Theme.secondaryText)
+                                            .foregroundColor(.primary)
+                                    }
                                 }
                                 .padding()
                                 .frame(maxWidth: .infinity, alignment: .leading)

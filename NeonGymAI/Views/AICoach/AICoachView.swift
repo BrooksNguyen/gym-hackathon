@@ -254,9 +254,9 @@ struct AICoachView: View {
                                     messageText = ""
                                     isGenerating = true
                                     
-                                    // Start Local SLM Streaming
+                                    // Start Apple Foundation Model Streaming
                                     Task {
-                                        let stream = LocalLLMManager.shared.generate(prompt: query)
+                                        let stream = AppleFoundationModelManager.shared.generateStream(prompt: query)
                                         var isFirstToken = true
                                         var aiMessageIndex = 0
                                         

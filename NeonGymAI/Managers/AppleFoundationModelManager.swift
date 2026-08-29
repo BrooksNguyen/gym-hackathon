@@ -1,22 +1,23 @@
 import Foundation
-// import MLX
-// import MLXRandom
+// import LanguageModel // iOS 26 Native Framework
+// import AppleIntelligence
 
-class LocalLLMManager: ObservableObject {
-    static let shared = LocalLLMManager()
+class AppleFoundationModelManager: ObservableObject {
+    static let shared = AppleFoundationModelManager()
     
     private init() {
-        // TODO: Initialize MLX Model Weights here.
-        // let model = loadModel("Llama-3-8B-Instruct.safetensors")
+        // TODO: Initialize native LanguageModel session
+        // let config = LanguageModelConfiguration(model: .appleFoundationModel, mode: .offline)
+        // let session = try? LanguageModelSession(configuration: config)
     }
     
-    /// Generates a response locally on-device using MLX/Neural Engine.
+    /// Generates a response locally using the iOS 26 Apple Foundation Model API.
     /// Returns an AsyncStream to update the UI token-by-token.
-    func generate(prompt: String) -> AsyncStream<String> {
+    func generateStream(prompt: String) -> AsyncStream<String> {
         let response: String
         
-        // Context-aware dummy responses tailored for Hackathon Demo.
-        // When using real MLX, replace this with the `model.generate()` loop yielding tokens.
+        // Context-aware dummy responses tailored for Hackathon Demo on Simulator
+        // When running on physical device, replace with: session.generate(prompt: prompt)
         if prompt.contains("Chest") {
             response = "Based on your Hypertrophy goal and BMI, here is your Chest plan today:\n\n1. Barbell Bench Press: 4x8-10\n2. Incline Dumbbell Press: 3x10-12\n3. Cable Crossovers: 3x15\n\nTake 90s rest between sets."
         } else if prompt.contains("Nutrition") || prompt.contains("BMI") {
@@ -31,7 +32,7 @@ class LocalLLMManager: ObservableObject {
             Task {
                 let characters = Array(response)
                 for char in characters {
-                    // Simulate hardware generation speed (approx 50 tokens/sec)
+                    // Simulate hardware generation speed of Neural Engine (approx 50 tokens/sec)
                     try? await Task.sleep(nanoseconds: 20_000_000) // 20ms
                     continuation.yield(String(char))
                 }

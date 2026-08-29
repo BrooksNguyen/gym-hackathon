@@ -66,4 +66,58 @@ class LLMNetworkManager {
             }
         }
     }
+    
+    struct DailyWorkoutResponse: Codable {
+        let title: String
+        let summary: String
+        let isActiveRecovery: Bool
+    }
+    
+    func generateDailyWorkout(stars: Int, targetMuscle: String, completion: @escaping (Result<DailyWorkoutResponse, Error>) -> Void) {
+        // AI Logic based on Star Rating
+        var title = ""
+        var summary = ""
+        var isActiveRecovery = false
+        
+        switch stars {
+        case 5:
+            title = "\(targetMuscle) - 100% Volume"
+            summary = "You feel great! Time to push hard. Standard 4 sets x 8-12 reps."
+        case 4:
+            title = "\(targetMuscle) - Slightly Fatigued"
+            summary = "Maintain weight but drop 1-2 reps per set to manage fatigue."
+        case 2, 3:
+            title = "\(targetMuscle) - Deload Session"
+            summary = "Aggressively scaling down. Drop working weight by 15-20%. Focus on form."
+        case 1:
+            title = "Stretching & Active Recovery"
+            summary = "You are exhausted! Skip the weights today. 20 mins of mobility work."
+            isActiveRecovery = true
+        default:
+            title = "\(targetMuscle) Workout"
+            summary = "Standard workout routine."
+        }
+        
+        let mockJSON = """
+        {
+          "title": "\(title)",
+          "summary": "\(summary)",
+          "isActiveRecovery": \(isActiveRecovery)
+        }
+        """.data(using: .utf8)!
+        
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1.0) {
+            do {
+                let decoder = JSONDecoder()
+                let result = try decoder.decode(DailyWorkoutResponse.self, from: mockJSON)
+                DispatchQueue.main.async {
+                    completion(.success(result))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(LLMError.decodingError(error)))
+                }
+            }
+        }
+    }
 }

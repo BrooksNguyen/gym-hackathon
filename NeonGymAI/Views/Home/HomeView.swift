@@ -91,6 +91,23 @@ struct HomeView: View {
                                 }
                             }
                             
+                            if healthState.starRating > 0 {
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Quick AI Suggestion")
+                                        .font(Theme.tertiaryText)
+                                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                    
+                                    Text(quickRecommendation)
+                                        .font(Theme.secondaryText)
+                                        .foregroundColor(.primary)
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color.white.opacity(0.05))
+                                .cornerRadius(12)
+                                .transition(.opacity)
+                            }
+                            
                             if healthState.starRating > 0 && generatedWorkout == nil {
                                 Button(action: {
                                     withAnimation { isGenerating = true }
@@ -179,6 +196,25 @@ struct HomeView: View {
         formatter.timeZone = TimeZone(identifier: "Australia/Sydney")
         formatter.dateFormat = "EEE, MMM d • h:mm a"
         return formatter.string(from: date)
+    }
+    
+    private var quickRecommendation: String {
+        let muscle = healthState.selectedMuscle
+        let stars = healthState.starRating
+        
+        let intensity = stars >= 4 ? "Heavy & intense" : (stars == 3 ? "Moderate volume" : "Light recovery")
+        let exercise: String
+        switch muscle {
+        case "Chest": exercise = "Bench Press & Flyes"
+        case "Back": exercise = "Pull-ups & Rows"
+        case "Legs": exercise = "Squats & Leg Press"
+        case "Shoulders": exercise = "Overhead Press & Lateral Raises"
+        case "Arms": exercise = "Bicep Curls & Tricep Extensions"
+        case "Full Body": exercise = "Deadlifts & Burpees"
+        default: exercise = "Compound movements"
+        }
+        
+        return "\(intensity) \(exercise) focus today."
     }
     
     private func starColor(for index: Int) -> Color {

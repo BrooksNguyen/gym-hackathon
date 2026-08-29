@@ -183,7 +183,30 @@ struct ActiveTrackingView: View {
                                 }
                             }) {
                                 Text("End Rest")
-                                    .metallicButton(scheme: colorScheme, isPrimary: true)
+                                    .font(Theme.primaryText)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 16)
+                                    .background(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [Color.red.opacity(0.8), Color.red, Color.red.opacity(0.6)]),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .foregroundColor(.white)
+                                    .cornerRadius(8)
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .stroke(
+                                                LinearGradient(
+                                                    gradient: Gradient(colors: [Color.white.opacity(0.5), Color.black.opacity(0.3)]),
+                                                    startPoint: .topLeading,
+                                                    endPoint: .bottomTrailing
+                                                ),
+                                                lineWidth: 1
+                                            )
+                                    )
+                                    .shadow(color: Color.red.opacity(0.5), radius: 6, x: 0, y: 4)
                             }
                             .padding(.horizontal, 40)
                         }

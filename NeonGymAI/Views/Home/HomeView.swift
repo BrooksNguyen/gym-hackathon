@@ -1,17 +1,15 @@
 import SwiftUI
 
 struct HomeView: View {
-    @Environment(\.colorScheme) var colorScheme
-    @State private var showScanMachine = false
-    @State private var showTracking = false
-    
-    // Check-in State
-    @StateObject private var healthState = HealthStateManager.shared
-    @State private var isGenerating = false
-    @State private var generatedWorkout: LLMNetworkManager.DailyWorkoutResponse?
-    
-    let muscleGroups = ["Chest", "Back", "Legs", "Shoulders", "Arms", "Full Body"]
-    
+    private enum HomeFlow: String, Identifiable {
+        case scan
+        case tracking
+
+        var id: String { rawValue }
+    }
+
+    @State private var presentedFlow: HomeFlow?
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -36,98 +34,36 @@ struct HomeView: View {
                         }
                         .padding(.top, 20)
                         
-                        // Daily Check-in Card
-                        VStack(alignment: .leading, spacing: 24) {
-                            Text("Daily Check-in")
-                                .font(Theme.primaryText)
-                            
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("What muscle group are you targeting today?")
-                                    .font(Theme.secondaryText)
-                                    .foregroundColor(.secondary)
-                                
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 12) {
-                                        ForEach(muscleGroups, id: \.self) { muscle in
-                                            Button(action: {
-                                                withAnimation { healthState.selectedMuscle = muscle }
-                                            }) {
-                                                Text(muscle)
-                                                    .font(Theme.secondaryText)
-                                                    .padding(.horizontal, 16)
-                                                    .padding(.vertical, 10)
-                                                    .background(healthState.selectedMuscle == muscle ? Theme.primaryAccent(for: colorScheme) : Color.clear)
-                                                    .foregroundColor(healthState.selectedMuscle == muscle ? .white : .primary)
-                                                    .overlay(
-                                                        RoundedRectangle(cornerRadius: 12)
-                                                            .stroke(healthState.selectedMuscle == muscle ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
-                                                    )
-                                                    .cornerRadius(12)
-                                            }
-                                        }
-                                    }
-                                }
+                        // Hero Button
+                        Button(action: {
+                            presentedFlow = .scan
+                        }) {
+                            HStack {
+                                Image(systemName: "camera.viewfinder")
+                                    .font(.title)
+                                Text("Scan Machine")
+                                    .font(.headline)
                             }
-                            
-                            VStack(alignment: .leading, spacing: 12) {
-                                Text("How is your physical condition today?")
-                                    .font(Theme.secondaryText)
-                                    .foregroundColor(.secondary)
-                                
-                                ViewThatFits {
-                                    // 1. Try to fit horizontally
-                                    HStack(spacing: 16) {
-                                        HStack(spacing: 16) {
-                                            ForEach(1...5, id: \.self) { index in
-                                                Image(systemName: "star.fill")
-                                                    .font(.system(size: 32))
-                                                    .foregroundColor(starColor(for: index))
-                                                    .scaleEffect(healthState.starRating >= index ? 1.1 : 1.0)
-                                                    .onTapGesture {
-                                                        let impactMed = UIImpactFeedbackGenerator(style: .medium)
-                                                        impactMed.impactOccurred()
-                                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
-                                                            healthState.starRating = index
-                                                            generatedWorkout = nil
-                                                        }
-                                                    }
-                                            }
-                                        }
-                                        
-                                        if healthState.starRating > 0 {
-                                            Text(healthState.statusText())
-                                                .font(Theme.tertiaryText)
-                                                .foregroundColor(healthState.statusColor(for: colorScheme))
-                                        }
-                                        Spacer()
-                                    }
-                                    
-                                    // 2. Fallback to vertical if it doesn't fit
-                                    VStack(alignment: .leading, spacing: 12) {
-                                        HStack(spacing: 16) {
-                                            ForEach(1...5, id: \.self) { index in
-                                                Image(systemName: "star.fill")
-                                                    .font(.system(size: 32))
-                                                    .foregroundColor(starColor(for: index))
-                                                    .scaleEffect(healthState.starRating >= index ? 1.1 : 1.0)
-                                                    .onTapGesture {
-                                                        let impactMed = UIImpactFeedbackGenerator(style: .medium)
-                                                        impactMed.impactOccurred()
-                                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
-                                                            healthState.starRating = index
-                                                            generatedWorkout = nil
-                                                        }
-                                                    }
-                                            }
-                                        }
-                                        
-                                        if healthState.starRating > 0 {
-                                            Text(healthState.statusText())
-                                                .font(Theme.tertiaryText)
-                                                .foregroundColor(healthState.statusColor(for: colorScheme))
-                                        }
-                                    }
-                                }
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Theme.neonCyan, lineWidth: 2)
+                                    .background(Theme.neonCyan.opacity(0.1))
+                            )
+                            .foregroundColor(Theme.neonCyan)
+                            .shadow(color: Theme.neonCyan, radius: 10, x: 0, y: 0)
+                        }
+                        
+                        // Secondary Button
+                        Button(action: {
+                            presentedFlow = .tracking
+                        }) {
+                            HStack {
+                                Image(systemName: "figure.run")
+                                    .font(.title)
+                                Text("Start Tracking")
+                                    .font(.headline)
                             }
                             
 
@@ -259,6 +195,16 @@ struct HomeView: View {
                 }
             }
             .navigationBarHidden(true)
+        }
+        .fullScreenCover(item: $presentedFlow) { flow in
+            switch flow {
+            case .scan:
+                MachineScanView {
+                    presentedFlow = .tracking
+                }
+            case .tracking:
+                WorkoutTrackingView()
+            }
         }
     }
     

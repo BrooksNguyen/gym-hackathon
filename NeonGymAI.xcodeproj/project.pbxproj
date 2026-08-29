@@ -23,6 +23,10 @@
 		8E9942C781061DEF33B0C2D1 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500A30D77FE12318D497F86D /* ProfileManager.swift */; };
 		90CDAE840C3EAEC30E652AF9 /* SquatTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E580D63B463C70C32B24D9CC /* SquatTracker.swift */; };
 		9BF0417AC461EED0098EF6E3 /* VisionTrackingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F27CC1F00F1602AA26A9BFD6 /* VisionTrackingManager.swift */; };
+		A10000000000000000000001 /* CameraPreviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000001 /* CameraPreviewView.swift */; };
+		A10000000000000000000002 /* MachineScanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000002 /* MachineScanView.swift */; };
+		A10000000000000000000003 /* SkeletonOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000003 /* SkeletonOverlay.swift */; };
+		A10000000000000000000004 /* WorkoutTrackingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B10000000000000000000004 /* WorkoutTrackingView.swift */; };
 		A2BEDC3165A8C0BF9069329F /* TutorialOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154B70FEFE7BDBD4C2B4577C /* TutorialOverlayView.swift */; };
 		AACAE372A4F5ED5432D8067E /* AppleFoundationModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E97A588DD5BF7390C2AF029 /* AppleFoundationModelManager.swift */; };
 		D0B4F91526A121E30D3938BE /* MathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D44F8B05081194DC19ACD99 /* MathUtils.swift */; };
@@ -48,6 +52,10 @@
 		34446B3202D88C74B2760B57 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		37593491E232419A4DD9BD9C /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		395CBF15B74D68C1CF4BDA59 /* AICoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICoachView.swift; sourceTree = "<group>"; };
+		B10000000000000000000001 /* CameraPreviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreviewView.swift; sourceTree = "<group>"; };
+		B10000000000000000000002 /* MachineScanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MachineScanView.swift; sourceTree = "<group>"; };
+		B10000000000000000000003 /* SkeletonOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonOverlay.swift; sourceTree = "<group>"; };
+		B10000000000000000000004 /* WorkoutTrackingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTrackingView.swift; sourceTree = "<group>"; };
 		45E0F4B9212C90FD90810049 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		500A30D77FE12318D497F86D /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 		5E97A588DD5BF7390C2AF029 /* AppleFoundationModelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleFoundationModelManager.swift; sourceTree = "<group>"; };
@@ -83,11 +91,13 @@
 			children = (
 				37593491E232419A4DD9BD9C /* MainTabView.swift */,
 				0359C86C6CA254FB431B67CB /* AICoach */,
+				C10000000000000000000001 /* Camera */,
 				A672EFC58D7599165DA1EA14 /* Components */,
 				79472D36C83F64C666001D82 /* Home */,
 				99D2124C55217023AD1F4CB0 /* Me */,
 				0693FE8E0FDD7849AC955ABC /* Onboarding */,
 				912CC8E035BD74DAE37E88B9 /* Settings */,
+				C10000000000000000000002 /* Tracking */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -164,6 +174,24 @@
 			path = Theme;
 			sourceTree = "<group>";
 		};
+		C10000000000000000000001 /* Camera */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000001 /* CameraPreviewView.swift */,
+				B10000000000000000000002 /* MachineScanView.swift */,
+			);
+			path = Camera;
+			sourceTree = "<group>";
+		};
+		C10000000000000000000002 /* Tracking */ = {
+			isa = PBXGroup;
+			children = (
+				B10000000000000000000003 /* SkeletonOverlay.swift */,
+				B10000000000000000000004 /* WorkoutTrackingView.swift */,
+			);
+			path = Tracking;
+      sourceTree = "<group>";
+    };
 		A672EFC58D7599165DA1EA14 /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -226,8 +254,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 3083F663A74FD3FC0949C902 /* Build configuration list for PBXProject "NeonGymAI" */;
 			developmentRegion = en;
@@ -264,6 +290,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A10000000000000000000001 /* CameraPreviewView.swift in Sources */,
+				A10000000000000000000002 /* MachineScanView.swift in Sources */,
 				22DFFA344BB7BA3EF0F8FE73 /* AICoachView.swift in Sources */,
 				EA049F4E5C571B99DEAF07E3 /* ActiveTrackingView.swift in Sources */,
 				F644BE970CABA33B8CB9A4F4 /* AnalyticsDashboardView.swift in Sources */,
@@ -287,6 +315,8 @@
 				8075FCDE70EF85BCEB39DE96 /* Theme.swift in Sources */,
 				A2BEDC3165A8C0BF9069329F /* TutorialOverlayView.swift in Sources */,
 				9BF0417AC461EED0098EF6E3 /* VisionTrackingManager.swift in Sources */,
+				A10000000000000000000003 /* SkeletonOverlay.swift in Sources */,
+				A10000000000000000000004 /* WorkoutTrackingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,7 +328,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"NeonGymAI/Preview Content\"";
+				DEVELOPMENT_TEAM = CVYZ7WM5XU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
@@ -313,7 +345,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.brooksnguyen.NeonGymAI;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mimikaka.NeonGymAI;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -381,7 +414,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"NeonGymAI/Preview Content\"";
+				DEVELOPMENT_TEAM = CVYZ7WM5XU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
@@ -396,7 +431,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.brooksnguyen.NeonGymAI;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.mimikaka.NeonGymAI;
 				SDKROOT = iphoneos;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;

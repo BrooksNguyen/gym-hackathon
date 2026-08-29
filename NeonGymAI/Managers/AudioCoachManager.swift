@@ -6,7 +6,7 @@ class AudioCoachManager {
     
     func speak(command: String) {
         let utterance = AVSpeechUtterance(string: command)
-        utterance.voice = AVSpeechSynthesisVoice(language: "vi-VN")
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
         utterance.rate = AVSpeechUtteranceDefaultSpeechRate
         
         if synthesizer.isSpeaking {

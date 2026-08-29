@@ -9,6 +9,7 @@ struct WorkoutTrackingView: View {
     @State private var flashRep: Int? = nil
     @State private var showFlash: Bool = false
     @State private var flashIsGood: Bool = true
+    @State private var isAudioEnabled: Bool = true
 
     var body: some View {
         ZStack {
@@ -75,6 +76,11 @@ struct WorkoutTrackingView: View {
                 }
             }
         }
+        .onChange(of: tracker.metrics.feedback) { newFeedback in
+            if isAudioEnabled, !newFeedback.isEmpty {
+                AudioCoachManager.shared.speak(command: newFeedback)
+            }
+        }
         .onAppear {
             camera.onFrame = { sampleBuffer in
                 tracker.processFrame(sampleBuffer)
@@ -119,11 +125,11 @@ struct WorkoutTrackingView: View {
                 }
                 
                 Button {
-                    // sound toggle logic placeholder
+                    isAudioEnabled.toggle()
                 } label: {
-                    Image(systemName: "speaker.wave.2.fill")
+                    Image(systemName: isAudioEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
                         .font(.system(size: 18))
-                        .foregroundColor(Theme.primaryAccent(for: .dark))
+                        .foregroundColor(isAudioEnabled ? Theme.primaryAccent(for: .dark) : .gray)
                         .frame(width: 44, height: 44)
                         .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
                         .overlay(

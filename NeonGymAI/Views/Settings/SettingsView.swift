@@ -12,6 +12,7 @@ struct SettingsView: View {
     @State private var selectedLanguage = "English"
     @State private var showResetAlert = false
     @State private var showDeleteAlert = false
+    @State private var showSettingsAlert = false
     
     let languages = ["English", "Vietnamese"]
     let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
@@ -81,9 +82,18 @@ struct SettingsView: View {
                                 .tint(Theme.primaryAccent(for: colorScheme))
                                 .onChange(of: notificationsEnabled) { newValue in
                                     if newValue {
-                                        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                                        UNUserNotificationCenter.current().getNotificationSettings { settings in
                                             DispatchQueue.main.async {
-                                                if !success { notificationsEnabled = false }
+                                                if settings.authorizationStatus == .notDetermined {
+                                                    UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, _ in
+                                                        DispatchQueue.main.async {
+                                                            if !success { notificationsEnabled = false }
+                                                        }
+                                                    }
+                                                } else if settings.authorizationStatus == .denied {
+                                                    showSettingsAlert = true
+                                                    notificationsEnabled = false
+                                                }
                                             }
                                         }
                                     }
@@ -189,6 +199,16 @@ struct SettingsView: View {
                 }
             } message: {
                 Text("This will permanently delete all your workout history. This action cannot be undone.")
+            }
+            .alert("Permission Required", isPresented: $showSettingsAlert) {
+                Button("Cancel", role: .cancel) {}
+                Button("Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        openURL(url)
+                    }
+                }
+            } message: {
+                Text("Please enable notifications in Settings to use this feature.")
             }
         }
     }

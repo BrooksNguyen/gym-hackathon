@@ -1,6 +1,15 @@
 import SwiftUI
 
 struct HomeView: View {
+    private enum HomeFlow: String, Identifiable {
+        case scan
+        case tracking
+
+        var id: String { rawValue }
+    }
+
+    @State private var presentedFlow: HomeFlow?
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -21,7 +30,7 @@ struct HomeView: View {
                         
                         // Hero Button
                         Button(action: {
-                            // TODO: Open camera to scan machine
+                            presentedFlow = .scan
                         }) {
                             HStack {
                                 Image(systemName: "camera.viewfinder")
@@ -42,7 +51,7 @@ struct HomeView: View {
                         
                         // Secondary Button
                         Button(action: {
-                            // TODO: Start tracking
+                            presentedFlow = .tracking
                         }) {
                             HStack {
                                 Image(systemName: "figure.run")
@@ -92,6 +101,16 @@ struct HomeView: View {
             }
             .navigationTitle("Dashboard")
             .navigationBarHidden(true)
+        }
+        .fullScreenCover(item: $presentedFlow) { flow in
+            switch flow {
+            case .scan:
+                MachineScanView {
+                    presentedFlow = .tracking
+                }
+            case .tracking:
+                WorkoutTrackingView()
+            }
         }
     }
 }

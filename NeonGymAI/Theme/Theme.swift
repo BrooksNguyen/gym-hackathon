@@ -8,10 +8,10 @@ struct Theme {
         return scheme == .dark ? Color(red: 0.1, green: 0.11, blue: 0.12) : Color(red: 0.88, green: 0.89, blue: 0.91)
     }
     
-    // Primary Accents (Sapphire / Titanium Blue - Ánh kim)
+    // Primary Accents (Slate / Steel Blue - Metallic)
     static func primaryAccent(for scheme: ColorScheme) -> Color {
-        // Deep icy/sapphire metallic blue
-        return scheme == .dark ? Color(red: 0.25, green: 0.6, blue: 0.85) : Color(red: 0.15, green: 0.4, blue: 0.65)
+        // Denim/Slate blue with a hint of metallic gray
+        return scheme == .dark ? Color(red: 0.28, green: 0.46, blue: 0.68) : Color(red: 0.22, green: 0.38, blue: 0.58)
     }
     
     // Secondary Accents (Titanium / Chrome)
@@ -88,7 +88,15 @@ struct MetallicButtonModifier: ViewModifier {
             .background(
                 Group {
                     if isPrimary {
-                        Theme.primaryAccent(for: scheme)
+                        LinearGradient(
+                            gradient: Gradient(colors: [
+                                Theme.primaryAccent(for: scheme).opacity(0.8),
+                                Theme.primaryAccent(for: scheme),
+                                Theme.primaryAccent(for: scheme).opacity(0.85)
+                            ]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
                     } else {
                         LinearGradient(
                             gradient: Gradient(colors: scheme == .dark ? 

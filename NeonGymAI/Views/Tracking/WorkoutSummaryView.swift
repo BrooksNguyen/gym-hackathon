@@ -34,8 +34,14 @@ struct WorkoutSummaryView: View {
                             .foregroundColor(.secondary)
                         Text("\(response.formScore)%")
                             .font(.system(size: 80, weight: .heavy, design: .rounded))
-                            .foregroundColor(Theme.neonGreen)
-                            .shadow(color: Theme.neonGreen.opacity(0.3), radius: 10)
+                            .foregroundStyle(
+                                LinearGradient(
+                                    colors: [Color.teal.opacity(0.8), Color.mint],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .shadow(color: Color.mint.opacity(0.15), radius: 8)
                         Text(response.coachFeedback)
                             .font(Theme.secondaryText)
                             .foregroundColor(.primary)
@@ -48,9 +54,9 @@ struct WorkoutSummaryView: View {
                     
                     // Details (Calories, Intensity, Reps)
                     HStack(spacing: 16) {
-                        summaryCard(title: "Reps", value: "\(reps)", icon: "arrow.up.arrow.down", color: Theme.neonGreen)
-                        summaryCard(title: "Calories", value: "\(response.caloriesBurned)", icon: "flame.fill", color: .orange)
-                        summaryCard(title: "Intensity", value: response.intensity, icon: "bolt.fill", color: Theme.metallicGold)
+                        summaryCard(title: "Reps", value: "\(reps)", icon: "arrow.up.arrow.down", color: .cyan)
+                        summaryCard(title: "Calories", value: "\(response.caloriesBurned)", icon: "flame.fill", color: .orange.opacity(0.8))
+                        summaryCard(title: "Intensity", value: response.intensity, icon: "bolt.fill", color: .purple.opacity(0.8))
                     }
                     
                     Spacer()

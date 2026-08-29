@@ -13,7 +13,7 @@ struct AICoachView: View {
     
     struct Message: Identifiable {
         let id = UUID()
-        let text: String
+        var text: String
         let isUser: Bool
     }
     
@@ -254,34 +254,27 @@ struct AICoachView: View {
                                     messageText = ""
                                     isGenerating = true
                                     
-                                    // Mock User Profile
-                                    let age = 24
-                                    let gender = "Male"
-                                    let bmi = 23.5
-                                    let goal = "Hypertrophy"
-                                    let todayTargetMuscle = healthState.selectedMuscle
-                                    
-                                    // System Prompt Injection
-                                    let systemPrompt = """
-                                    You are Gymini AI Coach, an expert fitness assistant.
-                                    User Profile:
-                                    - Age: \(age), Gender: \(gender)
-                                    - BMI: \(bmi) (Normal)
-                                    - Goal: \(goal)
-                                    - Today's Target: \(todayTargetMuscle)
-                                    Provide concise, actionable workout advice based strictly on these metrics.
-                                    """
-                                    print("Sending to Local SLM Model:\n\(systemPrompt)\nUser Query: \(query)")
-                                    
-                                    // Mock response delay for SLM Generation
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                        withAnimation {
-                                            isGenerating = false
-                                            if query.contains("Chest workout") {
-                                                messages.append(Message(text: "Based on your Hypertrophy goal and BMI of \(String(format: "%.1f", bmi)), here is your Chest plan today:\n1. Barbell Bench Press: 4x8-10\n2. Incline Dumbbell Press: 3x10-12\n3. Cable Crossovers: 3x15", isUser: false))
-                                            } else {
-                                                messages.append(Message(text: "Got it! Since you are focusing on \(todayTargetMuscle), let's adjust your plan to ensure optimal hypertrophy.", isUser: false))
+                                    // Start Local SLM Streaming
+                                    Task {
+                                        let stream = LocalLLMManager.shared.generate(prompt: query)
+                                        var isFirstToken = true
+                                        var aiMessageIndex = 0
+                                        
+                                        for await token in stream {
+                                            await MainActor.run {
+                                                if isFirstToken {
+                                                    withAnimation { isGenerating = false }
+                                                    messages.append(Message(text: token, isUser: false))
+                                                    aiMessageIndex = messages.count - 1
+                                                    isFirstToken = false
+                                                } else {
+                                                    messages[aiMessageIndex].text += token
+                                                }
                                             }
+                                        }
+                                        
+                                        await MainActor.run {
+                                            withAnimation { isGenerating = false }
                                         }
                                     }
                                 }

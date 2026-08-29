@@ -3,6 +3,7 @@ options:
   bundleIdPrefix: com.brooksnguyen
   deploymentTarget:
     iOS: "18.1"
+
 targets:
   NeonGymAI:
     type: application

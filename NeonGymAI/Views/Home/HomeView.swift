@@ -202,10 +202,10 @@ struct HomeView: View {
                             }) {
                                 VStack(spacing: 6) {
                                     ZStack {
-                                        Image(systemName: "camera.viewfinder")
-                                            .font(.system(size: 30))
+                                        Image(systemName: "viewfinder")
+                                            .font(.system(size: 34, weight: .light))
                                         Image(systemName: "dumbbell.fill")
-                                            .font(.system(size: 10))
+                                            .font(.system(size: 14))
                                     }
                                     .frame(height: 36)
                                     Text("Scan Machine")
@@ -218,7 +218,7 @@ struct HomeView: View {
                                         .frame(height: 28, alignment: .top)
                                 }
                                 .padding(.horizontal, 4)
-                                .metallicButton(scheme: colorScheme, isPrimary: true, cornerRadius: 24)
+                                .metallicButton(scheme: colorScheme, isPrimary: false, cornerRadius: 24)
                             }
                             .fullScreenCover(isPresented: $showScanMachine) {
                                 ScanMachineView()
@@ -241,7 +241,7 @@ struct HomeView: View {
                                         .frame(height: 28, alignment: .top)
                                 }
                                 .padding(.horizontal, 4)
-                                .metallicButton(scheme: colorScheme, isPrimary: false, cornerRadius: 24)
+                                .metallicButton(scheme: colorScheme, isPrimary: true, cornerRadius: 24)
                             }
                             .fullScreenCover(isPresented: $showTracking) {
                                 ActiveTrackingView()

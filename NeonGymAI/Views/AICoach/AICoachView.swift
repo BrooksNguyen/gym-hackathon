@@ -9,7 +9,7 @@ struct AICoachView: View {
     @State private var isSending = false
     @State private var showingVoiceHint = false
     @State private var messages: [Message] = [
-        Message(text: "Hello! I'm your on-device AI Coach powered by Apple Intelligence. How can I help you today?", isUser: false)
+        Message(text: "Hello! I'm your AI Coach. Based on your profile, how can I help you today?", isUser: false)
     ]
 
     private let quickPrompts = ["How do I squat?", "Build me a leg day", "Check my form"]
@@ -31,7 +31,7 @@ struct AICoachView: View {
     
     private var systemPrompt: String {
         """
-        You are an expert AI Gym Coach inside a fitness app called Gymini. You run on-device via Apple Intelligence.
+        You are an expert AI Gym Coach inside a fitness app called Gymini.
         
         USER PROFILE:
         - Name: \(profile.name.isEmpty ? "Athlete" : profile.name)
@@ -61,18 +61,24 @@ struct AICoachView: View {
             ZStack {
                 Theme.AppBackground(scheme: colorScheme)
                 
-                // Apple Intelligence Full Screen Edge Glow (Visible when generating)
+                // Subtle shimmer glow when generating
                 if isGenerating {
                     RoundedRectangle(cornerRadius: 40)
                         .strokeBorder(
                             AngularGradient(
-                                gradient: Gradient(colors: [Color.blue, Color.purple, Color.pink, Color.orange, Color.blue]),
+                                gradient: Gradient(colors: [
+                                    Color.white.opacity(0.4),
+                                    Color.gray.opacity(0.2),
+                                    Color.white.opacity(0.5),
+                                    Color.gray.opacity(0.2),
+                                    Color.white.opacity(0.4)
+                                ]),
                                 center: .center,
                                 angle: .degrees(isAnimating ? 360 : 0)
                             ),
-                            lineWidth: 8
+                            lineWidth: 4
                         )
-                        .blur(radius: 20)
+                        .blur(radius: 15)
                         .ignoresSafeArea()
                         .transition(.opacity)
                 }
@@ -80,44 +86,14 @@ struct AICoachView: View {
                 VStack(spacing: 0) {
                     // Header
                     HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Apple Intelligence Coach")
-                                .font(.system(size: 20, weight: .bold))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
-                                .foregroundColor(.primary)
-                        }
+                        Text("AI Coach")
+                            .font(.system(size: 20, weight: .bold))
+                            .foregroundColor(.primary)
                         
                         Spacer()
-                        
-                        // Health Status Badge
-                        HStack(spacing: 6) {
-                            Circle()
-                                .fill(Color.green)
-                                .frame(width: 8, height: 8)
-                                .shadow(color: Color.green.opacity(0.8), radius: 5)
-                            Text("⚡ On-Device")
-                                .font(Theme.tertiaryText)
-                                .foregroundColor(Color.green)
-                        }
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .glassCard(cornerRadius: 12, scheme: colorScheme)
                     }
                     .padding()
                     .glassCard(cornerRadius: 16, scheme: colorScheme)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.blue.opacity(0.6), Color.purple.opacity(0.6), Color.pink.opacity(0.6)]),
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                ),
-                                lineWidth: 1
-                            )
-                            .blur(radius: 0.5)
-                    )
                     .padding(.horizontal, 24)
                     .padding(.top, 16)
                     .padding(.bottom, 8)
@@ -138,22 +114,26 @@ struct AICoachView: View {
                                                 .cornerRadius(4, corners: [.bottomRight])
                                         } else {
                                             HStack(alignment: .bottom) {
-                                                // Apple Intelligence Orb Avatar
+                                                // Metallic Silver Avatar
                                                 ZStack {
                                                     Circle()
                                                         .fill(
-                                                            AngularGradient(
-                                                                gradient: Gradient(colors: [Color.blue, Color.purple, Color.pink, Color.orange, Color.blue]),
-                                                                center: .center,
-                                                                angle: .degrees(isAnimating ? 360 : 0)
+                                                            LinearGradient(
+                                                                gradient: Gradient(colors: [
+                                                                    Color(red: 0.85, green: 0.87, blue: 0.90),
+                                                                    Color(red: 0.65, green: 0.68, blue: 0.72),
+                                                                    Color(red: 0.78, green: 0.80, blue: 0.84)
+                                                                ]),
+                                                                startPoint: .topLeading,
+                                                                endPoint: .bottomTrailing
                                                             )
                                                         )
                                                         .frame(width: 32, height: 32)
-                                                        .shadow(color: Color.purple.opacity(0.5), radius: 5)
+                                                        .shadow(color: Color.gray.opacity(0.4), radius: 4)
                                                     
                                                     Image(systemName: "sparkles")
                                                         .font(.system(size: 14, weight: .bold))
-                                                        .foregroundColor(.white)
+                                                        .foregroundColor(Color(red: 0.3, green: 0.32, blue: 0.35))
                                                 }
                                                 .padding(.bottom, 8)
                                                 
@@ -176,18 +156,22 @@ struct AICoachView: View {
                                         ZStack {
                                             Circle()
                                                 .fill(
-                                                    AngularGradient(
-                                                        gradient: Gradient(colors: [Color.blue, Color.purple, Color.pink, Color.orange, Color.blue]),
-                                                        center: .center,
-                                                        angle: .degrees(isAnimating ? 360 : 0)
+                                                    LinearGradient(
+                                                        gradient: Gradient(colors: [
+                                                            Color(red: 0.85, green: 0.87, blue: 0.90),
+                                                            Color(red: 0.65, green: 0.68, blue: 0.72),
+                                                            Color(red: 0.78, green: 0.80, blue: 0.84)
+                                                        ]),
+                                                        startPoint: .topLeading,
+                                                        endPoint: .bottomTrailing
                                                     )
                                                 )
                                                 .frame(width: 32, height: 32)
-                                                .shadow(color: Color.purple.opacity(0.5), radius: 5)
+                                                .shadow(color: Color.gray.opacity(0.4), radius: 4)
                                             
                                             Image(systemName: "sparkles")
                                                 .font(.system(size: 14, weight: .bold))
-                                                .foregroundColor(.white)
+                                                .foregroundColor(Color(red: 0.3, green: 0.32, blue: 0.35))
                                         }
                                         .padding(.bottom, 8)
                                         
@@ -258,13 +242,12 @@ struct AICoachView: View {
                             .overlay(
                                 RoundedRectangle(cornerRadius: 24)
                                     .strokeBorder(
-                                        isGenerating ? 
                                         LinearGradient(
-                                            gradient: Gradient(colors: [Color.blue, Color.purple, Color.pink, Color.orange]),
+                                            gradient: Gradient(colors: [Color.gray.opacity(0.3)]),
                                             startPoint: .leading,
                                             endPoint: .trailing
-                                        ) : LinearGradient(gradient: Gradient(colors: [Color.gray.opacity(0.3)]), startPoint: .leading, endPoint: .trailing),
-                                        lineWidth: isGenerating ? 2 : 1
+                                        ),
+                                        lineWidth: 1
                                     )
                             )
                             .font(Theme.secondaryText)
@@ -286,9 +269,9 @@ struct AICoachView: View {
                                 .font(.title3)
                                 .foregroundColor(.white)
                                 .padding(16)
-                                .background(isGenerating ? Color.purple : Theme.primaryAccent(for: colorScheme))
+                                .background(Theme.primaryAccent(for: colorScheme))
                                 .clipShape(Circle())
-                                .shadow(color: (isGenerating ? Color.purple : Theme.primaryAccent(for: colorScheme)).opacity(0.4), radius: 10, y: 5)
+                                .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.3), radius: 8, y: 4)
                         }
                         .disabled(messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSending)
                         .opacity(messageText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isSending ? 0.4 : 1)

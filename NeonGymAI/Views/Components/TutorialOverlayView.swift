@@ -17,7 +17,7 @@ struct TutorialOverlayView: View {
                 
                 // Tooltip Card
                 VStack(spacing: 20) {
-                    Text("Hướng dẫn (Bước \(currentStepIndex + 1)/\(steps.count))")
+                    Text("Tutorial (Step \(currentStepIndex + 1)/\(steps.count))")
                         .font(Theme.primaryText)
                         .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                     

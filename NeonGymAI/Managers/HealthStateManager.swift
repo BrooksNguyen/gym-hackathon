@@ -8,20 +8,20 @@ class HealthStateManager: ObservableObject {
     
     func statusText() -> String {
         switch starRating {
-        case 5: return "Sung sức"
-        case 4: return "Ổn định"
-        case 3: return "Hơi mỏi"
-        case 1, 2: return "Cần phục hồi"
-        default: return "Chưa đánh giá"
+        case 5: return "Peak Condition"
+        case 4: return "Stable"
+        case 3: return "Slightly Fatigued"
+        case 1, 2: return "Needs Recovery"
+        default: return "Unrated"
         }
     }
     
     func statusColor(for scheme: ColorScheme) -> Color {
         switch starRating {
-        case 5: return Theme.secondaryAccent(for: scheme) // Cyber Cyan / Green
+        case 5: return Theme.secondaryAccent(for: scheme) // Cool Steel / Cobalt
         case 4: return Theme.secondaryAccent(for: scheme).opacity(0.8)
         case 3: return .yellow
-        case 1, 2: return Theme.primaryAccent(for: scheme) // Neon Red / Crimson
+        case 1, 2: return Color.orange // Replaced Red with Metallic Copper/Orange vibe
         default: return .gray
         }
     }

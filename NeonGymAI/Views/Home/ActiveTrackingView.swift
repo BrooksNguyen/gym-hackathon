@@ -92,9 +92,9 @@ struct ActiveTrackingView: View {
                 if !hasSeenTrackingTutorial {
                     TutorialOverlayView(
                         steps: [
-                            "Đặt điện thoại ngang tầm gối hoặc hông.",
-                            "Đứng toàn thân vào khung hình để AI đếm rep.",
-                            "Bấm Finish Session để lưu kết quả."
+                            "Place your phone at knee or hip level.",
+                            "Stand fully inside the frame for AI rep counting.",
+                            "Tap Finish Session to save your results."
                         ],
                         isPresented: $showTutorial
                     )

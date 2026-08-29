@@ -86,8 +86,8 @@ struct ScanMachineView: View {
             if !hasSeenScanTutorial {
                 TutorialOverlayView(
                     steps: [
-                        "Hướng camera vào máy tập bạn muốn dùng.",
-                        "Bấm chụp để AI phân tích và lên bài tập."
+                        "Point the camera at the machine you want to use.",
+                        "Tap capture for AI analysis and workout generation."
                     ],
                     isPresented: $showTutorial
                 )

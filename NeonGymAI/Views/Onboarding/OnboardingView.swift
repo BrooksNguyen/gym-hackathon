@@ -118,11 +118,11 @@ struct GoalsCommitmentStep: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 40) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Chào mừng, \(manager.name.isEmpty ? "bạn" : manager.name)!")
+                Text("Welcome, \(manager.name.isEmpty ? "guest" : manager.name)!")
                     .font(Theme.heroText)
                     .padding(.top, 60)
                 
-                Text("\(manager.name), mục tiêu hiện tại của bạn là gì?")
+                Text("\(manager.name), what is your current goal?")
                     .font(Theme.secondaryText)
                     .foregroundColor(.secondary)
             }
@@ -188,7 +188,7 @@ struct GoalsCommitmentStep: View {
                 Button(action: {
                     manager.completeOnboarding()
                 }) {
-                    Text("Bắt đầu hành trình")
+                    Text("Start Journey")
                         .font(Theme.primaryText)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 20)

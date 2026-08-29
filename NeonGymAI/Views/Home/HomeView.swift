@@ -19,11 +19,11 @@ struct HomeView: View {
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 32) {
-                        // Header with Clock
+                        // Header with Clock (Australia/Sydney Time)
                         HStack {
                             VStack(alignment: .leading, spacing: 6) {
                                 TimelineView(.everyMinute) { context in
-                                    Text(context.date.formatted(.dateTime.weekday().month().day().hour().minute()))
+                                    Text(australiaTime(date: context.date))
                                         .font(Theme.tertiaryText)
                                         .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                                 }
@@ -41,7 +41,7 @@ struct HomeView: View {
                                 .font(Theme.primaryText)
                             
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("Hôm nay bạn muốn tập nhóm cơ nào?")
+                                Text("What muscle group are you targeting today?")
                                     .font(Theme.secondaryText)
                                     .foregroundColor(.secondary)
                                 
@@ -69,7 +69,7 @@ struct HomeView: View {
                             }
                             
                             VStack(alignment: .leading, spacing: 12) {
-                                Text("Thể lực hôm nay của bạn thế nào?")
+                                Text("How is your physical condition today?")
                                     .font(Theme.secondaryText)
                                     .foregroundColor(.secondary)
                                 
@@ -122,7 +122,7 @@ struct HomeView: View {
                                 VStack(alignment: .leading, spacing: 8) {
                                     Text(workout.title)
                                         .font(Theme.primaryText)
-                                        .foregroundColor(workout.isActiveRecovery ? Theme.primaryAccent(for: colorScheme) : .primary)
+                                        .foregroundColor(workout.isActiveRecovery ? Color.orange : .primary)
                                     
                                     Text(workout.summary)
                                         .font(Theme.secondaryText)
@@ -152,7 +152,7 @@ struct HomeView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 24)
                                 .background(Theme.primaryAccent(for: colorScheme))
-                                .foregroundColor(.white)
+                                .foregroundColor(colorScheme == .light ? .white : .black)
                                 .cornerRadius(20)
                             }
                             .fullScreenCover(isPresented: $showScanMachine) {
@@ -176,8 +176,6 @@ struct HomeView: View {
                             .fullScreenCover(isPresented: $showTracking) {
                                 ActiveTrackingView()
                             }
-                            // Block start tracking if it's active recovery? 
-                            // Only a suggestion per user request, so button remains enabled.
                         }
                     }
                     .padding(.horizontal, 24)
@@ -188,14 +186,21 @@ struct HomeView: View {
         }
     }
     
+    private func australiaTime(date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.timeZone = TimeZone(identifier: "Australia/Sydney")
+        formatter.dateFormat = "EEE, MMM d • h:mm a"
+        return formatter.string(from: date)
+    }
+    
     private func starColor(for index: Int) -> Color {
         if healthState.starRating >= index {
             if healthState.starRating <= 2 {
-                return Theme.primaryAccent(for: colorScheme) // Red/Orange
+                return Color.orange // Copper metallic
             } else if healthState.starRating <= 4 {
-                return .yellow
+                return .yellow // Gold
             } else {
-                return Theme.secondaryAccent(for: colorScheme) // Cyan/Green
+                return Theme.secondaryAccent(for: colorScheme) // Cyan/Steel
             }
         }
         return Color.gray.opacity(0.3)

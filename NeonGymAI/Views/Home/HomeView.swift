@@ -2,28 +2,29 @@ import SwiftUI
 
 struct HomeView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject private var energyManager = EnergyManager.shared
     @State private var showScanMachine = false
     @State private var showTracking = false
     
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
+                Theme.AppBackground(scheme: colorScheme)
                 
                 ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
-                        // Header with Clock and Battery
+                    VStack(alignment: .leading, spacing: 32) {
+                        // Header with Clock
                         HStack {
-                            VStack(alignment: .leading, spacing: 4) {
+                            VStack(alignment: .leading, spacing: 6) {
                                 TimelineView(.everyMinute) { context in
                                     Text(context.date.formatted(.dateTime.weekday().month().day().hour().minute()))
                                         .font(Theme.tertiaryText)
                                         .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                                 }
                                 Text("Ready to crush it?")
-                                    .font(Theme.primaryText)
+                                    .font(Theme.heroText)
+                                    .foregroundColor(.primary)
                             }
+                            Spacer()
                         }
                         .padding(.top, 20)
                         
@@ -40,13 +41,13 @@ struct HomeView: View {
                                     .font(Theme.primaryText)
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 20)
+                            .padding(.vertical, 24)
                             .background(
-                                RoundedRectangle(cornerRadius: 20)
+                                RoundedRectangle(cornerRadius: 24)
                                     .fill(Theme.primaryAccent(for: colorScheme))
                             )
                             .foregroundColor(.white)
-                            .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.3), radius: 10, y: 5)
+                            .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.4), radius: 15, y: 8)
                         }
                         .fullScreenCover(isPresented: $showScanMachine) {
                             ScanMachineView()
@@ -65,42 +66,33 @@ struct HomeView: View {
                                     .font(Theme.primaryText)
                             }
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 20)
-                            .background(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .fill(Theme.cardColor(for: colorScheme))
-                            )
+                            .padding(.vertical, 24)
+                            .background(Color.clear)
                             .foregroundColor(Theme.secondaryAccent(for: colorScheme))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(Theme.secondaryAccent(for: colorScheme), lineWidth: 2)
-                            )
-                            .shadow(color: Color.black.opacity(0.05), radius: 10, y: 5)
+                            .glassCard(cornerRadius: 24)
                         }
                         .fullScreenCover(isPresented: $showTracking) {
                             ActiveTrackingView()
                         }
                         
                         // Recent Activity
-                        VStack(alignment: .leading, spacing: 16) {
+                        VStack(alignment: .leading, spacing: 20) {
                             Text("Recent Activity")
                                 .font(Theme.primaryText)
                             
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 16) {
+                                HStack(spacing: 20) {
                                     ForEach(0..<5) { i in
-                                        VStack(alignment: .leading, spacing: 4) {
+                                        VStack(alignment: .leading, spacing: 8) {
                                             Text("Squat")
                                                 .font(Theme.secondaryText)
                                             Text("4 sets x 12 reps")
                                                 .font(Theme.tertiaryText)
                                                 .foregroundColor(.secondary)
                                         }
-                                        .padding()
-                                        .frame(width: 160, alignment: .leading)
-                                        .background(Theme.cardColor(for: colorScheme))
-                                        .cornerRadius(16)
-                                        .shadow(color: Color.black.opacity(0.05), radius: 8, y: 4)
+                                        .padding(20)
+                                        .frame(width: 180, alignment: .leading)
+                                        .glassCard(cornerRadius: 20)
                                     }
                                 }
                             }
@@ -108,6 +100,7 @@ struct HomeView: View {
                         .padding(.top, 16)
                     }
                     .padding(.horizontal, 24)
+                    .padding(.bottom, 40)
                 }
             }
             .navigationBarHidden(true)

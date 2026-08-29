@@ -10,24 +10,31 @@ struct ScanMachineView: View {
     
     var body: some View {
         ZStack {
-            Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
+            Theme.AppBackground(scheme: colorScheme)
             
             // Mock Camera View
             VStack {
                 Spacer()
                 Image(systemName: "camera.viewfinder")
                     .font(.system(size: 150))
-                    .foregroundColor(Theme.secondaryAccent(for: colorScheme).opacity(0.3))
+                    .foregroundColor(Theme.secondaryAccent(for: colorScheme).opacity(0.2))
+                    .blur(radius: 2)
                 Spacer()
             }
             
             if isScanning {
-                Color.black.opacity(0.4).edgesIgnoringSafeArea(.all)
-                    .blur(radius: 20)
+                Color.black.opacity(0.5).edgesIgnoringSafeArea(.all)
+                    .blur(radius: 30)
                     .transition(.opacity)
                 
-                ProgressView("Analyzing Machine...")
-                    .foregroundColor(.white)
+                VStack(spacing: 20) {
+                    ProgressView()
+                        .scaleEffect(2)
+                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    Text("Analyzing Machine...")
+                        .font(Theme.secondaryText)
+                        .foregroundColor(.white)
+                }
             }
             
             VStack {
@@ -36,8 +43,9 @@ struct ScanMachineView: View {
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Image(systemName: "xmark.circle.fill")
-                            .font(.title)
+                            .font(.system(size: 30))
                             .foregroundColor(Theme.secondaryAccent(for: colorScheme))
+                            .background(Circle().fill(Color.black.opacity(0.3)))
                     }
                     Spacer()
                 }
@@ -66,36 +74,60 @@ struct ScanMachineView: View {
                         }
                     }) {
                         Image(systemName: "largecircle.fill.circle")
-                            .font(.system(size: 80))
+                            .font(.system(size: 90))
                             .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                            .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.5), radius: 20, y: 0)
                     }
-                    .padding(.bottom, 40)
+                    .padding(.bottom, 60)
                 }
             }
         }
         .sheet(isPresented: $showResultSheet) {
             if let result = analysisResult {
-                VStack(spacing: 20) {
+                VStack(spacing: 24) {
                     Text(result.exerciseName)
-                        .font(Theme.primaryText)
-                    
-                    Text("Targets: \(result.targetMuscles.joined(separator: ", "))")
-                        .font(Theme.secondaryText)
-                    
-                    Text("Recommended Reps: \(result.recommendedReps)")
-                        .font(Theme.tertiaryText)
-                    
-                    // Display Coach Advice directly derived from energy
-                    Text("Coach says:")
-                        .font(Theme.secondaryText)
-                        .padding(.top)
-                    Text(result.coachAdvice)
-                        .font(Theme.secondaryText)
-                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                        .font(Theme.heroText)
                         .multilineTextAlignment(.center)
-                        .padding()
-                        .background(Theme.cardColor(for: colorScheme))
-                        .cornerRadius(12)
+                    
+                    VStack(spacing: 12) {
+                        Text("Target Muscles")
+                            .font(Theme.tertiaryText)
+                            .foregroundColor(.secondary)
+                        Text(result.targetMuscles.joined(separator: ", "))
+                            .font(Theme.primaryText)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .glassCard(cornerRadius: 16)
+                    
+                    VStack(spacing: 12) {
+                        Text("Recommended Reps")
+                            .font(Theme.tertiaryText)
+                            .foregroundColor(.secondary)
+                        Text("\(result.recommendedReps)")
+                            .font(Theme.numberFont(size: 40))
+                            .foregroundColor(Theme.secondaryAccent(for: colorScheme))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .glassCard(cornerRadius: 16)
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: "sparkles")
+                                .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                            Text("Coach says:")
+                                .font(Theme.secondaryText)
+                        }
+                        Text(result.coachAdvice)
+                            .font(Theme.secondaryText)
+                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .glassCard(cornerRadius: 16)
+                    
+                    Spacer()
                     
                     Button(action: {
                         showResultSheet = false
@@ -104,15 +136,17 @@ struct ScanMachineView: View {
                         Text("Start Workout")
                             .font(Theme.primaryText)
                             .frame(maxWidth: .infinity)
-                            .padding()
+                            .padding(.vertical, 20)
                             .background(Theme.primaryAccent(for: colorScheme))
                             .foregroundColor(.white)
-                            .cornerRadius(16)
+                            .clipShape(Capsule())
+                            .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.4), radius: 15, y: 8)
                     }
-                    .padding(.top, 20)
+                    .padding(.bottom, 20)
                 }
                 .padding(24)
-                .presentationDetents([.medium, .large])
+                .background(Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all))
+                .presentationDetents([.large])
             }
         }
     }

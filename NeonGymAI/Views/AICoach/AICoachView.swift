@@ -8,6 +8,9 @@ struct AICoachView: View {
         Message(text: "Hello! I am your AI Coach. How can I help you today?", isUser: false)
     ]
     
+    // Breathing animation state for battery
+    @State private var isBreathing = false
+    
     struct Message: Identifiable {
         let id = UUID()
         let text: String
@@ -17,9 +20,9 @@ struct AICoachView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
+                Theme.AppBackground(scheme: colorScheme)
                 
-                VStack {
+                VStack(spacing: 0) {
                     // Header with Health Battery
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
@@ -35,12 +38,13 @@ struct AICoachView: View {
                         // Energy Battery Ring
                         ZStack {
                             Circle()
-                                .stroke(Color.gray.opacity(0.3), lineWidth: 4)
+                                .stroke(Color.gray.opacity(0.2), lineWidth: 4)
                             Circle()
                                 .trim(from: 0, to: CGFloat(energyManager.currentEnergyLevel) / 100)
                                 .stroke(energyManager.energyColor(for: colorScheme), style: StrokeStyle(lineWidth: 4, lineCap: .round))
                                 .rotationEffect(.degrees(-90))
                                 .animation(.spring(), value: energyManager.currentEnergyLevel)
+                                .shadow(color: energyManager.energyColor(for: colorScheme).opacity(isBreathing ? 0.6 : 0.2), radius: isBreathing ? 10 : 3)
                             
                             Text("\(energyManager.currentEnergyLevel)%")
                                 .font(Theme.numberFont(size: 12))
@@ -49,13 +53,13 @@ struct AICoachView: View {
                         .frame(width: 40, height: 40)
                     }
                     .padding()
-                    .background(Theme.cardColor(for: colorScheme))
-                    .cornerRadius(16)
-                    .padding(.horizontal)
-                    .padding(.top, 8)
+                    .glassCard(cornerRadius: 16)
+                    .padding(.horizontal, 24)
+                    .padding(.top, 16)
+                    .padding(.bottom, 8)
                     
                     ScrollView {
-                        VStack(spacing: 12) {
+                        VStack(spacing: 16) {
                             ForEach(messages) { message in
                                 HStack {
                                     if message.isUser {
@@ -65,42 +69,46 @@ struct AICoachView: View {
                                             .padding()
                                             .background(Theme.primaryAccent(for: colorScheme))
                                             .foregroundColor(.white)
-                                            .cornerRadius(16)
+                                            .cornerRadius(20)
+                                            .cornerRadius(4, corners: [.bottomRight])
                                     } else {
                                         HStack(alignment: .bottom) {
-                                            Image(systemName: "desktopcomputer")
+                                            Image(systemName: "sparkles")
+                                                .font(.title3)
                                                 .foregroundColor(Theme.secondaryAccent(for: colorScheme))
+                                                .padding(.bottom, 8)
+                                            
                                             Text(message.text)
                                                 .font(Theme.secondaryText)
                                                 .padding()
-                                                .background(Theme.secondaryAccent(for: colorScheme).opacity(0.2))
-                                                .foregroundColor(Theme.secondaryAccent(for: colorScheme))
-                                                .cornerRadius(16)
+                                                .glassCard(cornerRadius: 20)
+                                                .cornerRadius(4, corners: [.bottomLeft])
                                         }
                                         Spacer()
                                     }
                                 }
-                                .padding(.horizontal)
-                                .transition(.scale.combined(with: .opacity))
+                                .padding(.horizontal, 24)
+                                .transition(.scale.combined(with: .opacity).combined(with: .move(edge: message.isUser ? .trailing : .leading)))
                             }
                         }
-                        .padding(.top)
+                        .padding(.top, 16)
                     }
                     
                     // Input Bar
-                    HStack {
+                    HStack(spacing: 12) {
                         TextField("Ask about workout/nutrition...", text: $messageText)
-                            .padding(12)
-                            .background(Theme.cardColor(for: colorScheme))
-                            .cornerRadius(20)
+                            .padding(16)
+                            .glassCard(cornerRadius: 24)
                             .font(Theme.secondaryText)
                         
                         Button(action: {
                             // TODO: Speech to text dictation
                         }) {
                             Image(systemName: "mic.fill")
-                                .font(.title2)
+                                .font(.title3)
                                 .foregroundColor(Theme.secondaryAccent(for: colorScheme))
+                                .padding(16)
+                                .glassCard(cornerRadius: 24)
                         }
                         
                         Button(action: {
@@ -113,15 +121,42 @@ struct AICoachView: View {
                             }
                         }) {
                             Image(systemName: "paperplane.fill")
-                                .font(.title2)
-                                .foregroundColor(Theme.secondaryAccent(for: colorScheme))
+                                .font(.title3)
+                                .foregroundColor(.white)
+                                .padding(16)
+                                .background(Theme.primaryAccent(for: colorScheme))
+                                .clipShape(Circle())
+                                .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.4), radius: 10, y: 5)
                         }
                     }
-                    .padding()
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 16)
                 }
             }
             .navigationTitle("AI Coach")
             .navigationBarTitleDisplayMode(.inline)
         }
+        .onAppear {
+            withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
+                isBreathing = true
+            }
+        }
+    }
+}
+
+// Extension to round specific corners for chat bubbles
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape( RoundedCorner(radius: radius, corners: corners) )
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
     }
 }

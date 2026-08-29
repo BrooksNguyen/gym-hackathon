@@ -7,18 +7,18 @@ struct AnalyticsDashboardView: View {
     
     var body: some View {
         ZStack {
-            Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
+            Theme.AppBackground(scheme: colorScheme)
             
             VStack(spacing: 30) {
                 Text("Session Completed")
-                    .font(Theme.primaryText)
+                    .font(Theme.heroText)
                     .padding(.top, 40)
                     .opacity(appear ? 1 : 0)
                 
                 // Mock Chart Area
-                VStack(spacing: 16) {
+                VStack(spacing: 24) {
                     Text("Workout Volume")
-                        .font(Theme.secondaryText)
+                        .font(Theme.primaryText)
                     
                     HStack(alignment: .bottom, spacing: 20) {
                         ForEach([30, 50, 40, 80, 60], id: \.self) { height in
@@ -29,9 +29,9 @@ struct AnalyticsDashboardView: View {
                     }
                     .frame(height: 100)
                 }
-                .padding()
-                .background(Theme.cardColor(for: colorScheme))
-                .cornerRadius(16)
+                .padding(24)
+                .glassCard(cornerRadius: 24)
+                .padding(.horizontal, 24)
                 .opacity(appear ? 1 : 0)
                 
                 Spacer()
@@ -42,12 +42,13 @@ struct AnalyticsDashboardView: View {
                     Text("Back to Home")
                         .font(Theme.primaryText)
                         .frame(maxWidth: .infinity)
-                        .padding()
+                        .padding(.vertical, 20)
                         .background(Theme.secondaryAccent(for: colorScheme))
                         .foregroundColor(.white)
-                        .cornerRadius(16)
+                        .clipShape(Capsule())
+                        .shadow(color: Theme.secondaryAccent(for: colorScheme).opacity(0.4), radius: 15, y: 8)
                 }
-                .padding(.horizontal, 24)
+                .padding(.horizontal, 40)
                 .padding(.bottom, 40)
                 .opacity(appear ? 1 : 0)
             }

@@ -24,60 +24,115 @@ struct MeView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
+                Theme.AppBackground(scheme: colorScheme)
                 
-                Form {
-                    Section(header: Text("Basic Info").font(Theme.tertiaryText).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
-                        TextField("Name", text: $name)
-                            .font(Theme.secondaryText)
-                        TextField("Age", text: $age)
-                            .keyboardType(.numberPad)
-                            .font(Theme.secondaryText)
-                        Picker("Gender", selection: $selectedGender) {
-                            ForEach(Gender.allCases, id: \.self) { gender in
-                                Text(gender.rawValue).tag(gender)
-                            }
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Profile Header
+                        VStack(spacing: 16) {
+                            Image(systemName: "person.crop.circle.fill")
+                                .font(.system(size: 80))
+                                .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.4), radius: 15, y: 5)
+                            
+                            TextField("Name", text: $name)
+                                .font(Theme.heroText)
+                                .multilineTextAlignment(.center)
                         }
-                    }
-                    .listRowBackground(Theme.cardColor(for: colorScheme))
-                    
-                    Section(header: Text("Body Metrics").font(Theme.tertiaryText).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
-                        VStack(spacing: 12) {
-                            HStack {
-                                Text("Height (cm)")
-                                Spacer()
-                                Text("\(Int(height))").font(Theme.primaryText)
-                            }
-                            Slider(value: $height, in: 100...220, step: 1)
-                                .accentColor(Theme.primaryAccent(for: colorScheme))
-                        }
-                        .padding(.vertical, 4)
+                        .padding(.top, 24)
                         
-                        VStack(spacing: 12) {
-                            HStack {
-                                Text("Weight (kg)")
-                                Spacer()
-                                Text("\(Int(weight))").font(Theme.primaryText)
+                        // Basic Info Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Basic Info")
+                                .font(Theme.tertiaryText)
+                                .foregroundColor(.secondary)
+                            
+                            VStack(spacing: 16) {
+                                HStack {
+                                    Text("Age")
+                                        .font(Theme.secondaryText)
+                                    Spacer()
+                                    TextField("Age", text: $age)
+                                        .keyboardType(.numberPad)
+                                        .font(Theme.primaryText)
+                                        .multilineTextAlignment(.trailing)
+                                }
+                                
+                                Divider().background(Color.gray.opacity(0.2))
+                                
+                                HStack {
+                                    Text("Gender")
+                                        .font(Theme.secondaryText)
+                                    Spacer()
+                                    Picker("Gender", selection: $selectedGender) {
+                                        ForEach(Gender.allCases, id: \.self) { gender in
+                                            Text(gender.rawValue).tag(gender)
+                                        }
+                                    }
+                                    .pickerStyle(.menu)
+                                    .tint(Theme.primaryAccent(for: colorScheme))
+                                }
                             }
-                            Slider(value: $weight, in: 40...150, step: 1)
-                                .accentColor(Theme.primaryAccent(for: colorScheme))
+                            .padding()
+                            .glassCard(cornerRadius: 16)
                         }
-                        .padding(.vertical, 4)
-                    }
-                    .listRowBackground(Theme.cardColor(for: colorScheme))
-                    
-                    Section(header: Text("Goals").font(Theme.tertiaryText).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
-                        Picker("Goal", selection: $selectedGoal) {
-                            ForEach(Goal.allCases, id: \.self) { goal in
-                                Text(goal.rawValue).tag(goal)
+                        
+                        // Body Metrics Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Body Metrics")
+                                .font(Theme.tertiaryText)
+                                .foregroundColor(.secondary)
+                            
+                            VStack(spacing: 24) {
+                                VStack(spacing: 12) {
+                                    HStack {
+                                        Text("Height (cm)")
+                                            .font(Theme.secondaryText)
+                                        Spacer()
+                                        Text("\(Int(height))")
+                                            .font(Theme.numberFont(size: 24))
+                                    }
+                                    Slider(value: $height, in: 100...220, step: 1)
+                                        .tint(Theme.secondaryAccent(for: colorScheme))
+                                }
+                                
+                                Divider().background(Color.gray.opacity(0.2))
+                                
+                                VStack(spacing: 12) {
+                                    HStack {
+                                        Text("Weight (kg)")
+                                            .font(Theme.secondaryText)
+                                        Spacer()
+                                        Text("\(Int(weight))")
+                                            .font(Theme.numberFont(size: 24))
+                                    }
+                                    Slider(value: $weight, in: 40...150, step: 1)
+                                        .tint(Theme.primaryAccent(for: colorScheme))
+                                }
                             }
+                            .padding()
+                            .glassCard(cornerRadius: 16)
                         }
-                        .pickerStyle(SegmentedPickerStyle())
-                        .padding(.vertical, 4)
+                        
+                        // Goals Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Goals")
+                                .font(Theme.tertiaryText)
+                                .foregroundColor(.secondary)
+                            
+                            Picker("Goal", selection: $selectedGoal) {
+                                ForEach(Goal.allCases, id: \.self) { goal in
+                                    Text(goal.rawValue).tag(goal)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                            .padding()
+                            .glassCard(cornerRadius: 16)
+                        }
                     }
-                    .listRowBackground(Theme.cardColor(for: colorScheme))
+                    .padding(.horizontal, 24)
+                    .padding(.bottom, 40)
                 }
-                .scrollContentBackground(.hidden)
             }
             .navigationTitle("Profile")
             .navigationBarTitleDisplayMode(.inline)

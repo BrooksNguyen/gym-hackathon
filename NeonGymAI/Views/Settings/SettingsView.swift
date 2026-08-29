@@ -11,40 +11,80 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Theme.backgroundColor(for: colorScheme).edgesIgnoringSafeArea(.all)
+                Theme.AppBackground(scheme: colorScheme)
                 
-                Form {
-                    Section(header: Text("Appearance").font(Theme.tertiaryText).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
-                        Toggle("Dark Mode", isOn: $isDarkMode)
-                            .font(Theme.secondaryText)
-                            .tint(Theme.primaryAccent(for: colorScheme))
-                    }
-                    .listRowBackground(Theme.cardColor(for: colorScheme))
-                    
-                    Section(header: Text("Preferences").font(Theme.tertiaryText).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
-                        Picker("Language", selection: $selectedLanguage) {
-                            ForEach(languages, id: \.self) { language in
-                                Text(language).font(Theme.secondaryText).tag(language)
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Appearance Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Appearance")
+                                .font(Theme.tertiaryText)
+                                .foregroundColor(.secondary)
+                            
+                            VStack(spacing: 16) {
+                                Toggle("Dark Mode", isOn: $isDarkMode)
+                                    .font(Theme.primaryText)
+                                    .tint(Theme.primaryAccent(for: colorScheme))
                             }
+                            .padding()
+                            .glassCard(cornerRadius: 16)
                         }
-                        .pickerStyle(MenuPickerStyle())
                         
-                        Toggle("Audio Coach", isOn: $audioCoachEnabled)
-                            .font(Theme.secondaryText)
-                            .tint(Theme.primaryAccent(for: colorScheme))
-                    }
-                    .listRowBackground(Theme.cardColor(for: colorScheme))
-                    
-                    Section(header: Text("Support").font(Theme.tertiaryText).foregroundColor(Theme.secondaryAccent(for: colorScheme))) {
-                        Button("Report / Feedback") {
-                            // Action
+                        // Preferences Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Preferences")
+                                .font(Theme.tertiaryText)
+                                .foregroundColor(.secondary)
+                            
+                            VStack(spacing: 16) {
+                                HStack {
+                                    Text("Language")
+                                        .font(Theme.primaryText)
+                                    Spacer()
+                                    Picker("Language", selection: $selectedLanguage) {
+                                        ForEach(languages, id: \.self) { language in
+                                            Text(language).tag(language)
+                                        }
+                                    }
+                                    .pickerStyle(MenuPickerStyle())
+                                    .tint(Theme.secondaryAccent(for: colorScheme))
+                                }
+                                
+                                Divider().background(Color.gray.opacity(0.2))
+                                
+                                Toggle("Audio Coach", isOn: $audioCoachEnabled)
+                                    .font(Theme.primaryText)
+                                    .tint(Theme.primaryAccent(for: colorScheme))
+                            }
+                            .padding()
+                            .glassCard(cornerRadius: 16)
                         }
-                        .font(Theme.secondaryText)
-                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                        
+                        // Support Section
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Support")
+                                .font(Theme.tertiaryText)
+                                .foregroundColor(.secondary)
+                            
+                            Button(action: {
+                                // Action
+                            }) {
+                                HStack {
+                                    Text("Report / Feedback")
+                                        .font(Theme.primaryText)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                            .padding()
+                            .glassCard(cornerRadius: 16)
+                        }
                     }
-                    .listRowBackground(Theme.cardColor(for: colorScheme))
+                    .padding(.horizontal, 24)
+                    .padding(.top, 24)
                 }
-                .scrollContentBackground(.hidden)
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)

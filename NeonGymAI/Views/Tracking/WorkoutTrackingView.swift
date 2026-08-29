@@ -85,7 +85,7 @@ struct WorkoutTrackingView: View {
             } label: {
                 Image(systemName: "speaker.wave.2.fill")
                     .font(.system(size: 18))
-                    .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                    .foregroundColor(Theme.primaryAccent(for: .dark))
                     .frame(width: 44, height: 44)
                     .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
                     .overlay(

@@ -168,11 +168,19 @@ struct SettingsView: View {
                             }
                         }
                         
-                        Text("by 2 freaking excellent founders")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .padding(.top, 8)
-                            .padding(.bottom, 40)
+                        VStack(spacing: 8) {
+                            Image("AppLogo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
+                                .cornerRadius(10)
+                            
+                            Text("founded by 2 freaking excellent minds")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.top, 16)
+                        .padding(.bottom, 40)
                     }
                     .padding(.horizontal, 24)
                     .padding(.top, 24)

@@ -87,11 +87,14 @@ struct MeView: View {
                                     Text("Age")
                                         .font(Theme.secondaryText)
                                     Spacer()
-                                    TextField("Age", value: $profile.age, format: .number)
-                                        .keyboardType(.numberPad)
-                                        .font(Theme.primaryText)
-                                        .multilineTextAlignment(.trailing)
-                                        .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                    Picker("Age", selection: $profile.age) {
+                                        ForEach(12...100, id: \.self) { a in
+                                            Text("\(a)").tag(a)
+                                        }
+                                    }
+                                    .pickerStyle(.wheel)
+                                    .frame(width: 80, height: 80)
+                                    .clipped()
                                 }
                                 
                                 Divider().background(Color.gray.opacity(0.2))
@@ -196,7 +199,7 @@ struct MeView: View {
                                 HStack(spacing: 0) {
                                     VStack(spacing: 0) {
                                         Text("Height (cm)")
-                                            .font(Theme.secondaryText)
+                                            .font(.caption)
                                             .foregroundColor(.secondary)
                                         
                                         Picker("Height", selection: Binding(
@@ -208,14 +211,15 @@ struct MeView: View {
                                             }
                                         }
                                         .pickerStyle(.wheel)
-                                        .frame(height: 120)
+                                        .frame(height: 80)
+                                        .clipped()
                                     }
                                     
                                     Divider().background(Color.gray.opacity(0.1))
                                     
                                     VStack(spacing: 0) {
                                         Text("Weight (kg)")
-                                            .font(Theme.secondaryText)
+                                            .font(.caption)
                                             .foregroundColor(.secondary)
                                         
                                         Picker("Weight", selection: Binding(
@@ -227,9 +231,13 @@ struct MeView: View {
                                             }
                                         }
                                         .pickerStyle(.wheel)
-                                        .frame(height: 120)
+                                        .frame(height: 80)
+                                        .clipped()
                                     }
                                 }
+                                .padding(.vertical, 8)
+                                .background(Color.gray.opacity(0.05))
+                                .cornerRadius(8)
                             }
                             .padding()
                             .glassCard(cornerRadius: 16, scheme: colorScheme)

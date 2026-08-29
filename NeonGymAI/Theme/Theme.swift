@@ -8,12 +8,15 @@ struct Theme {
         return scheme == .dark ? Color(red: 0.1, green: 0.11, blue: 0.12) : Color(red: 0.88, green: 0.89, blue: 0.91)
     }
     
+    // Primary Accents (Cyber Metallic Blue)
     static func primaryAccent(for scheme: ColorScheme) -> Color {
-        return scheme == .dark ? Color(red: 0.8, green: 0.82, blue: 0.85) : Color(red: 0.35, green: 0.38, blue: 0.42)
+        // A deep, glowing metallic blue
+        return scheme == .dark ? Color(red: 0.15, green: 0.55, blue: 0.95) : Color(red: 0.1, green: 0.45, blue: 0.8)
     }
     
+    // Secondary Accents (Titanium / Chrome)
     static func secondaryAccent(for scheme: ColorScheme) -> Color {
-        return scheme == .dark ? Color(red: 0.4, green: 0.7, blue: 0.9) : Color(red: 0.2, green: 0.4, blue: 0.7)
+        return scheme == .dark ? Color(red: 0.8, green: 0.82, blue: 0.85) : Color(red: 0.35, green: 0.38, blue: 0.42)
     }
     
     // Typography
@@ -57,7 +60,7 @@ struct Theme {
                 
                 RadialGradient(
                     gradient: Gradient(colors: [
-                        Theme.secondaryAccent(for: scheme).opacity(scheme == .dark ? 0.15 : 0.1),
+                        Theme.primaryAccent(for: scheme).opacity(scheme == .dark ? 0.15 : 0.1),
                         Color.clear
                     ]),
                     center: .bottomTrailing,
@@ -83,8 +86,8 @@ struct MetallicButtonModifier: ViewModifier {
             .background(
                 LinearGradient(
                     gradient: Gradient(colors: isPrimary ? (scheme == .dark ? 
-                        [Color(red: 0.3, green: 0.32, blue: 0.35), Color(red: 0.15, green: 0.16, blue: 0.18)] : 
-                        [Color(red: 0.45, green: 0.48, blue: 0.52), Color(red: 0.25, green: 0.28, blue: 0.32)]) :
+                        [Theme.primaryAccent(for: scheme), Theme.primaryAccent(for: scheme).opacity(0.7)] : 
+                        [Theme.primaryAccent(for: scheme).opacity(0.8), Theme.primaryAccent(for: scheme)]) :
                         (scheme == .dark ? 
                         [Color(red: 0.2, green: 0.22, blue: 0.25), Color(red: 0.1, green: 0.11, blue: 0.12)] : 
                         [Color(red: 0.9, green: 0.92, blue: 0.95), Color(red: 0.8, green: 0.82, blue: 0.85)])
@@ -106,7 +109,7 @@ struct MetallicButtonModifier: ViewModifier {
                         lineWidth: 1
                     )
             )
-            .shadow(color: Color.black.opacity(0.2), radius: 5, x: 0, y: 3)
+            .shadow(color: isPrimary ? Theme.primaryAccent(for: scheme).opacity(0.4) : Color.black.opacity(0.2), radius: 5, x: 0, y: 3)
     }
 }
 

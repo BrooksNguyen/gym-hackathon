@@ -28,24 +28,9 @@ struct HomeView: View {
                                         .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                                 }
                                 
-                                if colorScheme == .dark {
-                                    Image("AppLogo")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(height: 140)
-                                        .padding(.leading, -40)
-                                        .padding(.vertical, -40)
-                                        .blendMode(.screen)
-                                } else {
-                                    Image("AppLogo")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .frame(height: 140)
-                                        .padding(.leading, -40)
-                                        .padding(.vertical, -40)
-                                        .colorInvert()
-                                        .blendMode(.multiply)
-                                }
+                                Text("Ready to crush it?")
+                                    .font(Theme.heroText)
+                                    .foregroundColor(.primary)
                             }
                             Spacer()
                         }

@@ -1,7 +1,9 @@
 import SwiftUI
+import UserNotifications
 
 struct SettingsView: View {
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.openURL) var openURL
     @AppStorage("isDarkMode") private var isDarkMode = true
     @AppStorage("notifications_enabled") private var notificationsEnabled = true
     @AppStorage("haptic_feedback") private var hapticFeedback = true
@@ -77,6 +79,15 @@ struct SettingsView: View {
                             Toggle("Push Notifications", isOn: $notificationsEnabled)
                                 .font(Theme.secondaryText)
                                 .tint(Theme.primaryAccent(for: colorScheme))
+                                .onChange(of: notificationsEnabled) { newValue in
+                                    if newValue {
+                                        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
+                                            DispatchQueue.main.async {
+                                                if !success { notificationsEnabled = false }
+                                            }
+                                        }
+                                    }
+                                }
                         }
                         
                         // Data & Privacy Section
@@ -112,13 +123,30 @@ struct SettingsView: View {
                         
                         // About Section
                         settingsSection(title: "About") {
-                            linkRow(title: "Privacy Policy", icon: "hand.raised")
+                            linkRow(title: "Privacy Policy", icon: "hand.raised") {
+                                openURL(URL(string: "https://apple.com/privacy")!)
+                            }
                             Divider().background(Color.gray.opacity(0.2))
-                            linkRow(title: "Terms of Service", icon: "doc.text")
+                            linkRow(title: "Terms of Service", icon: "doc.text") {
+                                openURL(URL(string: "https://apple.com/legal")!)
+                            }
                             Divider().background(Color.gray.opacity(0.2))
-                            linkRow(title: "Rate on App Store", icon: "star")
+                            linkRow(title: "Rate on App Store", icon: "star") {
+                                openURL(URL(string: "https://apps.apple.com")!)
+                            }
                             Divider().background(Color.gray.opacity(0.2))
-                            linkRow(title: "Share with Friends", icon: "square.and.arrow.up")
+                            
+                            ShareLink(item: URL(string: "https://github.com")!, subject: Text("Check out Gymini!"), message: Text("I'm using Gymini for my AI workouts!")) {
+                                HStack {
+                                    Text("Share with Friends")
+                                        .font(Theme.secondaryText)
+                                    Spacer()
+                                    Image(systemName: "square.and.arrow.up")
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .foregroundColor(.primary)
+                            
                             Divider().background(Color.gray.opacity(0.2))
                             HStack {
                                 Text("Version")
@@ -155,7 +183,9 @@ struct SettingsView: View {
             .alert("Delete Workout History", isPresented: $showDeleteAlert) {
                 Button("Cancel", role: .cancel) {}
                 Button("Delete", role: .destructive) {
-                    // Placeholder for actual deletion
+                    UserDefaults.standard.removeObject(forKey: "workoutHistory")
+                    HealthStateManager.shared.starRating = 3
+                    HealthStateManager.shared.selectedMuscle = "Full Body"
                 }
             } message: {
                 Text("This will permanently delete all your workout history. This action cannot be undone.")
@@ -177,8 +207,8 @@ struct SettingsView: View {
         }
     }
     
-    private func linkRow(title: String, icon: String) -> some View {
-        Button(action: {}) {
+    private func linkRow(title: String, icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
             HStack {
                 Text(title)
                     .font(Theme.secondaryText)

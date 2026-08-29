@@ -3,6 +3,7 @@ import SwiftUI
 struct MeView: View {
     @Environment(\.colorScheme) var colorScheme
     @ObservedObject var profile = ProfileManager.shared
+    @AppStorage("units_metric") private var unitsMetric = true
     
     enum Goal: String, CaseIterable {
         case hypertrophy = "Hypertrophy"
@@ -27,6 +28,20 @@ struct MeView: View {
         Binding(
             get: { Gender(rawValue: profile.gender) ?? .male },
             set: { profile.gender = $0.rawValue }
+        )
+    }
+    
+    private var heightBinding: Binding<Int> {
+        Binding(
+            get: { unitsMetric ? Int(profile.height) : Int(profile.height / 2.54) },
+            set: { profile.height = unitsMetric ? Double($0) : Double($0) * 2.54 }
+        )
+    }
+    
+    private var weightBinding: Binding<Int> {
+        Binding(
+            get: { unitsMetric ? Int(profile.weight) : Int(profile.weight * 2.20462) },
+            set: { profile.weight = unitsMetric ? Double($0) : Double($0) / 2.20462 }
         )
     }
     
@@ -198,16 +213,21 @@ struct MeView: View {
                                 // Quick Edit: Height & Weight
                                 HStack(spacing: 0) {
                                     VStack(spacing: 0) {
-                                        Text("Height (cm)")
+                                        Text(unitsMetric ? "Height (cm)" : "Height (in)")
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                         
-                                        Picker("Height", selection: Binding(
-                                            get: { Int(profile.height) },
-                                            set: { profile.height = Double($0) }
-                                        )) {
-                                            ForEach(100...220, id: \.self) { h in
-                                                Text("\(h)").font(.headline).tag(h)
+                                        Picker("Height", selection: heightBinding) {
+                                            if unitsMetric {
+                                                ForEach(100...220, id: \.self) { h in
+                                                    Text("\(h)").font(.headline).tag(h)
+                                                }
+                                            } else {
+                                                ForEach(39...86, id: \.self) { h in
+                                                    let feet = h / 12
+                                                    let inches = h % 12
+                                                    Text("\(feet)'\(inches)\"").font(.headline).tag(h)
+                                                }
                                             }
                                         }
                                         .pickerStyle(.wheel)
@@ -218,16 +238,19 @@ struct MeView: View {
                                     Divider().background(Color.gray.opacity(0.1))
                                     
                                     VStack(spacing: 0) {
-                                        Text("Weight (kg)")
+                                        Text(unitsMetric ? "Weight (kg)" : "Weight (lbs)")
                                             .font(.caption)
                                             .foregroundColor(.secondary)
                                         
-                                        Picker("Weight", selection: Binding(
-                                            get: { Int(profile.weight) },
-                                            set: { profile.weight = Double($0) }
-                                        )) {
-                                            ForEach(40...150, id: \.self) { w in
-                                                Text("\(w)").font(.headline).tag(w)
+                                        Picker("Weight", selection: weightBinding) {
+                                            if unitsMetric {
+                                                ForEach(40...150, id: \.self) { w in
+                                                    Text("\(w)").font(.headline).tag(w)
+                                                }
+                                            } else {
+                                                ForEach(88...330, id: \.self) { w in
+                                                    Text("\(w)").font(.headline).tag(w)
+                                                }
                                             }
                                         }
                                         .pickerStyle(.wheel)

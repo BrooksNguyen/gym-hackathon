@@ -10,6 +10,9 @@ struct WorkoutTrackingView: View {
     @State private var showFlash: Bool = false
     @State private var flashIsGood: Bool = true
     @State private var sessionFinished: Bool = false
+    @State private var isPaused: Bool = false
+    @State private var breakSeconds: Int = 0
+    @State private var timer: Timer? = nil
 
     var body: some View {
         if sessionFinished {
@@ -69,6 +72,31 @@ struct WorkoutTrackingView: View {
                 .transition(.scale(scale: 0.5).combined(with: .opacity))
                 .zIndex(2)
             }
+            
+            // Paused Overlay
+            if isPaused {
+                ZStack {
+                    Theme.trueBlack.opacity(0.85).ignoresSafeArea()
+                    
+                    VStack(spacing: 24) {
+                        Text("PAUSED")
+                            .font(.system(size: 32, weight: .black, design: .rounded))
+                            .tracking(4)
+                            .foregroundColor(.white)
+                        
+                        Text(timeString(from: breakSeconds))
+                            .font(.system(size: 80, weight: .bold, design: .rounded).monospacedDigit())
+                            .foregroundColor(Theme.primaryAccent(for: .dark))
+                            .shadow(color: Theme.primaryAccent(for: .dark).opacity(0.5), radius: 20)
+                        
+                        Text("Rest up. Tap Resume when ready.")
+                            .font(Theme.secondaryText)
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                }
+                .zIndex(3)
+                .transition(.opacity)
+            }
         }
         .preferredColorScheme(.dark)
         .onChange(of: tracker.metrics.reps) { newReps in
@@ -91,14 +119,24 @@ struct WorkoutTrackingView: View {
         }
         .onAppear {
             camera.onFrame = { sampleBuffer in
-                tracker.processFrame(sampleBuffer)
+                if !isPaused {
+                    tracker.processFrame(sampleBuffer)
+                }
             }
             camera.start(position: cameraPosition)
         }
         .onDisappear {
             camera.onFrame = nil
             camera.stop()
+            timer?.invalidate()
+            timer = nil
         }
+    }
+    
+    private func timeString(from totalSeconds: Int) -> String {
+        let minutes = totalSeconds / 60
+        let seconds = totalSeconds % 60
+        return String(format: "%02d:%02d", minutes, seconds)
     }
 
     private var topBar: some View {
@@ -157,18 +195,29 @@ struct WorkoutTrackingView: View {
     private var bottomBar: some View {
         HStack(spacing: 16) {
             Button {
-                // Pause logic placeholder
+                withAnimation {
+                    isPaused.toggle()
+                }
+                if isPaused {
+                    breakSeconds = 0
+                    timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+                        breakSeconds += 1
+                    }
+                } else {
+                    timer?.invalidate()
+                    timer = nil
+                }
             } label: {
-                Text("Take a break")
+                Text(isPaused ? "Resume" : "Take a break")
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .frame(height: 52)
-                    .background(Color.white.opacity(0.15))
+                    .background(isPaused ? Theme.primaryAccent(for: .dark) : Color.white.opacity(0.15))
                     .cornerRadius(10)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10)
-                            .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                            .stroke(isPaused ? Color.clear : Color.white.opacity(0.3), lineWidth: 1)
                     )
             }
             

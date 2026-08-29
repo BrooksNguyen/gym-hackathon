@@ -193,37 +193,41 @@ struct MeView: View {
                                 Divider().background(Color.gray.opacity(0.2))
                                 
                                 // Quick Edit: Height & Weight
-                                VStack(spacing: 16) {
-                                    HStack {
+                                HStack(spacing: 0) {
+                                    VStack(spacing: 0) {
                                         Text("Height (cm)")
                                             .font(Theme.secondaryText)
-                                        Spacer()
-                                        TextField("Height", value: $profile.height, format: .number)
-                                            .keyboardType(.numberPad)
-                                            .font(Theme.primaryText)
-                                            .multilineTextAlignment(.center)
-                                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
-                                            .frame(width: 80)
-                                            .padding(.vertical, 8)
-                                            .background(Color.gray.opacity(0.15))
-                                            .cornerRadius(8)
+                                            .foregroundColor(.secondary)
+                                        
+                                        Picker("Height", selection: Binding(
+                                            get: { Int(profile.height) },
+                                            set: { profile.height = Double($0) }
+                                        )) {
+                                            ForEach(100...220, id: \.self) { h in
+                                                Text("\(h)").tag(h)
+                                            }
+                                        }
+                                        .pickerStyle(.wheel)
+                                        .frame(height: 120)
                                     }
                                     
                                     Divider().background(Color.gray.opacity(0.1))
                                     
-                                    HStack {
+                                    VStack(spacing: 0) {
                                         Text("Weight (kg)")
                                             .font(Theme.secondaryText)
-                                        Spacer()
-                                        TextField("Weight", value: $profile.weight, format: .number)
-                                            .keyboardType(.decimalPad)
-                                            .font(Theme.primaryText)
-                                            .multilineTextAlignment(.center)
-                                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
-                                            .frame(width: 80)
-                                            .padding(.vertical, 8)
-                                            .background(Color.gray.opacity(0.15))
-                                            .cornerRadius(8)
+                                            .foregroundColor(.secondary)
+                                        
+                                        Picker("Weight", selection: Binding(
+                                            get: { Int(profile.weight) },
+                                            set: { profile.weight = Double($0) }
+                                        )) {
+                                            ForEach(40...150, id: \.self) { w in
+                                                Text("\(w)").tag(w)
+                                            }
+                                        }
+                                        .pickerStyle(.wheel)
+                                        .frame(height: 120)
                                     }
                                 }
                             }

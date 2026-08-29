@@ -6,8 +6,7 @@ struct HomeView: View {
     @State private var showTracking = false
     
     // Check-in State
-    @State private var selectedMuscle = "Chest"
-    @State private var starRating = 0
+    @StateObject private var healthState = HealthStateManager.shared
     @State private var isGenerating = false
     @State private var generatedWorkout: LLMNetworkManager.DailyWorkoutResponse?
     
@@ -50,17 +49,17 @@ struct HomeView: View {
                                     HStack(spacing: 12) {
                                         ForEach(muscleGroups, id: \.self) { muscle in
                                             Button(action: {
-                                                withAnimation { selectedMuscle = muscle }
+                                                withAnimation { healthState.selectedMuscle = muscle }
                                             }) {
                                                 Text(muscle)
                                                     .font(Theme.secondaryText)
                                                     .padding(.horizontal, 16)
                                                     .padding(.vertical, 10)
-                                                    .background(selectedMuscle == muscle ? Theme.primaryAccent(for: colorScheme) : Color.clear)
-                                                    .foregroundColor(selectedMuscle == muscle ? .white : .primary)
+                                                    .background(healthState.selectedMuscle == muscle ? Theme.primaryAccent(for: colorScheme) : Color.clear)
+                                                    .foregroundColor(healthState.selectedMuscle == muscle ? .white : .primary)
                                                     .overlay(
                                                         RoundedRectangle(cornerRadius: 12)
-                                                            .stroke(selectedMuscle == muscle ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
+                                                            .stroke(healthState.selectedMuscle == muscle ? Color.clear : Color.gray.opacity(0.3), lineWidth: 1)
                                                     )
                                                     .cornerRadius(12)
                                             }
@@ -79,12 +78,12 @@ struct HomeView: View {
                                         Image(systemName: "star.fill")
                                             .font(.system(size: 32))
                                             .foregroundColor(starColor(for: index))
-                                            .scaleEffect(starRating >= index ? 1.1 : 1.0)
+                                            .scaleEffect(healthState.starRating >= index ? 1.1 : 1.0)
                                             .onTapGesture {
                                                 let impactMed = UIImpactFeedbackGenerator(style: .medium)
                                                 impactMed.impactOccurred()
                                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
-                                                    starRating = index
+                                                    healthState.starRating = index
                                                     generatedWorkout = nil // Reset when stars change
                                                 }
                                             }
@@ -92,10 +91,10 @@ struct HomeView: View {
                                 }
                             }
                             
-                            if starRating > 0 && generatedWorkout == nil {
+                            if healthState.starRating > 0 && generatedWorkout == nil {
                                 Button(action: {
                                     withAnimation { isGenerating = true }
-                                    LLMNetworkManager.shared.generateDailyWorkout(stars: starRating, targetMuscle: selectedMuscle) { result in
+                                    LLMNetworkManager.shared.generateDailyWorkout(stars: healthState.starRating, targetMuscle: healthState.selectedMuscle) { result in
                                         withAnimation { isGenerating = false }
                                         if case .success(let response) = result {
                                             withAnimation { generatedWorkout = response }
@@ -190,10 +189,10 @@ struct HomeView: View {
     }
     
     private func starColor(for index: Int) -> Color {
-        if starRating >= index {
-            if starRating <= 2 {
+        if healthState.starRating >= index {
+            if healthState.starRating <= 2 {
                 return Theme.primaryAccent(for: colorScheme) // Red/Orange
-            } else if starRating <= 4 {
+            } else if healthState.starRating <= 4 {
                 return .yellow
             } else {
                 return Theme.secondaryAccent(for: colorScheme) // Cyan/Green

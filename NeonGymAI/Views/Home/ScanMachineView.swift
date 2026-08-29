@@ -3,7 +3,8 @@ import SwiftUI
 struct ScanMachineView: View {
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.colorScheme) var colorScheme
-    @StateObject private var energyManager = EnergyManager.shared
+    @AppStorage("hasSeenScanTutorial") private var hasSeenScanTutorial = false
+    @State private var showTutorial = true
     @State private var isScanning = false
     @State private var showResultSheet = false
     @State private var analysisResult: MachineAnalysisResponse?
@@ -59,8 +60,8 @@ struct ScanMachineView: View {
                             isScanning = true
                         }
                         
-                        // Pass energy constraints to LLM
-                        LLMNetworkManager.shared.scanMachine(imageData: Data(), currentEnergy: energyManager.currentEnergyLevel, fatiguedMuscles: energyManager.fatiguedMuscles) { result in
+                        // Pass mock energy constraints to LLM (since EnergyManager is removed)
+                        LLMNetworkManager.shared.scanMachine(imageData: Data(), currentEnergy: 100, fatiguedMuscles: []) { result in
                             withAnimation {
                                 isScanning = false
                             }
@@ -79,6 +80,21 @@ struct ScanMachineView: View {
                             .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.5), radius: 20, y: 0)
                     }
                     .padding(.bottom, 60)
+                }
+            }
+            
+            if !hasSeenScanTutorial {
+                TutorialOverlayView(
+                    steps: [
+                        "Hướng camera vào máy tập bạn muốn dùng.",
+                        "Bấm chụp để AI phân tích và lên bài tập."
+                    ],
+                    isPresented: $showTutorial
+                )
+                .onChange(of: showTutorial) { newValue in
+                    if !newValue {
+                        hasSeenScanTutorial = true
+                    }
                 }
             }
         }

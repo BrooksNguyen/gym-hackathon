@@ -2,14 +2,11 @@ import SwiftUI
 
 struct AICoachView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject private var energyManager = EnergyManager.shared
+    @StateObject private var healthState = HealthStateManager.shared
     @State private var messageText = ""
     @State private var messages: [Message] = [
         Message(text: "Hello! I am your AI Coach. How can I help you today?", isUser: false)
     ]
-    
-    // Breathing animation state for battery
-    @State private var isBreathing = false
     
     struct Message: Identifiable {
         let id = UUID()
@@ -23,34 +20,28 @@ struct AICoachView: View {
                 Theme.AppBackground(scheme: colorScheme)
                 
                 VStack(spacing: 0) {
-                    // Header with Health Battery
+                    // Header with Health Status Pill
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Coach Monitor")
                                 .font(Theme.primaryText)
-                            Text("Health Status: \(energyManager.currentEnergyLevel >= 80 ? "Optimal" : (energyManager.currentEnergyLevel >= 40 ? "Fatigued" : "Exhausted"))")
-                                .font(Theme.tertiaryText)
-                                .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                         }
                         
                         Spacer()
                         
-                        // Energy Battery Ring
-                        ZStack {
+                        // Health Status Badge
+                        HStack(spacing: 6) {
                             Circle()
-                                .stroke(Color.gray.opacity(0.2), lineWidth: 4)
-                            Circle()
-                                .trim(from: 0, to: CGFloat(energyManager.currentEnergyLevel) / 100)
-                                .stroke(energyManager.energyColor(for: colorScheme), style: StrokeStyle(lineWidth: 4, lineCap: .round))
-                                .rotationEffect(.degrees(-90))
-                                .animation(.spring(), value: energyManager.currentEnergyLevel)
-                                .shadow(color: energyManager.energyColor(for: colorScheme).opacity(isBreathing ? 0.6 : 0.2), radius: isBreathing ? 10 : 3)
-                            
-                            Text("\(energyManager.currentEnergyLevel)%")
-                                .font(Theme.numberFont(size: 12))
-                                .foregroundColor(.primary)
+                                .fill(healthState.statusColor(for: colorScheme))
+                                .frame(width: 8, height: 8)
+                                .shadow(color: healthState.statusColor(for: colorScheme).opacity(0.8), radius: 5)
+                            Text(healthState.statusText())
+                                .font(Theme.tertiaryText)
+                                .foregroundColor(healthState.statusColor(for: colorScheme))
                         }
-                        .frame(width: 40, height: 40)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .glassCard(cornerRadius: 12)
                     }
                     .padding()
                     .glassCard(cornerRadius: 16)
@@ -115,9 +106,24 @@ struct AICoachView: View {
                             if !messageText.isEmpty {
                                 withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                                     messages.append(Message(text: messageText, isUser: true))
+                                    let query = messageText
                                     messageText = ""
+                                    
+                                    // Simulated LLM Call with Context Append
+                                    let contextString = "[System: User is currently '\(healthState.statusText())' with \(healthState.starRating) stars.]\n"
+                                    print("Sending to LLM: \(contextString) \(query)")
+                                    
+                                    // Mock response
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                        withAnimation {
+                                            if healthState.starRating == 1 {
+                                                messages.append(Message(text: "I see you're needing recovery. Let's focus on stretching today instead.", isUser: false))
+                                            } else {
+                                                messages.append(Message(text: "Got it! Since you are '\(healthState.statusText())', let's adjust accordingly.", isUser: false))
+                                            }
+                                        }
+                                    }
                                 }
-                                // TODO: Call LLM Chat
                             }
                         }) {
                             Image(systemName: "paperplane.fill")
@@ -135,11 +141,6 @@ struct AICoachView: View {
             }
             .navigationTitle("AI Coach")
             .navigationBarTitleDisplayMode(.inline)
-        }
-        .onAppear {
-            withAnimation(.easeInOut(duration: 2.0).repeatForever(autoreverses: true)) {
-                isBreathing = true
-            }
         }
     }
 }

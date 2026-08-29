@@ -62,22 +62,43 @@ struct SettingsView: View {
                         
                         // Support Section
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Support")
+                            Text("Support & Debug")
                                 .font(Theme.tertiaryText)
                                 .foregroundColor(.secondary)
                             
-                            Button(action: {
-                                // Action
-                            }) {
-                                HStack {
-                                    Text("Report / Feedback")
-                                        .font(Theme.primaryText)
-                                    Spacer()
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(.secondary)
+                            VStack(spacing: 16) {
+                                Button(action: {
+                                    // Reset tooltips
+                                    UserDefaults.standard.set(false, forKey: "hasSeenScanTutorial")
+                                    UserDefaults.standard.set(false, forKey: "hasSeenTrackingTutorial")
+                                    // Reset onboarding for testing
+                                    UserDefaults.standard.set(false, forKey: "hasCompletedOnboarding")
+                                }) {
+                                    HStack {
+                                        Text("Reset All Tooltips & Onboarding")
+                                            .font(Theme.primaryText)
+                                        Spacer()
+                                        Image(systemName: "arrow.counterclockwise")
+                                            .foregroundColor(.secondary)
+                                    }
                                 }
+                                .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                
+                                Divider().background(Color.gray.opacity(0.2))
+                                
+                                Button(action: {
+                                    // Action
+                                }) {
+                                    HStack {
+                                        Text("Report / Feedback")
+                                            .font(Theme.primaryText)
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                            .foregroundColor(.secondary)
+                                    }
+                                }
+                                .foregroundColor(Theme.primaryAccent(for: colorScheme))
                             }
-                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
                             .padding()
                             .glassCard(cornerRadius: 16)
                         }

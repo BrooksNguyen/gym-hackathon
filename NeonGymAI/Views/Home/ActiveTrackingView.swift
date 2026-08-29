@@ -2,7 +2,8 @@ import SwiftUI
 
 struct ActiveTrackingView: View {
     @Environment(\.colorScheme) var colorScheme
-    @StateObject private var energyManager = EnergyManager.shared
+    @AppStorage("hasSeenTrackingTutorial") private var hasSeenTrackingTutorial = false
+    @State private var showTutorial = true
     @State private var reps = 0
     @State private var showFinishAlert = false
     @State private var navigateToAnalytics = false
@@ -38,23 +39,6 @@ struct ActiveTrackingView: View {
                     }
                     
                     Spacer()
-                    
-                    // Energy Battery Ring with Breathing glow
-                    ZStack {
-                        Circle()
-                            .stroke(Color.gray.opacity(0.2), lineWidth: 6)
-                        Circle()
-                            .trim(from: 0, to: CGFloat(energyManager.currentEnergyLevel) / 100)
-                            .stroke(energyManager.energyColor(for: colorScheme), style: StrokeStyle(lineWidth: 6, lineCap: .round))
-                            .rotationEffect(.degrees(-90))
-                            .animation(.spring(), value: energyManager.currentEnergyLevel)
-                            .shadow(color: energyManager.energyColor(for: colorScheme).opacity(isBreathing ? 0.6 : 0.2), radius: isBreathing ? 15 : 5)
-                        
-                        Text("\(energyManager.currentEnergyLevel)%")
-                            .font(Theme.numberFont(size: 14))
-                            .foregroundColor(.primary)
-                    }
-                    .frame(width: 50, height: 50)
                 }
                 .padding(24)
                 .glassCard(cornerRadius: 24)
@@ -97,15 +81,30 @@ struct ActiveTrackingView: View {
                 if reps < 12 {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         reps += 1
-                        energyManager.decreaseEnergy(by: 2)
-                    }
-                    if reps == 10 {
-                        energyManager.addFatiguedMuscle("Quadriceps")
                     }
                 } else {
                     timer.invalidate()
                 }
             }
         }
+        .overlay(
+            Group {
+                if !hasSeenTrackingTutorial {
+                    TutorialOverlayView(
+                        steps: [
+                            "Đặt điện thoại ngang tầm gối hoặc hông.",
+                            "Đứng toàn thân vào khung hình để AI đếm rep.",
+                            "Bấm Finish Session để lưu kết quả."
+                        ],
+                        isPresented: $showTutorial
+                    )
+                    .onChange(of: showTutorial) { newValue in
+                        if !newValue {
+                            hasSeenTrackingTutorial = true
+                        }
+                    }
+                }
+            }
+        )
     }
 }

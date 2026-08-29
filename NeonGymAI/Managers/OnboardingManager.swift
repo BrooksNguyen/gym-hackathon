@@ -22,6 +22,14 @@ class OnboardingManager: ObservableObject {
     }
     
     func completeOnboarding() {
+        let profile = ProfileManager.shared
+        profile.name = self.name
+        profile.age = self.age
+        profile.weight = Double(self.weight)
+        profile.height = Double(self.height)
+        profile.goal = self.selectedGoal
+        profile.sessionsPerWeek = self.sessionsPerWeek
+        
         withAnimation(.easeInOut) {
             hasCompletedOnboarding = true
         }

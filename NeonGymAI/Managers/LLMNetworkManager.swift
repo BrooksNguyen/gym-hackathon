@@ -18,15 +18,18 @@ class LLMNetworkManager {
     }
     
     func scanMachine(imageData: Data, currentEnergy: Int, fatiguedMuscles: [String], completion: @escaping (Result<MachineAnalysisResponse, Error>) -> Void) {
+        let profile = ProfileManager.shared
         let scanMachinePrompt = """
         You are an expert AI Gym Coach. Analyze the provided image of a gym machine.
         
         CONTEXT:
         - User's Energy Level: \(currentEnergy)%
         - Fatigued Muscles: \(fatiguedMuscles.joined(separator: ", "))
+        - User Goal: \(profile.goal)
+        - User Weight: \(profile.weight)kg, Age: \(profile.age)
         
         RULES:
-        1. High Energy (>80%): Recommend Progressive Overload (Increase weight/reps).
+        1. High Energy (>80%): Recommend Progressive Overload. For \(profile.goal), adapt rep range (e.g., Cutting = 12-15 reps, Strength = 4-6 reps, Hypertrophy = 8-12 reps).
         2. Muscle Fatigue: If target muscles are in the fatigued list, explicitly suggest substituting the exercise.
         3. Low Energy (<40%): Trigger a "Deload" state. Explicitly recommend dropping the weight by 20% or stopping.
         
@@ -41,7 +44,7 @@ class LLMNetworkManager {
         """
         
         // Mock implementation for Hackathon
-        let advice = currentEnergy < 40 ? "Your energy is low (Deload state). Drop weight by 20%." : "Energy looks optimal! Time for progressive overload."
+        let advice = currentEnergy < 40 ? "Your energy is low (Deload state). Drop weight by 20%." : "Energy looks optimal! Since your goal is \(profile.goal), adapt your reps accordingly."
         
         let mockJSON = """
         {
@@ -74,18 +77,22 @@ class LLMNetworkManager {
     }
     
     func generateDailyWorkout(stars: Int, targetMuscle: String, completion: @escaping (Result<DailyWorkoutResponse, Error>) -> Void) {
-        // AI Logic based on Star Rating
+        let profile = ProfileManager.shared
+        // AI Logic based on Star Rating and Profile Goal
         var title = ""
         var summary = ""
         var isActiveRecovery = false
         
+        // Adjust logic based on the user's goal
+        let goalContext = profile.goal == "Cutting" ? "Focus on calorie burn and lower rest times." : (profile.goal == "Strength" ? "Focus on heavy loads and 3-5 min rests." : "Focus on hypertrophy (8-12 reps).")
+        
         switch stars {
         case 5:
             title = "\(targetMuscle) - 100% Volume"
-            summary = "You feel great! Time to push hard. Standard 4 sets x 8-12 reps."
+            summary = "You feel great! Time to push hard. \(goalContext)"
         case 4:
             title = "\(targetMuscle) - Slightly Fatigued"
-            summary = "Maintain weight but drop 1-2 reps per set to manage fatigue."
+            summary = "Maintain weight but drop 1-2 reps per set to manage fatigue. \(goalContext)"
         case 2, 3:
             title = "\(targetMuscle) - Deload Session"
             summary = "Aggressively scaling down. Drop working weight by 15-20%. Focus on form."
@@ -95,7 +102,7 @@ class LLMNetworkManager {
             isActiveRecovery = true
         default:
             title = "\(targetMuscle) Workout"
-            summary = "Standard workout routine."
+            summary = "Standard workout routine. \(goalContext)"
         }
         
         let mockJSON = """

@@ -19,6 +19,7 @@
 		7CDAB62E5E3CE98EEB6F392F /* HealthStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0999DA6F0157C8EB07DFAEF0 /* HealthStateManager.swift */; };
 		8075FCDE70EF85BCEB39DE96 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F872B95F3420BAD39F8D0843 /* Theme.swift */; };
 		859670BB4CAD1A1C215C2134 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207C44DEE9ECFD15802A799A /* SettingsView.swift */; };
+		8E9942C781061DEF33B0C2D1 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500A30D77FE12318D497F86D /* ProfileManager.swift */; };
 		90CDAE840C3EAEC30E652AF9 /* SquatTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E580D63B463C70C32B24D9CC /* SquatTracker.swift */; };
 		9BF0417AC461EED0098EF6E3 /* VisionTrackingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F27CC1F00F1602AA26A9BFD6 /* VisionTrackingManager.swift */; };
 		A2BEDC3165A8C0BF9069329F /* TutorialOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 154B70FEFE7BDBD4C2B4577C /* TutorialOverlayView.swift */; };
@@ -44,6 +45,7 @@
 		34446B3202D88C74B2760B57 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		37593491E232419A4DD9BD9C /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		395CBF15B74D68C1CF4BDA59 /* AICoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICoachView.swift; sourceTree = "<group>"; };
+		500A30D77FE12318D497F86D /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 		6C5B69897B96A3F985DB6322 /* OnboardingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingManager.swift; sourceTree = "<group>"; };
 		A35FB7556A7400DD5B063820 /* ScanMachineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanMachineView.swift; sourceTree = "<group>"; };
 		ABCDAC8EDE95C88334AD0A65 /* AnalyticsDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsDashboardView.swift; sourceTree = "<group>"; };
@@ -171,6 +173,7 @@
 				2475EE2D4B584C2AA85C52A1 /* LLMNetworkManager.swift */,
 				1D44F8B05081194DC19ACD99 /* MathUtils.swift */,
 				6C5B69897B96A3F985DB6322 /* OnboardingManager.swift */,
+				500A30D77FE12318D497F86D /* ProfileManager.swift */,
 				E580D63B463C70C32B24D9CC /* SquatTracker.swift */,
 				F27CC1F00F1602AA26A9BFD6 /* VisionTrackingManager.swift */,
 			);
@@ -246,6 +249,7 @@
 				62233547E7206F0946732275 /* NeonGymAIApp.swift in Sources */,
 				EAB3F02923A092C18DFF1295 /* OnboardingManager.swift in Sources */,
 				315302DDA07204626F22527E /* OnboardingView.swift in Sources */,
+				8E9942C781061DEF33B0C2D1 /* ProfileManager.swift in Sources */,
 				43BB0186EFE4C9DF27E363B5 /* ScanMachineView.swift in Sources */,
 				859670BB4CAD1A1C215C2134 /* SettingsView.swift in Sources */,
 				90CDAE840C3EAEC30E652AF9 /* SquatTracker.swift in Sources */,

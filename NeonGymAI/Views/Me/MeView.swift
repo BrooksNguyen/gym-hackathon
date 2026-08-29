@@ -2,12 +2,7 @@ import SwiftUI
 
 struct MeView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State private var name: String = "Nguyễn Phúc Bách"
-    @State private var age: String = "25"
-    @State private var height: Double = 175
-    @State private var weight: Double = 70
-    @State private var selectedGoal: Goal = .hypertrophy
-    @State private var selectedGender: Gender = .male
+    @ObservedObject var profile = ProfileManager.shared
     
     enum Goal: String, CaseIterable {
         case hypertrophy = "Hypertrophy"
@@ -19,6 +14,20 @@ struct MeView: View {
         case male = "Male"
         case female = "Female"
         case other = "Other"
+    }
+    
+    private var goalBinding: Binding<Goal> {
+        Binding(
+            get: { Goal(rawValue: profile.goal) ?? .hypertrophy },
+            set: { profile.goal = $0.rawValue }
+        )
+    }
+    
+    private var genderBinding: Binding<Gender> {
+        Binding(
+            get: { Gender(rawValue: profile.gender) ?? .male },
+            set: { profile.gender = $0.rawValue }
+        )
     }
     
     var body: some View {
@@ -35,7 +44,7 @@ struct MeView: View {
                                 .foregroundColor(Theme.primaryAccent(for: colorScheme))
                                 .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.4), radius: 15, y: 5)
                             
-                            TextField("Name", text: $name)
+                            TextField("Name", text: $profile.name)
                                 .font(Theme.heroText)
                                 .multilineTextAlignment(.center)
                         }
@@ -52,7 +61,7 @@ struct MeView: View {
                                     Text("Age")
                                         .font(Theme.secondaryText)
                                     Spacer()
-                                    TextField("Age", text: $age)
+                                    TextField("Age", value: $profile.age, format: .number)
                                         .keyboardType(.numberPad)
                                         .font(Theme.primaryText)
                                         .multilineTextAlignment(.trailing)
@@ -64,7 +73,7 @@ struct MeView: View {
                                     Text("Gender")
                                         .font(Theme.secondaryText)
                                     Spacer()
-                                    Picker("Gender", selection: $selectedGender) {
+                                    Picker("Gender", selection: genderBinding) {
                                         ForEach(Gender.allCases, id: \.self) { gender in
                                             Text(gender.rawValue).tag(gender)
                                         }
@@ -89,10 +98,10 @@ struct MeView: View {
                                         Text("Height (cm)")
                                             .font(Theme.secondaryText)
                                         Spacer()
-                                        Text("\(Int(height))")
+                                        Text("\(Int(profile.height))")
                                             .font(Theme.numberFont(size: 24))
                                     }
-                                    Slider(value: $height, in: 100...220, step: 1)
+                                    Slider(value: $profile.height, in: 100...220, step: 1)
                                         .tint(Theme.secondaryAccent(for: colorScheme))
                                 }
                                 
@@ -103,10 +112,10 @@ struct MeView: View {
                                         Text("Weight (kg)")
                                             .font(Theme.secondaryText)
                                         Spacer()
-                                        Text("\(Int(weight))")
+                                        Text("\(Int(profile.weight))")
                                             .font(Theme.numberFont(size: 24))
                                     }
-                                    Slider(value: $weight, in: 40...150, step: 1)
+                                    Slider(value: $profile.weight, in: 40...150, step: 1)
                                         .tint(Theme.primaryAccent(for: colorScheme))
                                 }
                             }
@@ -120,7 +129,7 @@ struct MeView: View {
                                 .font(Theme.tertiaryText)
                                 .foregroundColor(.secondary)
                             
-                            Picker("Goal", selection: $selectedGoal) {
+                            Picker("Goal", selection: goalBinding) {
                                 ForEach(Goal.allCases, id: \.self) { goal in
                                     Text(goal.rawValue).tag(goal)
                                 }

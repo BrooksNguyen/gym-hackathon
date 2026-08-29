@@ -183,13 +183,7 @@ struct HomeView: View {
     
     private func starColor(for index: Int) -> Color {
         if healthState.starRating >= index {
-            if healthState.starRating <= 2 {
-                return Color.orange // Copper metallic
-            } else if healthState.starRating <= 4 {
-                return .yellow // Gold
-            } else {
-                return Theme.secondaryAccent(for: colorScheme) // Cyan/Steel
-            }
+            return Theme.metallicGold
         }
         return Color.gray.opacity(0.3)
     }

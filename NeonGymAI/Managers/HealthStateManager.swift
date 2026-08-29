@@ -19,8 +19,8 @@ class HealthStateManager: ObservableObject {
     func statusColor(for scheme: ColorScheme) -> Color {
         switch starRating {
         case 5: return Theme.secondaryAccent(for: scheme) // Cool Steel / Cobalt
-        case 4: return Theme.secondaryAccent(for: scheme).opacity(0.8)
-        case 3: return .yellow
+        case 4: return Theme.metallicGold.opacity(0.8)
+        case 3: return Theme.metallicGold
         case 1, 2: return Color.orange // Replaced Red with Metallic Copper/Orange vibe
         default: return .gray
         }

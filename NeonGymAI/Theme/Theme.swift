@@ -8,10 +8,10 @@ struct Theme {
         return scheme == .dark ? Color(red: 0.1, green: 0.11, blue: 0.12) : Color(red: 0.88, green: 0.89, blue: 0.91)
     }
     
-    // Primary Accents (Cyber Metallic Blue)
+    // Primary Accents (Sapphire / Titanium Blue - Ánh kim)
     static func primaryAccent(for scheme: ColorScheme) -> Color {
-        // A deep, glowing metallic blue
-        return scheme == .dark ? Color(red: 0.15, green: 0.55, blue: 0.95) : Color(red: 0.1, green: 0.45, blue: 0.8)
+        // Deep icy/sapphire metallic blue
+        return scheme == .dark ? Color(red: 0.25, green: 0.6, blue: 0.85) : Color(red: 0.15, green: 0.4, blue: 0.65)
     }
     
     // Secondary Accents (Titanium / Chrome)
@@ -19,10 +19,13 @@ struct Theme {
         return scheme == .dark ? Color(red: 0.8, green: 0.82, blue: 0.85) : Color(red: 0.35, green: 0.38, blue: 0.42)
     }
     
+    // Metallic Gold for Stars
+    static let metallicGold = Color(red: 0.85, green: 0.65, blue: 0.2)
+    
     // Typography
     static let heroText = Font.system(size: 34, weight: .heavy, design: .default)
     static let primaryText = Font.system(size: 22, weight: .bold, design: .default)
-    static let secondaryText = Font.system(size: 16, weight: .semibold, design: .default) // Increased weight to fix readability
+    static let secondaryText = Font.system(size: 16, weight: .semibold, design: .default)
     static let tertiaryText = Font.system(size: 13, weight: .bold, design: .default).uppercaseSmallCaps()
     
     static func numberFont(size: CGFloat) -> Font {
@@ -85,15 +88,16 @@ struct MetallicButtonModifier: ViewModifier {
             .padding(.vertical, 16)
             .background(
                 LinearGradient(
+                    // Add 3 stops to make it look like light reflecting off metal (Ánh kim)
                     gradient: Gradient(colors: isPrimary ? (scheme == .dark ? 
-                        [Theme.primaryAccent(for: scheme), Theme.primaryAccent(for: scheme).opacity(0.7)] : 
-                        [Theme.primaryAccent(for: scheme).opacity(0.8), Theme.primaryAccent(for: scheme)]) :
+                        [Theme.primaryAccent(for: scheme).opacity(0.6), Theme.primaryAccent(for: scheme), Theme.primaryAccent(for: scheme).opacity(0.4)] : 
+                        [Theme.primaryAccent(for: scheme).opacity(0.8), Theme.primaryAccent(for: scheme), Theme.primaryAccent(for: scheme).opacity(0.7)]) :
                         (scheme == .dark ? 
-                        [Color(red: 0.2, green: 0.22, blue: 0.25), Color(red: 0.1, green: 0.11, blue: 0.12)] : 
-                        [Color(red: 0.9, green: 0.92, blue: 0.95), Color(red: 0.8, green: 0.82, blue: 0.85)])
+                        [Color(red: 0.3, green: 0.32, blue: 0.35), Color(red: 0.2, green: 0.22, blue: 0.25), Color(red: 0.15, green: 0.16, blue: 0.18)] : 
+                        [Color(red: 0.95, green: 0.97, blue: 1.0), Color(red: 0.85, green: 0.87, blue: 0.9), Color(red: 0.75, green: 0.77, blue: 0.8)])
                     ),
-                    startPoint: .top,
-                    endPoint: .bottom
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
             )
             .foregroundColor(isPrimary ? .white : (scheme == .dark ? .white : .black))
@@ -102,14 +106,14 @@ struct MetallicButtonModifier: ViewModifier {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(
                         LinearGradient(
-                            gradient: Gradient(colors: [Color.white.opacity(0.6), Color.black.opacity(0.3)]),
+                            gradient: Gradient(colors: [Color.white.opacity(isPrimary ? 0.4 : 0.8), Color.black.opacity(0.3)]),
                             startPoint: .topLeading,
                             endPoint: .bottomTrailing
                         ),
                         lineWidth: 1
                     )
             )
-            .shadow(color: isPrimary ? Theme.primaryAccent(for: scheme).opacity(0.4) : Color.black.opacity(0.2), radius: 5, x: 0, y: 3)
+            .shadow(color: isPrimary ? Theme.primaryAccent(for: scheme).opacity(0.5) : Color.black.opacity(0.2), radius: 6, x: 0, y: 4)
     }
 }
 

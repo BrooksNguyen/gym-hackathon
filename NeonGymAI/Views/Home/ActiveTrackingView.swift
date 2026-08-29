@@ -5,6 +5,7 @@ struct ActiveTrackingView: View {
     @AppStorage("hasSeenTrackingTutorial") private var hasSeenTrackingTutorial = false
     @State private var showTutorial = true
     @State private var reps = 0
+    @State private var isAudioEnabled = true
     @State private var showFinishAlert = false
     @State private var navigateToAnalytics = false
     @Environment(\.presentationMode) var presentationMode
@@ -21,48 +22,99 @@ struct ActiveTrackingView: View {
                 Spacer()
                 Image(systemName: "figure.run")
                     .font(.system(size: 150))
-                    .foregroundColor(Theme.secondaryAccent(for: colorScheme).opacity(0.2))
+                    .foregroundColor(Theme.secondaryAccent(for: colorScheme).opacity(0.1))
                     .blur(radius: 2)
                 Spacer()
             }
             
+            // HUGE Transparent Rep Counter
+            Text("\(reps)")
+                .font(.system(size: 200, weight: .heavy, design: .rounded))
+                .foregroundColor(Theme.primaryAccent(for: colorScheme).opacity(0.2))
+                .blendMode(.overlay)
+                .allowsHitTesting(false)
+            
             VStack {
-                // Floating Metrics Card
-                HStack(spacing: 24) {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("SQUAT")
-                            .font(Theme.tertiaryText)
-                            .foregroundColor(.secondary)
-                        Text("\(reps) Reps")
-                            .font(Theme.heroText)
-                            .foregroundColor(.primary)
+                // Top Bar
+                HStack {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 30))
+                            .foregroundColor(Theme.secondaryAccent(for: colorScheme))
+                            .background(Circle().fill(Color.black.opacity(0.3)))
                     }
                     
                     Spacer()
+                    
+                    Text("CHECK FORM: SQUAT")
+                        .font(Theme.primaryText)
+                        .foregroundColor(.primary)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 8)
+                        .glassCard(cornerRadius: 12, scheme: colorScheme)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        withAnimation {
+                            isAudioEnabled.toggle()
+                        }
+                    }) {
+                        Image(systemName: isAudioEnabled ? "speaker.wave.3.fill" : "speaker.slash.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(isAudioEnabled ? Theme.primaryAccent(for: colorScheme) : .secondary)
+                            .padding(12)
+                            .glassCard(cornerRadius: 12, scheme: colorScheme)
+                    }
                 }
-                .padding(24)
-                .glassCard(cornerRadius: 24, scheme: colorScheme)
-                .padding(.horizontal, 24)
-                .padding(.top, 20)
+                .padding()
                 
                 Spacer()
                 
-                // Finish Session Button
-                Button(action: {
-                    withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                        navigateToAnalytics = true
+                // Bottom Action Buttons
+                HStack(spacing: 16) {
+                    Button(action: {
+                        // Take a break action
+                    }) {
+                        Text("Take a break")
+                            .metallicButton(scheme: colorScheme, isPrimary: false) // Metallic Silver
                     }
-                }) {
-                    Text("Finish Session")
-                        .font(Theme.primaryText)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 20)
-                        .background(Theme.primaryAccent(for: colorScheme))
-                        .foregroundColor(.white)
-                        .clipShape(Capsule())
-                        .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.5), radius: 15, y: 8)
+                    
+                    Button(action: {
+                        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                            navigateToAnalytics = true
+                        }
+                    }) {
+                        Text("Finish")
+                            .font(Theme.primaryText)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.red.opacity(0.8), Color.red, Color.red.opacity(0.6)]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                            .foregroundColor(.white)
+                            .cornerRadius(8) // Square look
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(
+                                        LinearGradient(
+                                            gradient: Gradient(colors: [Color.white.opacity(0.5), Color.black.opacity(0.3)]),
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        ),
+                                        lineWidth: 1
+                                    )
+                            )
+                            .shadow(color: Color.red.opacity(0.5), radius: 6, x: 0, y: 4)
+                    }
                 }
-                .padding(.horizontal, 40)
+                .padding(.horizontal, 24)
                 .padding(.bottom, 40)
             }
         }

@@ -16,7 +16,7 @@ struct HomeView: View {
     @State private var isGenerating = false
     @State private var generatedWorkout: LLMNetworkManager.DailyWorkoutResponse?
 
-    private let muscleGroups = ["Chest", "Back", "Legs", "Shoulders", "Arms", "Full Body"]
+    private let muscleGroups = ["Chest", "Back", "Legs", "Shoulders"]
 
     var body: some View {
         NavigationStack {
@@ -189,20 +189,72 @@ struct HomeView: View {
     }
 
     private var actionButtons: some View {
-        VStack(spacing: 14) {
+        HStack(spacing: 16) {
+            // Left Card: Scan Machine
             Button {
                 presentedFlow = .scan
             } label: {
-                Label("Scan Machine", systemImage: "camera.viewfinder")
-                    .metallicButton(scheme: colorScheme, isPrimary: false, cornerRadius: 16)
+                VStack(spacing: 12) {
+                    ZStack {
+                        Image(systemName: "viewfinder")
+                            .font(.system(size: 32, weight: .light))
+                        Image(systemName: "dumbbell.fill")
+                            .font(.system(size: 16))
+                    }
+                    .foregroundColor(.white)
+                    
+                    VStack(spacing: 4) {
+                        Text("Scan Machine")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                        Text("Find workouts for any machine")
+                            .font(.system(size: 10))
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 140)
+                .glassCard(cornerRadius: 20, scheme: colorScheme)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.white.opacity(0.1), lineWidth: 1)
+                )
             }
+            .buttonStyle(.plain)
 
+            // Right Card: Live Assistant
             Button {
                 presentedFlow = .tracking
             } label: {
-                Label("Start Tracking", systemImage: "figure.run")
-                    .metallicButton(scheme: colorScheme, isPrimary: true, cornerRadius: 16)
+                VStack(spacing: 12) {
+                    Image(systemName: "person.fill.viewfinder")
+                        .font(.system(size: 36, weight: .light))
+                        .foregroundColor(.white)
+                    
+                    VStack(spacing: 4) {
+                        Text("Live Assistant")
+                            .font(.system(size: 16, weight: .bold))
+                            .foregroundColor(.white)
+                        Text("Real-time rep & form tracking")
+                            .font(.system(size: 10))
+                            .foregroundColor(.white.opacity(0.8))
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 140)
+                .background(Theme.primaryAccent(for: colorScheme))
+                .cornerRadius(20)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 20)
+                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                )
+                .shadow(color: Theme.primaryAccent(for: colorScheme).opacity(0.3), radius: 10, y: 5)
             }
+            .buttonStyle(.plain)
         }
     }
 

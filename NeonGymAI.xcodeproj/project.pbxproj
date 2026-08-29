@@ -16,6 +16,7 @@
 		421E619FF4C186D42D117C10 /* LLMNetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2475EE2D4B584C2AA85C52A1 /* LLMNetworkManager.swift */; };
 		43BB0186EFE4C9DF27E363B5 /* ScanMachineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A35FB7556A7400DD5B063820 /* ScanMachineView.swift */; };
 		62233547E7206F0946732275 /* NeonGymAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE21483CCE25A3204118A87 /* NeonGymAIApp.swift */; };
+		73489BFBFD1260CCFADB216F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 45E0F4B9212C90FD90810049 /* Assets.xcassets */; };
 		7CDAB62E5E3CE98EEB6F392F /* HealthStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0999DA6F0157C8EB07DFAEF0 /* HealthStateManager.swift */; };
 		8075FCDE70EF85BCEB39DE96 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F872B95F3420BAD39F8D0843 /* Theme.swift */; };
 		859670BB4CAD1A1C215C2134 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207C44DEE9ECFD15802A799A /* SettingsView.swift */; };
@@ -45,6 +46,7 @@
 		34446B3202D88C74B2760B57 /* CameraManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraManager.swift; sourceTree = "<group>"; };
 		37593491E232419A4DD9BD9C /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		395CBF15B74D68C1CF4BDA59 /* AICoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICoachView.swift; sourceTree = "<group>"; };
+		45E0F4B9212C90FD90810049 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		500A30D77FE12318D497F86D /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 		6C5B69897B96A3F985DB6322 /* OnboardingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingManager.swift; sourceTree = "<group>"; };
 		A35FB7556A7400DD5B063820 /* ScanMachineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScanMachineView.swift; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 		85416C308111F60D0F464B05 /* NeonGymAI */ = {
 			isa = PBXGroup;
 			children = (
+				45E0F4B9212C90FD90810049 /* Assets.xcassets */,
 				8CB18365CD1F2952F1460D89 /* App */,
 				D14F25B667987F32B123F817 /* Managers */,
 				9BD4A1794A750BD4910BDB20 /* Theme */,
@@ -188,6 +191,7 @@
 			buildConfigurationList = 5D5CF4F0DB2F2FFD11395350 /* Build configuration list for PBXNativeTarget "NeonGymAI" */;
 			buildPhases = (
 				9B1EAE42F09BDCA16AA0DB64 /* Sources */,
+				9C84948EE280BCAC0E6F2C31 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -230,6 +234,17 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		9C84948EE280BCAC0E6F2C31 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				73489BFBFD1260CCFADB216F /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		9B1EAE42F09BDCA16AA0DB64 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -270,6 +285,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"NeonGymAI/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Gymini;
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to the camera to scan gym machines and perform 360-degree pose tracking.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to the microphone for AI Coach voice commands.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need access to speech recognition for the AI Coach.";
@@ -351,6 +367,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"NeonGymAI/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Gymini;
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need access to the camera to scan gym machines and perform 360-degree pose tracking.";
 				INFOPLIST_KEY_NSMicrophoneUsageDescription = "We need access to the microphone for AI Coach voice commands.";
 				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "We need access to speech recognition for the AI Coach.";

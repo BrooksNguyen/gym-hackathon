@@ -8,6 +8,7 @@ struct WorkoutTrackingView: View {
     @State private var cameraPosition: AVCaptureDevice.Position = .front
     @State private var flashRep: Int? = nil
     @State private var showFlash: Bool = false
+    @State private var flashIsGood: Bool = true
 
     var body: some View {
         ZStack {
@@ -41,18 +42,28 @@ struct WorkoutTrackingView: View {
             
             // Flashing Rep Overlay
             if showFlash, let rep = flashRep {
-                Text("\(rep)")
-                    .font(.system(size: 250, weight: .black, design: .rounded))
-                    .foregroundColor(.white)
-                    .shadow(color: Theme.primaryAccent(for: .dark).opacity(0.8), radius: 30)
-                    .transition(.scale(scale: 0.5).combined(with: .opacity))
-                    .zIndex(2)
+                VStack(spacing: -30) {
+                    Text("\(rep)")
+                        .font(.system(size: 300, weight: .black, design: .rounded))
+                        .foregroundColor(.white)
+                        .shadow(color: Theme.primaryAccent(for: .dark).opacity(0.8), radius: 30)
+                    
+                    Text(flashIsGood ? "GOOD" : "BAD")
+                        .font(.system(size: 250, weight: .black, design: .rounded))
+                        .foregroundColor(flashIsGood ? Theme.neonGreen : .red)
+                        .shadow(color: (flashIsGood ? Theme.neonGreen : Color.red).opacity(0.8), radius: 30)
+                        .minimumScaleFactor(0.3)
+                        .lineLimit(1)
+                }
+                .transition(.scale(scale: 0.5).combined(with: .opacity))
+                .zIndex(2)
             }
         }
         .preferredColorScheme(.dark)
         .onChange(of: tracker.metrics.reps) { newReps in
             if newReps > 0 {
                 flashRep = newReps
+                flashIsGood = tracker.metrics.feedback.contains("Good") || tracker.metrics.feedback.contains("locked")
                 withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                     showFlash = true
                 }
@@ -90,18 +101,36 @@ struct WorkoutTrackingView: View {
             
             Spacer()
             
-            Button {
-                // sound toggle logic placeholder
-            } label: {
-                Image(systemName: "speaker.wave.2.fill")
-                    .font(.system(size: 18))
-                    .foregroundColor(Theme.primaryAccent(for: .dark))
-                    .frame(width: 44, height: 44)
-                    .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                    )
+            HStack(spacing: 12) {
+                Button {
+                    cameraPosition = cameraPosition == .front ? .back : .front
+                    tracker.recalibrateForCameraChange()
+                    camera.start(position: cameraPosition)
+                } label: {
+                    Image(systemName: "camera.rotate.fill")
+                        .font(.system(size: 18))
+                        .foregroundColor(.white)
+                        .frame(width: 44, height: 44)
+                        .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                }
+                
+                Button {
+                    // sound toggle logic placeholder
+                } label: {
+                    Image(systemName: "speaker.wave.2.fill")
+                        .font(.system(size: 18))
+                        .foregroundColor(Theme.primaryAccent(for: .dark))
+                        .frame(width: 44, height: 44)
+                        .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                }
             }
         }
     }

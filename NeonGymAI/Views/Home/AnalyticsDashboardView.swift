@@ -30,7 +30,7 @@ struct AnalyticsDashboardView: View {
                     .frame(height: 100)
                 }
                 .padding(24)
-                .glassCard(cornerRadius: 24)
+                .glassCard(cornerRadius: 24, scheme: colorScheme)
                 .padding(.horizontal, 24)
                 .opacity(appear ? 1 : 0)
                 

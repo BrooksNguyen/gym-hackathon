@@ -41,10 +41,10 @@ struct AICoachView: View {
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .glassCard(cornerRadius: 12)
+                        .glassCard(cornerRadius: 12, scheme: colorScheme)
                     }
                     .padding()
-                    .glassCard(cornerRadius: 16)
+                    .glassCard(cornerRadius: 16, scheme: colorScheme)
                     .padding(.horizontal, 24)
                     .padding(.top, 16)
                     .padding(.bottom, 8)
@@ -72,7 +72,7 @@ struct AICoachView: View {
                                             Text(message.text)
                                                 .font(Theme.secondaryText)
                                                 .padding()
-                                                .glassCard(cornerRadius: 20)
+                                                .glassCard(cornerRadius: 20, scheme: colorScheme)
                                                 .cornerRadius(4, corners: [.bottomLeft])
                                         }
                                         Spacer()
@@ -89,7 +89,7 @@ struct AICoachView: View {
                     HStack(spacing: 12) {
                         TextField("Ask about workout/nutrition...", text: $messageText)
                             .padding(16)
-                            .glassCard(cornerRadius: 24)
+                            .glassCard(cornerRadius: 24, scheme: colorScheme)
                             .font(Theme.secondaryText)
                         
                         Button(action: {
@@ -99,7 +99,7 @@ struct AICoachView: View {
                                 .font(.title3)
                                 .foregroundColor(Theme.secondaryAccent(for: colorScheme))
                                 .padding(16)
-                                .glassCard(cornerRadius: 24)
+                                .glassCard(cornerRadius: 24, scheme: colorScheme)
                         }
                         
                         Button(action: {

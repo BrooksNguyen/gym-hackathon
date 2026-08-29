@@ -27,7 +27,7 @@ struct SettingsView: View {
                                     .tint(Theme.primaryAccent(for: colorScheme))
                             }
                             .padding()
-                            .glassCard(cornerRadius: 16)
+                            .glassCard(cornerRadius: 16, scheme: colorScheme)
                         }
                         
                         // Preferences Section
@@ -57,7 +57,7 @@ struct SettingsView: View {
                                     .tint(Theme.primaryAccent(for: colorScheme))
                             }
                             .padding()
-                            .glassCard(cornerRadius: 16)
+                            .glassCard(cornerRadius: 16, scheme: colorScheme)
                         }
                         
                         // Support Section
@@ -100,7 +100,7 @@ struct SettingsView: View {
                                 .foregroundColor(Theme.primaryAccent(for: colorScheme))
                             }
                             .padding()
-                            .glassCard(cornerRadius: 16)
+                            .glassCard(cornerRadius: 16, scheme: colorScheme)
                         }
                     }
                     .padding(.horizontal, 24)

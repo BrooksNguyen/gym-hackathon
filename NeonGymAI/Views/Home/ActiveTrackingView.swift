@@ -41,7 +41,7 @@ struct ActiveTrackingView: View {
                     Spacer()
                 }
                 .padding(24)
-                .glassCard(cornerRadius: 24)
+                .glassCard(cornerRadius: 24, scheme: colorScheme)
                 .padding(.horizontal, 24)
                 .padding(.top, 20)
                 

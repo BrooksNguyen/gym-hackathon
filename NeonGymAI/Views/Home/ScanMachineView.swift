@@ -114,7 +114,7 @@ struct ScanMachineView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .glassCard(cornerRadius: 16)
+                    .glassCard(cornerRadius: 16, scheme: colorScheme)
                     
                     VStack(spacing: 12) {
                         Text("Recommended Reps")
@@ -126,7 +126,7 @@ struct ScanMachineView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .glassCard(cornerRadius: 16)
+                    .glassCard(cornerRadius: 16, scheme: colorScheme)
                     
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
@@ -141,7 +141,7 @@ struct ScanMachineView: View {
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-                    .glassCard(cornerRadius: 16)
+                    .glassCard(cornerRadius: 16, scheme: colorScheme)
                     
                     Spacer()
                     

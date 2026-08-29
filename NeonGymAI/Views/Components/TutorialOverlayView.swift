@@ -36,7 +36,7 @@ struct TutorialOverlayView: View {
                                 .font(Theme.secondaryText)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 14)
-                                .glassCard(cornerRadius: 12)
+                                .glassCard(cornerRadius: 12, scheme: colorScheme)
                         }
                         
                         Button(action: {
@@ -59,7 +59,7 @@ struct TutorialOverlayView: View {
                     }
                 }
                 .padding(24)
-                .glassCard(cornerRadius: 24)
+                .glassCard(cornerRadius: 24, scheme: colorScheme)
                 .padding(24)
                 
                 Spacer()

@@ -38,7 +38,7 @@ struct MetricsInductionStep: View {
                 TextField("Nguyễn Phúc Bách", text: $manager.name)
                     .font(Theme.primaryText)
                     .padding(20)
-                    .glassCard(cornerRadius: 16)
+                    .glassCard(cornerRadius: 16, scheme: colorScheme)
             }
             
             HStack(spacing: 20) {
@@ -54,7 +54,7 @@ struct MetricsInductionStep: View {
                     }
                     .pickerStyle(.wheel)
                     .frame(height: 120)
-                    .glassCard(cornerRadius: 16)
+                    .glassCard(cornerRadius: 16, scheme: colorScheme)
                 }
                 
                 // Weight Picker
@@ -69,7 +69,7 @@ struct MetricsInductionStep: View {
                     }
                     .pickerStyle(.wheel)
                     .frame(height: 120)
-                    .glassCard(cornerRadius: 16)
+                    .glassCard(cornerRadius: 16, scheme: colorScheme)
                 }
                 
                 // Height Picker
@@ -84,7 +84,7 @@ struct MetricsInductionStep: View {
                     }
                     .pickerStyle(.wheel)
                     .frame(height: 120)
-                    .glassCard(cornerRadius: 16)
+                    .glassCard(cornerRadius: 16, scheme: colorScheme)
                 }
             }
             
@@ -146,7 +146,7 @@ struct GoalsCommitmentStep: View {
                             }
                         }
                         .padding(20)
-                        .glassCard(cornerRadius: 16)
+                        .glassCard(cornerRadius: 16, scheme: colorScheme)
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
                                 .stroke(manager.selectedGoal == goal ? Theme.primaryAccent(for: colorScheme) : Color.clear, lineWidth: 2)
@@ -179,7 +179,7 @@ struct GoalsCommitmentStep: View {
                     }
                 }
                 .padding()
-                .glassCard(cornerRadius: 16)
+                .glassCard(cornerRadius: 16, scheme: colorScheme)
             }
             
             Spacer()

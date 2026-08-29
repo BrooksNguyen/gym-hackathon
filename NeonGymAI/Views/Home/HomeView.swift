@@ -108,12 +108,7 @@ struct HomeView: View {
                                             Text("Generate Workout")
                                         }
                                     }
-                                    .font(Theme.primaryText)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 16)
-                                    .background(Theme.secondaryAccent(for: colorScheme))
-                                    .foregroundColor(.white)
-                                    .cornerRadius(16)
+                                    .metallicButton(scheme: colorScheme, isPrimary: true)
                                 }
                                 .padding(.top, 8)
                             }
@@ -136,7 +131,7 @@ struct HomeView: View {
                             }
                         }
                         .padding(24)
-                        .glassCard(cornerRadius: 24)
+                        .glassCard(cornerRadius: 24, scheme: colorScheme)
                         
                         // Action Buttons
                         HStack(spacing: 16) {
@@ -149,11 +144,7 @@ struct HomeView: View {
                                     Text("Scan Machine")
                                         .font(Theme.secondaryText)
                                 }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 24)
-                                .background(Theme.primaryAccent(for: colorScheme))
-                                .foregroundColor(colorScheme == .light ? .white : .black)
-                                .cornerRadius(20)
+                                .metallicButton(scheme: colorScheme, isPrimary: true)
                             }
                             .fullScreenCover(isPresented: $showScanMachine) {
                                 ScanMachineView()
@@ -168,10 +159,7 @@ struct HomeView: View {
                                     Text("Start Tracking")
                                         .font(Theme.secondaryText)
                                 }
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 24)
-                                .glassCard(cornerRadius: 20)
-                                .foregroundColor(Theme.secondaryAccent(for: colorScheme))
+                                .metallicButton(scheme: colorScheme, isPrimary: false)
                             }
                             .fullScreenCover(isPresented: $showTracking) {
                                 ActiveTrackingView()

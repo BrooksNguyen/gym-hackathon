@@ -74,7 +74,7 @@ struct MeView: View {
                                 }
                             }
                             .padding()
-                            .glassCard(cornerRadius: 16)
+                            .glassCard(cornerRadius: 16, scheme: colorScheme)
                         }
                         
                         // Body Metrics Section
@@ -111,7 +111,7 @@ struct MeView: View {
                                 }
                             }
                             .padding()
-                            .glassCard(cornerRadius: 16)
+                            .glassCard(cornerRadius: 16, scheme: colorScheme)
                         }
                         
                         // Goals Section
@@ -127,7 +127,7 @@ struct MeView: View {
                             }
                             .pickerStyle(.segmented)
                             .padding()
-                            .glassCard(cornerRadius: 16)
+                            .glassCard(cornerRadius: 16, scheme: colorScheme)
                         }
                     }
                     .padding(.horizontal, 24)

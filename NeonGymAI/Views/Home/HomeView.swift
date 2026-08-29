@@ -73,7 +73,7 @@ struct HomeView: View {
                                     .font(Theme.secondaryText)
                                     .foregroundColor(.secondary)
                                 
-                                HStack {
+                                HStack(spacing: 16) {
                                     HStack(spacing: 16) {
                                         ForEach(1...5, id: \.self) { index in
                                             Image(systemName: "star.fill")
@@ -91,13 +91,13 @@ struct HomeView: View {
                                         }
                                     }
                                     
-                                    Spacer()
-                                    
                                     if healthState.starRating > 0 {
                                         Text(healthState.statusText())
                                             .font(Theme.tertiaryText)
                                             .foregroundColor(healthState.statusColor(for: colorScheme))
                                     }
+                                    
+                                    Spacer()
                                 }
                             }
                             
@@ -135,10 +135,11 @@ struct HomeView: View {
                                         
                                         Text(workout.summary)
                                             .font(Theme.secondaryText)
-                                            .foregroundColor(.secondary)
+                                            .foregroundColor(colorScheme == .dark ? Color(white: 0.85) : Color(white: 0.3)) // Better accessibility
                                     }
                                     
                                     Divider()
+                                        .overlay(Color.primary.opacity(0.3))
                                     
                                     // 2. Quick AI Suggestion
                                     VStack(alignment: .leading, spacing: 8) {
@@ -151,10 +152,14 @@ struct HomeView: View {
                                             .foregroundColor(.primary)
                                     }
                                 }
-                                .padding()
+                                .padding(20) // Better breathing room
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Color.white.opacity(0.05))
+                                .background(colorScheme == .dark ? Color.black.opacity(0.25) : Color.white.opacity(0.6)) // Depth contrast
                                 .cornerRadius(12)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.primary.opacity(0.1), lineWidth: 1)
+                                )
                                 .transition(.move(edge: .top).combined(with: .opacity))
                             }
                         }
@@ -195,7 +200,7 @@ struct HomeView: View {
                         }
                     }
                     .padding(.horizontal, 24)
-                    .padding(.bottom, 40)
+                    .padding(.bottom, 80) // Added more safe area margin
                 }
             }
             .navigationBarHidden(true)

@@ -87,18 +87,20 @@ struct MetallicButtonModifier: ViewModifier {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
             .background(
-                LinearGradient(
-                    // Add 3 stops to make it look like light reflecting off metal (Ánh kim)
-                    gradient: Gradient(colors: isPrimary ? (scheme == .dark ? 
-                        [Theme.primaryAccent(for: scheme).opacity(0.6), Theme.primaryAccent(for: scheme), Theme.primaryAccent(for: scheme).opacity(0.4)] : 
-                        [Theme.primaryAccent(for: scheme).opacity(0.8), Theme.primaryAccent(for: scheme), Theme.primaryAccent(for: scheme).opacity(0.7)]) :
-                        (scheme == .dark ? 
-                        [Color(red: 0.3, green: 0.32, blue: 0.35), Color(red: 0.2, green: 0.22, blue: 0.25), Color(red: 0.15, green: 0.16, blue: 0.18)] : 
-                        [Color(red: 0.95, green: 0.97, blue: 1.0), Color(red: 0.85, green: 0.87, blue: 0.9), Color(red: 0.75, green: 0.77, blue: 0.8)])
-                    ),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+                Group {
+                    if isPrimary {
+                        Theme.primaryAccent(for: scheme)
+                    } else {
+                        LinearGradient(
+                            gradient: Gradient(colors: scheme == .dark ? 
+                                [Color(red: 0.3, green: 0.32, blue: 0.35), Color(red: 0.2, green: 0.22, blue: 0.25), Color(red: 0.15, green: 0.16, blue: 0.18)] : 
+                                [Color(red: 0.95, green: 0.97, blue: 1.0), Color(red: 0.85, green: 0.87, blue: 0.9), Color(red: 0.75, green: 0.77, blue: 0.8)]
+                            ),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    }
+                }
             )
             .foregroundColor(isPrimary ? .white : (scheme == .dark ? .white : .black))
             .cornerRadius(8) // Square look

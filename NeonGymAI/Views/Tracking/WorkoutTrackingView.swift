@@ -12,9 +12,13 @@ struct WorkoutTrackingView: View {
             Theme.trueBlack.ignoresSafeArea()
 
             if camera.permissionGranted {
-                CameraPreviewView(session: camera.session, mirrored: cameraPosition == .front)
+                CameraPreviewView(session: camera.session,
+                                  videoGravity: .resizeAspect,
+                                  mirrored: cameraPosition == .front)
                     .ignoresSafeArea()
-                SkeletonOverlay(points: tracker.points, mirrored: cameraPosition == .front)
+                SkeletonOverlay(points: tracker.points,
+                                mirrored: cameraPosition == .front,
+                                videoGravity: .resizeAspect)
                     .ignoresSafeArea()
             } else {
                 VStack(spacing: 14) {
@@ -68,6 +72,7 @@ struct WorkoutTrackingView: View {
             HStack(spacing: 10) {
                 Button {
                     cameraPosition = cameraPosition == .front ? .back : .front
+                    tracker.recalibrateForCameraChange()
                     camera.start(position: cameraPosition)
                 } label: {
                     Image(systemName: "camera.rotate.fill")
@@ -88,7 +93,7 @@ struct WorkoutTrackingView: View {
                 }
 
                 VStack(alignment: .trailing, spacing: 5) {
-                    Text("SQUAT TRACKING")
+                    Text(trackingTitle)
                         .font(.caption.weight(.bold))
                         .tracking(1.5)
                         .foregroundColor(Theme.neonGreen)
@@ -103,6 +108,16 @@ struct WorkoutTrackingView: View {
                 }
             }
         }
+    }
+
+    private var trackingTitle: String {
+        if let exercise = tracker.metrics.exercise {
+            return "\(exercise.rawValue) LOCKED"
+        }
+        if let candidate = tracker.metrics.candidate {
+            return "DETECTING \(candidate.rawValue)"
+        }
+        return "AUTO TRACKING"
     }
 
     private var metricsPanel: some View {
@@ -146,9 +161,12 @@ struct WorkoutTrackingView: View {
     }
 
     private var feedbackPanel: some View {
-        HStack(spacing: 10) {
-            Image(systemName: tracker.metrics.feedback.contains("Good") ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                .foregroundColor(tracker.metrics.feedback.contains("Good") ? Theme.neonGreen : .orange)
+        let isPositiveFeedback = tracker.metrics.feedback.contains("Good")
+            || tracker.metrics.feedback.contains("locked")
+
+        return HStack(spacing: 10) {
+            Image(systemName: isPositiveFeedback ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
+                .foregroundColor(isPositiveFeedback ? Theme.neonGreen : .orange)
             Text(tracker.metrics.feedback)
                 .font(Theme.digitalFont)
                 .foregroundColor(.white)

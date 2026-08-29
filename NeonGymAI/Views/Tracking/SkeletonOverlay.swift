@@ -1,8 +1,10 @@
+import AVFoundation
 import SwiftUI
 
 struct SkeletonOverlay: View {
     let points: [PosePoint]
     let mirrored: Bool
+    var videoGravity: AVLayerVideoGravity = .resizeAspect
 
     var body: some View {
         Canvas { context, size in
@@ -32,7 +34,30 @@ struct SkeletonOverlay: View {
     }
 
     private func screenPoint(_ point: CGPoint, in size: CGSize) -> CGPoint {
-        CGPoint(x: (mirrored ? 1 - point.x : point.x) * size.width,
-                y: (1 - point.y) * size.height)
+        // The camera preview uses the same aspect mode as this overlay. A
+        // plain normalized-to-screen conversion is incorrect when the source
+        // frame is letterboxed or cropped, which is most visible for a
+        // horizontal push-up. iPhone camera output is displayed portrait here
+        // at approximately 9:16.
+        let sourceAspectRatio: CGFloat = 9.0 / 16.0
+        let viewRect = CGRect(origin: .zero, size: size)
+        let sourceSize = CGSize(width: sourceAspectRatio, height: 1)
+        let contentRect: CGRect
+
+        if videoGravity == .resizeAspectFill {
+            let scale = max(size.width / sourceSize.width,
+                            size.height / sourceSize.height)
+            let contentSize = CGSize(width: sourceSize.width * scale,
+                                     height: sourceSize.height * scale)
+            contentRect = CGRect(x: (size.width - contentSize.width) / 2,
+                                 y: (size.height - contentSize.height) / 2,
+                                 width: contentSize.width,
+                                 height: contentSize.height)
+        } else {
+            contentRect = AVMakeRect(aspectRatio: sourceSize, insideRect: viewRect)
+        }
+
+        return CGPoint(x: contentRect.minX + (mirrored ? 1 - point.x : point.x) * contentRect.width,
+                       y: contentRect.minY + (1 - point.y) * contentRect.height)
     }
 }

@@ -9,9 +9,19 @@ struct WorkoutTrackingView: View {
     @State private var flashRep: Int? = nil
     @State private var showFlash: Bool = false
     @State private var flashIsGood: Bool = true
-    @State private var isAudioEnabled: Bool = true
+    @State private var sessionFinished: Bool = false
 
     var body: some View {
+        if sessionFinished {
+            WorkoutSummaryView(reps: tracker.metrics.reps, exercise: "SQUAT") {
+                dismiss()
+            }
+        } else {
+            trackingView
+        }
+    }
+    
+    private var trackingView: some View {
         ZStack {
             Theme.trueBlack.ignoresSafeArea()
 
@@ -80,11 +90,6 @@ struct WorkoutTrackingView: View {
                 }
             }
         }
-        .onChange(of: tracker.metrics.feedback) { newFeedback in
-            if isAudioEnabled, !newFeedback.isEmpty {
-                AudioCoachManager.shared.speak(command: newFeedback)
-            }
-        }
         .onAppear {
             camera.onFrame = { sampleBuffer in
                 tracker.processFrame(sampleBuffer)
@@ -111,36 +116,20 @@ struct WorkoutTrackingView: View {
             
             Spacer()
             
-            HStack(spacing: 12) {
-                Button {
-                    cameraPosition = cameraPosition == .front ? .back : .front
-                    tracker.recalibrateForCameraChange()
-                    camera.start(position: cameraPosition)
-                } label: {
-                    Image(systemName: "camera.rotate.fill")
-                        .font(.system(size: 18))
-                        .foregroundColor(.white)
-                        .frame(width: 44, height: 44)
-                        .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
-                }
-                
-                Button {
-                    isAudioEnabled.toggle()
-                } label: {
-                    Image(systemName: isAudioEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
-                        .font(.system(size: 18))
-                        .foregroundColor(isAudioEnabled ? Theme.primaryAccent(for: .dark) : .gray)
-                        .frame(width: 44, height: 44)
-                        .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
-                }
+            Button {
+                cameraPosition = cameraPosition == .front ? .back : .front
+                tracker.recalibrateForCameraChange()
+                camera.start(position: cameraPosition)
+            } label: {
+                Image(systemName: "camera.rotate.fill")
+                    .font(.system(size: 18))
+                    .foregroundColor(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Color.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
             }
         }
     }
@@ -185,7 +174,7 @@ struct WorkoutTrackingView: View {
             }
             
             Button {
-                dismiss()
+                sessionFinished = true
             } label: {
                 Text("Finish")
                     .font(.system(size: 16, weight: .semibold))

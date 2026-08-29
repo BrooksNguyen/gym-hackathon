@@ -1,73 +1,438 @@
 import Foundation
 
 struct MachineAnalysisResponse: Codable {
-    let exerciseName: String
+    let machineName: String
+    let confidence: Double
     let targetMuscles: [String]
+    let instructions: [String]
+    let safetyNotes: [String]
     let recommendedReps: Int
-    let coachAdvice: String // Added field for contextual advice based on energy
+    let coachAdvice: String
+
+    // Kept for compatibility with the older mock scan screen.
+    var exerciseName: String { machineName }
 }
 
 class LLMNetworkManager {
     static let shared = LLMNetworkManager()
+
+    private let machineScanModels = ["gemini-3.7-flash", "gemini-3.6-flash"]
+    private let storyboardImageModel = "gemini-3.1-flash-image"
+    private let maxRetriesPerModel = 1
+    private let storyboardCache = MachineInstructionStoryboardCache()
     
-    enum LLMError: Error {
+    enum LLMError: LocalizedError {
         case invalidURL
         case noData
+        case missingAPIKey
+        case invalidResponse
+        case invalidStoryboardSteps
         case decodingError(Error)
         case apiError(String)
+
+        var errorDescription: String? {
+            switch self {
+            case .invalidURL:
+                return "The Gemini scan URL is invalid."
+            case .noData:
+                return "No camera image was available for the scan."
+            case .missingAPIKey:
+                return "GEMINI_API_KEY is not configured for this app run."
+            case .invalidResponse:
+                return "Gemini returned an empty or unreadable scan result."
+            case .invalidStoryboardSteps:
+                return "Three instruction steps are required to create the visual guide."
+            case .decodingError(let error):
+                return "Gemini returned data the app could not read: \(error.localizedDescription)"
+            case .apiError(let message):
+                return message
+            }
+        }
     }
     
     func scanMachine(imageData: Data, currentEnergy: Int, fatiguedMuscles: [String], completion: @escaping (Result<MachineAnalysisResponse, Error>) -> Void) {
         let profile = ProfileManager.shared
+        guard !imageData.isEmpty else {
+            DispatchQueue.main.async { completion(.failure(LLMError.noData)) }
+            return
+        }
+
+        guard let apiKey = geminiAPIKey else {
+            DispatchQueue.main.async { completion(.failure(LLMError.missingAPIKey)) }
+            return
+        }
+
         let scanMachinePrompt = """
-        You are an expert AI Gym Coach. Analyze the provided image of a gym machine.
-        
+        You are an expert gym equipment identification coach. Analyze the image and identify the visible gym machine, not the person using it.
+
         CONTEXT:
-        - User's Energy Level: \(currentEnergy)%
-        - Fatigued Muscles: \(fatiguedMuscles.joined(separator: ", "))
-        - User Goal: \(profile.goal)
-        - User Weight: \(profile.weight)kg, Age: \(profile.age)
-        
+        - User energy: \(currentEnergy)%
+        - Fatigued muscles: \(fatiguedMuscles.isEmpty ? "none reported" : fatiguedMuscles.joined(separator: ", "))
+        - User goal: \(profile.goal)
+
         RULES:
-        1. High Energy (>80%): Recommend Progressive Overload. For \(profile.goal), adapt rep range (e.g., Cutting = 12-15 reps, Strength = 4-6 reps, Hypertrophy = 8-12 reps).
-        2. Muscle Fatigue: If target muscles are in the fatigued list, explicitly suggest substituting the exercise.
-        3. Low Energy (<40%): Trigger a "Deload" state. Explicitly recommend dropping the weight by 20% or stopping.
-        
-        Return a STRICT JSON response exactly matching this schema:
-        {
-          "exerciseName": "String",
-          "targetMuscles": ["String"],
-          "recommendedReps": 12,
-          "coachAdvice": "String"
-        }
-        Do not output any markdown or additional text. Just the raw JSON.
+        1. Identify the equipment category, for example bench press, rowing machine, lat pulldown, leg press, cable machine, treadmill, or exercise bench.
+        2. Prefer "Unknown gym machine" over guessing when the machine is not clearly visible.
+        3. List the main muscle groups trained by that machine.
+        4. Give exactly three concise instructions for adjusting and using the machine safely.
+        5. Include safety notes about posture, load selection, and stopping if pain occurs.
+        6. Recommend a reasonable rep target based on the user's goal and energy. If energy is below 40%, recommend a deload.
+        7. Set confidence between 0 and 1, where 1 means the machine is clearly identifiable.
+
+        Return only JSON matching the supplied schema. Do not include markdown or additional text.
         """
-        
-        // Mock implementation for Hackathon
-        let advice = currentEnergy < 40 ? "Your energy is low (Deload state). Drop weight by 20%." : "Energy looks optimal! Since your goal is \(profile.goal), adapt your reps accordingly."
-        
-        let mockJSON = """
-        {
-          "exerciseName": "Leg Extension",
-          "targetMuscles": ["Quadriceps"],
-          "recommendedReps": 12,
-          "coachAdvice": "\(advice)"
+
+        let schema: [String: Any] = [
+            "type": "object",
+            "properties": [
+                "machineName": ["type": "string"],
+                "confidence": ["type": "number"],
+                "targetMuscles": ["type": "array", "items": ["type": "string"]],
+                "instructions": [
+                    "type": "array",
+                    "items": ["type": "string"]
+                ],
+                "safetyNotes": ["type": "array", "items": ["type": "string"]],
+                "recommendedReps": ["type": "integer"],
+                "coachAdvice": ["type": "string"]
+            ],
+            "required": [
+                "machineName",
+                "confidence",
+                "targetMuscles",
+                "instructions",
+                "safetyNotes",
+                "recommendedReps",
+                "coachAdvice"
+            ]
+        ]
+
+        performMachineScan(
+            imageData: imageData,
+            apiKey: apiKey,
+            prompt: scanMachinePrompt,
+            schema: schema,
+            modelIndex: 0,
+            attempt: 0,
+            completion: completion
+        )
+    }
+
+    func generateMachineInstructionStoryboard(
+        machineName: String,
+        instructions: [String],
+        completion: @escaping (Result<Data, Error>) -> Void
+    ) {
+        if let cachedImage = storyboardCache.load(for: machineName) {
+            DispatchQueue.main.async { completion(.success(cachedImage)) }
+            return
         }
-        """.data(using: .utf8)!
-        
-        DispatchQueue.global().asyncAfter(deadline: .now() + 1.5) {
-            do {
-                let decoder = JSONDecoder()
-                let result = try decoder.decode(MachineAnalysisResponse.self, from: mockJSON)
-                DispatchQueue.main.async {
-                    completion(.success(result))
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    completion(.failure(LLMError.decodingError(error)))
-                }
+
+        guard let apiKey = geminiAPIKey else {
+            DispatchQueue.main.async { completion(.failure(LLMError.missingAPIKey)) }
+            return
+        }
+
+        let storyboardRequest = MachineInstructionStoryboardRequest(
+            machineName: machineName,
+            instructions: instructions
+        )
+
+        let payload: Data
+        do {
+            payload = try GeminiStoryboardAPIRequest.makePayload(
+                model: storyboardImageModel,
+                request: storyboardRequest
+            )
+        } catch GeminiStoryboardAPIRequest.RequestError.requiresThreeSteps {
+            DispatchQueue.main.async { completion(.failure(LLMError.invalidStoryboardSteps)) }
+            return
+        } catch {
+            DispatchQueue.main.async { completion(.failure(LLMError.decodingError(error))) }
+            return
+        }
+
+        guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/interactions") else {
+            DispatchQueue.main.async { completion(.failure(LLMError.invalidURL)) }
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 75
+        request.httpBody = payload
+        request.setValue(apiKey, forHTTPHeaderField: "x-goog-api-key")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("2026-05-20", forHTTPHeaderField: "Api-Revision")
+
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            guard let self else { return }
+
+            let finish: (Result<Data, Error>) -> Void = { result in
+                DispatchQueue.main.async { completion(result) }
             }
+
+            if let error {
+                finish(.failure(error))
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                finish(.failure(LLMError.invalidResponse))
+                return
+            }
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                let message = data.flatMap { String(data: $0, encoding: .utf8) }
+                    ?? "No error details returned"
+                finish(.failure(LLMError.apiError(
+                    "Gemini image generation returned HTTP \(httpResponse.statusCode): \(message)"
+                )))
+                return
+            }
+
+            guard let data else {
+                finish(.failure(LLMError.noData))
+                return
+            }
+
+            do {
+                let image = try GeminiStoryboardResponseParser.parse(data)
+                try? self.storyboardCache.store(
+                    image.data,
+                    mimeType: image.mimeType,
+                    for: machineName
+                )
+                finish(.success(image.data))
+            } catch {
+                finish(.failure(LLMError.decodingError(error)))
+            }
+        }.resume()
+    }
+
+    private func performMachineScan(
+        imageData: Data,
+        apiKey: String,
+        prompt: String,
+        schema: [String: Any],
+        modelIndex: Int,
+        attempt: Int,
+        completion: @escaping (Result<MachineAnalysisResponse, Error>) -> Void
+    ) {
+        guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/interactions") else {
+            DispatchQueue.main.async { completion(.failure(LLMError.invalidURL)) }
+            return
         }
+
+        let model = machineScanModels[modelIndex]
+        let requestBody: [String: Any] = [
+            "model": model,
+            "store": false,
+            "input": [
+                ["type": "text", "text": prompt],
+                [
+                    "type": "image",
+                    "data": imageData.base64EncodedString(),
+                    "mime_type": "image/jpeg"
+                ]
+            ],
+            "response_format": [
+                "type": "text",
+                "mime_type": "application/json",
+                "schema": schema
+            ]
+        ]
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.timeoutInterval = 45
+        request.setValue(apiKey, forHTTPHeaderField: "x-goog-api-key")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("2026-05-20", forHTTPHeaderField: "Api-Revision")
+
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
+        } catch {
+            DispatchQueue.main.async { completion(.failure(LLMError.decodingError(error))) }
+            return
+        }
+
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            guard let self else { return }
+
+            let finish: (Result<MachineAnalysisResponse, Error>) -> Void = { result in
+                DispatchQueue.main.async { completion(result) }
+            }
+
+            if let error {
+                if self.isTransient(error: error) {
+                    self.scheduleMachineScanRetry(
+                        imageData: imageData,
+                        apiKey: apiKey,
+                        prompt: prompt,
+                        schema: schema,
+                        modelIndex: modelIndex,
+                        attempt: attempt,
+                        lastError: error,
+                        completion: completion
+                    )
+                } else {
+                    finish(.failure(error))
+                }
+                return
+            }
+
+            guard let httpResponse = response as? HTTPURLResponse else {
+                finish(.failure(LLMError.invalidResponse))
+                return
+            }
+
+            guard (200...299).contains(httpResponse.statusCode) else {
+                let message = data.flatMap { String(data: $0, encoding: .utf8) } ?? "No error details returned"
+                let apiError = LLMError.apiError("Gemini returned HTTP \(httpResponse.statusCode): \(message)")
+                if self.isTransient(statusCode: httpResponse.statusCode) {
+                    self.scheduleMachineScanRetry(
+                        imageData: imageData,
+                        apiKey: apiKey,
+                        prompt: prompt,
+                        schema: schema,
+                        modelIndex: modelIndex,
+                        attempt: attempt,
+                        lastError: apiError,
+                        completion: completion
+                    )
+                } else {
+                    finish(.failure(apiError))
+                }
+                return
+            }
+
+            guard let data else {
+                finish(.failure(LLMError.noData))
+                return
+            }
+
+            do {
+                let envelope = try JSONDecoder().decode(GeminiInteractionResponse.self, from: data)
+                guard let outputContents = envelope.steps
+                    .first(where: { $0.type == "model_output" })?.content else {
+                    finish(.failure(LLMError.invalidResponse))
+                    return
+                }
+
+                let outputText = outputContents.compactMap(\.text)
+                    .joined()
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                guard let jsonData = Self.jsonData(from: outputText) else {
+                    finish(.failure(LLMError.invalidResponse))
+                    return
+                }
+
+                let decodedResult = try JSONDecoder().decode(MachineAnalysisResponse.self, from: jsonData)
+                let instructions = try MachineInstructionSteps.normalized(decodedResult.instructions)
+                let result = MachineAnalysisResponse(
+                    machineName: decodedResult.machineName,
+                    confidence: decodedResult.confidence,
+                    targetMuscles: decodedResult.targetMuscles,
+                    instructions: instructions,
+                    safetyNotes: decodedResult.safetyNotes,
+                    recommendedReps: decodedResult.recommendedReps,
+                    coachAdvice: decodedResult.coachAdvice
+                )
+                finish(.success(result))
+            } catch {
+                finish(.failure(LLMError.decodingError(error)))
+            }
+        }.resume()
+    }
+
+    private func scheduleMachineScanRetry(
+        imageData: Data,
+        apiKey: String,
+        prompt: String,
+        schema: [String: Any],
+        modelIndex: Int,
+        attempt: Int,
+        lastError: Error,
+        completion: @escaping (Result<MachineAnalysisResponse, Error>) -> Void
+    ) {
+        let nextModelIndex: Int
+        let nextAttempt: Int
+        let delay: TimeInterval
+
+        if attempt < maxRetriesPerModel {
+            nextModelIndex = modelIndex
+            nextAttempt = attempt + 1
+            delay = 1.5
+        } else if modelIndex + 1 < machineScanModels.count {
+            nextModelIndex = modelIndex + 1
+            nextAttempt = 0
+            delay = 0.5
+        } else {
+            DispatchQueue.main.async { completion(.failure(lastError)) }
+            return
+        }
+
+        DispatchQueue.global().asyncAfter(deadline: .now() + delay) { [weak self] in
+            self?.performMachineScan(
+                imageData: imageData,
+                apiKey: apiKey,
+                prompt: prompt,
+                schema: schema,
+                modelIndex: nextModelIndex,
+                attempt: nextAttempt,
+                completion: completion
+            )
+        }
+    }
+
+    private func isTransient(error: Error) -> Bool {
+        guard let urlError = error as? URLError else { return false }
+        return [
+            .timedOut,
+            .cannotConnectToHost,
+            .networkConnectionLost,
+            .notConnectedToInternet
+        ].contains(urlError.code)
+    }
+
+    private func isTransient(statusCode: Int) -> Bool {
+        [429, 500, 502, 503, 504].contains(statusCode)
+    }
+
+    private var geminiAPIKey: String? {
+        let values = [
+            ProcessInfo.processInfo.environment["GEMINI_API_KEY"],
+            Bundle.main.object(forInfoDictionaryKey: "GEMINI_API_KEY") as? String
+        ]
+
+        return values
+            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .first { !$0.isEmpty && !$0.hasPrefix("$(") }
+    }
+
+    private static func jsonData(from text: String) -> Data? {
+        guard let start = text.firstIndex(of: "{"),
+              let end = text.lastIndex(of: "}"),
+              start <= end else {
+            return nil
+        }
+
+        return String(text[start...end]).data(using: .utf8)
+    }
+
+    private struct GeminiInteractionResponse: Decodable {
+        let steps: [GeminiStep]
+    }
+
+    private struct GeminiStep: Decodable {
+        let type: String
+        let content: [GeminiContent]?
+    }
+
+    private struct GeminiContent: Decodable {
+        let type: String
+        let text: String?
     }
     
     struct DailyWorkoutResponse: Codable {

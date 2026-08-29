@@ -81,7 +81,7 @@ struct ActiveTrackingView: View {
                 HStack(spacing: 16) {
                     Button(action: {
                         withAnimation {
-                            restSeconds = 60
+                            restSeconds = 0
                             showRestTimer = true
                         }
                     }) {
@@ -182,7 +182,7 @@ struct ActiveTrackingView: View {
                                     showRestTimer = false
                                 }
                             }) {
-                                Text("Skip Rest")
+                                Text("End Rest")
                                     .metallicButton(scheme: colorScheme, isPrimary: true)
                             }
                             .padding(.horizontal, 40)
@@ -190,13 +190,7 @@ struct ActiveTrackingView: View {
                     }
                     .onReceive(Timer.publish(every: 1, on: .main, in: .common).autoconnect()) { _ in
                         if showRestTimer {
-                            if restSeconds > 0 {
-                                restSeconds -= 1
-                            } else {
-                                withAnimation {
-                                    showRestTimer = false
-                                }
-                            }
+                            restSeconds += 1
                         }
                     }
                     .transition(.opacity)

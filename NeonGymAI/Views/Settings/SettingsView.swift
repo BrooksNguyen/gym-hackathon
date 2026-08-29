@@ -2,7 +2,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(\.colorScheme) var colorScheme
-    @State private var isDarkMode = true
+    @AppStorage("isDarkMode") private var isDarkMode = true
     @State private var selectedLanguage = "English"
     @State private var audioCoachEnabled = true
     

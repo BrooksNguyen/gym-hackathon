@@ -15,6 +15,7 @@ targets:
         INFOPLIST_KEY_CFBundleDisplayName: "Gymini"
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
+        INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone: YES
         INFOPLIST_KEY_NSCameraUsageDescription: "We need access to the camera to scan gym machines and perform 360-degree pose tracking."
         INFOPLIST_KEY_NSMicrophoneUsageDescription: "We need access to the microphone for AI Coach voice commands."
         INFOPLIST_KEY_NSSpeechRecognitionUsageDescription: "We need access to speech recognition for the AI Coach."

@@ -11,6 +11,7 @@ targets:
     sources: [NeonGymAI]
     settings:
       base:
+        GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_NSCameraUsageDescription: "We need access to the camera to scan gym machines and perform 360-degree pose tracking."

@@ -201,8 +201,12 @@ struct MeView: View {
                                         TextField("Height", value: $profile.height, format: .number)
                                             .keyboardType(.numberPad)
                                             .font(Theme.primaryText)
-                                            .multilineTextAlignment(.trailing)
+                                            .multilineTextAlignment(.center)
                                             .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                            .frame(width: 80)
+                                            .padding(.vertical, 8)
+                                            .background(Color.gray.opacity(0.15))
+                                            .cornerRadius(8)
                                     }
                                     
                                     Divider().background(Color.gray.opacity(0.1))
@@ -214,8 +218,12 @@ struct MeView: View {
                                         TextField("Weight", value: $profile.weight, format: .number)
                                             .keyboardType(.decimalPad)
                                             .font(Theme.primaryText)
-                                            .multilineTextAlignment(.trailing)
+                                            .multilineTextAlignment(.center)
                                             .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                                            .frame(width: 80)
+                                            .padding(.vertical, 8)
+                                            .background(Color.gray.opacity(0.15))
+                                            .cornerRadius(8)
                                     }
                                 }
                             }

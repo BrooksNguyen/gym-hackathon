@@ -152,6 +152,12 @@ struct HomeView: View {
                                     .metallicButton(scheme: colorScheme, isPrimary: true)
                                 }
                                 .padding(.top, 8)
+                            } else if healthState.starRating == 0 {
+                                Text("Rate your condition to generate today's AI plan...")
+                                    .font(.system(size: 14, weight: .regular, design: .default))
+                                    .foregroundColor(.secondary)
+                                    .italic()
+                                    .padding(.top, 4)
                             }
                             
                             if let workout = generatedWorkout {

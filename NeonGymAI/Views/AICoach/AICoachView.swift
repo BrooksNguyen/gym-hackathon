@@ -3,9 +3,10 @@ import SwiftUI
 struct AICoachView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject private var healthState = HealthStateManager.shared
+    @StateObject private var profile = ProfileManager.shared
     @State private var messageText = ""
     @State private var messages: [Message] = [
-        Message(text: "Hello! I am your AI Coach. How can I help you today?", isUser: false)
+        Message(text: "Hello! I'm your local AI Coach. Based on your current profile (Normal BMI, \(ProfileManager.shared.goal) goal), how can I help you today?", isUser: false)
     ]
     @State private var isAnimating = false
     @State private var isGenerating = false
@@ -14,6 +15,12 @@ struct AICoachView: View {
         let id = UUID()
         let text: String
         let isUser: Bool
+    }
+    
+    private var bmi: Double {
+        let heightInMeters = profile.height / 100
+        guard heightInMeters > 0 else { return 0 }
+        return profile.weight / (heightInMeters * heightInMeters)
     }
     
     var body: some View {
@@ -43,14 +50,7 @@ struct AICoachView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Apple Intelligence Coach")
                                 .font(Theme.primaryText)
-                                .overlay(
-                                    LinearGradient(
-                                        gradient: Gradient(colors: [Color.blue, Color.purple, Color.pink]),
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                    .mask(Text("Apple Intelligence Coach").font(Theme.primaryText))
-                                )
+                                .foregroundColor(.primary)
                         }
                         
                         Spacer()
@@ -58,12 +58,12 @@ struct AICoachView: View {
                         // Health Status Badge
                         HStack(spacing: 6) {
                             Circle()
-                                .fill(healthState.statusColor(for: colorScheme))
+                                .fill(Color.green)
                                 .frame(width: 8, height: 8)
-                                .shadow(color: healthState.statusColor(for: colorScheme).opacity(0.8), radius: 5)
-                            Text(healthState.statusText())
+                                .shadow(color: Color.green.opacity(0.8), radius: 5)
+                            Text("⚡ On-Device")
                                 .font(Theme.tertiaryText)
-                                .foregroundColor(healthState.statusColor(for: colorScheme))
+                                .foregroundColor(Color.green)
                         }
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
@@ -71,6 +71,18 @@ struct AICoachView: View {
                     }
                     .padding()
                     .glassCard(cornerRadius: 16, scheme: colorScheme)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .strokeBorder(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.blue.opacity(0.6), Color.purple.opacity(0.6), Color.pink.opacity(0.6)]),
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                ),
+                                lineWidth: 1
+                            )
+                            .blur(radius: 0.5)
+                    )
                     .padding(.horizontal, 24)
                     .padding(.top, 16)
                     .padding(.bottom, 8)
@@ -177,7 +189,7 @@ struct AICoachView: View {
                     if messages.count == 1 {
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 12) {
-                                ForEach(["💪 Tạo lịch tập ngực", "📊 Dinh dưỡng cho BMI 23.5", "🏃‍♂️ Mẹo fix form Deadlift"], id: \.self) { prompt in
+                                ForEach(["💪 Chest workout plan", "📊 Nutrition for BMI \(String(format: "%.1f", bmi))", "🏃‍♂️ Fix Deadlift form"], id: \.self) { prompt in
                                     Button(action: {
                                         messageText = prompt
                                     }) {
@@ -263,8 +275,8 @@ struct AICoachView: View {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
                                         withAnimation {
                                             isGenerating = false
-                                            if query.contains("Tạo lịch tập ngực") {
-                                                messages.append(Message(text: "Dựa vào mục tiêu Hypertrophy và chỉ số BMI 23.5 của bạn, đây là lịch tập Ngực (Chest) hôm nay:\n1. Barbell Bench Press: 4x8-10\n2. Incline Dumbbell Press: 3x10-12\n3. Cable Crossovers: 3x15", isUser: false))
+                                            if query.contains("Chest workout") {
+                                                messages.append(Message(text: "Based on your Hypertrophy goal and BMI of \(String(format: "%.1f", bmi)), here is your Chest plan today:\n1. Barbell Bench Press: 4x8-10\n2. Incline Dumbbell Press: 3x10-12\n3. Cable Crossovers: 3x15", isUser: false))
                                             } else {
                                                 messages.append(Message(text: "Got it! Since you are focusing on \(todayTargetMuscle), let's adjust your plan to ensure optimal hypertrophy.", isUser: false))
                                             }

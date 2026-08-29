@@ -73,33 +73,59 @@ struct HomeView: View {
                                     .font(Theme.secondaryText)
                                     .foregroundColor(.secondary)
                                 
-                                HStack(spacing: 16) {
+                                ViewThatFits {
+                                    // 1. Try to fit horizontally
                                     HStack(spacing: 16) {
-                                        ForEach(1...5, id: \.self) { index in
-                                            Image(systemName: "star.fill")
-                                                .font(.system(size: 32))
-                                                .foregroundColor(starColor(for: index))
-                                                .scaleEffect(healthState.starRating >= index ? 1.1 : 1.0)
-                                                .onTapGesture {
-                                                    let impactMed = UIImpactFeedbackGenerator(style: .medium)
-                                                    impactMed.impactOccurred()
-                                                    withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
-                                                        healthState.starRating = index
-                                                        generatedWorkout = nil // Reset when stars change
+                                        HStack(spacing: 16) {
+                                            ForEach(1...5, id: \.self) { index in
+                                                Image(systemName: "star.fill")
+                                                    .font(.system(size: 32))
+                                                    .foregroundColor(starColor(for: index))
+                                                    .scaleEffect(healthState.starRating >= index ? 1.1 : 1.0)
+                                                    .onTapGesture {
+                                                        let impactMed = UIImpactFeedbackGenerator(style: .medium)
+                                                        impactMed.impactOccurred()
+                                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                                                            healthState.starRating = index
+                                                            generatedWorkout = nil
+                                                        }
                                                     }
-                                                }
+                                            }
+                                        }
+                                        
+                                        if healthState.starRating > 0 {
+                                            Text(healthState.statusText())
+                                                .font(Theme.tertiaryText)
+                                                .foregroundColor(healthState.statusColor(for: colorScheme))
+                                        }
+                                        Spacer()
+                                    }
+                                    
+                                    // 2. Fallback to vertical if it doesn't fit
+                                    VStack(alignment: .leading, spacing: 12) {
+                                        HStack(spacing: 16) {
+                                            ForEach(1...5, id: \.self) { index in
+                                                Image(systemName: "star.fill")
+                                                    .font(.system(size: 32))
+                                                    .foregroundColor(starColor(for: index))
+                                                    .scaleEffect(healthState.starRating >= index ? 1.1 : 1.0)
+                                                    .onTapGesture {
+                                                        let impactMed = UIImpactFeedbackGenerator(style: .medium)
+                                                        impactMed.impactOccurred()
+                                                        withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                                                            healthState.starRating = index
+                                                            generatedWorkout = nil
+                                                        }
+                                                    }
+                                            }
+                                        }
+                                        
+                                        if healthState.starRating > 0 {
+                                            Text(healthState.statusText())
+                                                .font(Theme.tertiaryText)
+                                                .foregroundColor(healthState.statusColor(for: colorScheme))
                                         }
                                     }
-                                    
-                                    if healthState.starRating > 0 {
-                                        Text(healthState.statusText())
-                                            .font(Theme.tertiaryText)
-                                            .foregroundColor(healthState.statusColor(for: colorScheme))
-                                            .multilineTextAlignment(.trailing)
-                                            .fixedSize(horizontal: false, vertical: true)
-                                    }
-                                    
-                                    Spacer()
                                 }
                             }
                             

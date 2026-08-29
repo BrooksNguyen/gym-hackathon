@@ -2,12 +2,12 @@ name: NeonGymAI
 options:
   bundleIdPrefix: com.brooksnguyen
   deploymentTarget:
-    iOS: "17.0"
+    iOS: "18.1"
 targets:
   NeonGymAI:
     type: application
     platform: iOS
-    deploymentTarget: "17.0"
+    deploymentTarget: "18.1"
     sources: [NeonGymAI]
     settings:
       base:

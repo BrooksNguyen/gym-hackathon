@@ -80,6 +80,7 @@ struct Theme {
 struct MetallicButtonModifier: ViewModifier {
     var scheme: ColorScheme
     var isPrimary: Bool = true
+    var cornerRadius: CGFloat = 8
     
     func body(content: Content) -> some View {
         content
@@ -103,9 +104,9 @@ struct MetallicButtonModifier: ViewModifier {
                 }
             )
             .foregroundColor(isPrimary ? .white : (scheme == .dark ? .white : .black))
-            .cornerRadius(8) // Square look
+            .cornerRadius(cornerRadius) // Flexible corner
             .overlay(
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: cornerRadius)
                     .stroke(
                         LinearGradient(
                             gradient: Gradient(colors: [Color.white.opacity(isPrimary ? 0.4 : 0.8), Color.black.opacity(0.3)]),
@@ -149,7 +150,7 @@ extension View {
         self.modifier(GlassmorphismModifier(cornerRadius: cornerRadius, scheme: scheme))
     }
     
-    func metallicButton(scheme: ColorScheme, isPrimary: Bool = true) -> some View {
-        self.modifier(MetallicButtonModifier(scheme: scheme, isPrimary: isPrimary))
+    func metallicButton(scheme: ColorScheme, isPrimary: Bool = true, cornerRadius: CGFloat = 8) -> some View {
+        self.modifier(MetallicButtonModifier(scheme: scheme, isPrimary: isPrimary, cornerRadius: cornerRadius))
     }
 }

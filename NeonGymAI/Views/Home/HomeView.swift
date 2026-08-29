@@ -200,13 +200,23 @@ struct HomeView: View {
                             Button(action: {
                                 withAnimation(.spring()) { showScanMachine = true }
                             }) {
-                                VStack(spacing: 12) {
-                                    Image(systemName: "camera.viewfinder")
-                                        .font(.system(size: 30))
+                                VStack(spacing: 6) {
+                                    ZStack {
+                                        Image(systemName: "camera.viewfinder")
+                                            .font(.system(size: 28))
+                                        Image(systemName: "dumbbell.fill")
+                                            .font(.system(size: 10))
+                                    }
+                                    .frame(height: 36)
                                     Text("Scan Machine")
                                         .font(Theme.secondaryText)
+                                    Text("Discover workouts for any machine")
+                                        .font(.system(size: 10, weight: .bold, design: .default))
+                                        .opacity(0.8)
+                                        .multilineTextAlignment(.center)
                                 }
-                                .metallicButton(scheme: colorScheme, isPrimary: true)
+                                .padding(.horizontal, 4)
+                                .metallicButton(scheme: colorScheme, isPrimary: true, cornerRadius: 24)
                             }
                             .fullScreenCover(isPresented: $showScanMachine) {
                                 ScanMachineView()
@@ -215,13 +225,19 @@ struct HomeView: View {
                             Button(action: {
                                 withAnimation(.spring()) { showTracking = true }
                             }) {
-                                VStack(spacing: 12) {
-                                    Image(systemName: "figure.run")
+                                VStack(spacing: 6) {
+                                    Image(systemName: "person.fill.viewfinder")
                                         .font(.system(size: 30))
-                                    Text("Start Tracking")
+                                        .frame(height: 36)
+                                    Text("Live Assistant")
                                         .font(Theme.secondaryText)
+                                    Text("Real-time rep & form tracking")
+                                        .font(.system(size: 10, weight: .bold, design: .default))
+                                        .opacity(0.8)
+                                        .multilineTextAlignment(.center)
                                 }
-                                .metallicButton(scheme: colorScheme, isPrimary: false)
+                                .padding(.horizontal, 4)
+                                .metallicButton(scheme: colorScheme, isPrimary: false, cornerRadius: 24)
                             }
                             .fullScreenCover(isPresented: $showTracking) {
                                 ActiveTrackingView()

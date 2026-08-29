@@ -86,7 +86,10 @@ struct AICoachView: View {
                 VStack(spacing: 0) {
                     // Header
                     HStack {
-                        Text("AI Coach")
+                        Image(systemName: "apple.intelligence")
+                            .font(.system(size: 18))
+                            .foregroundColor(Theme.primaryAccent(for: colorScheme))
+                        Text("Apple Intelligence")
                             .font(.system(size: 20, weight: .bold))
                             .foregroundColor(.primary)
                         

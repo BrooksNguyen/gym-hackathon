@@ -49,7 +49,9 @@ struct AICoachView: View {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("Apple Intelligence Coach")
-                                .font(Theme.primaryText)
+                                .font(.system(size: 20, weight: .bold))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                                 .foregroundColor(.primary)
                         }
                         

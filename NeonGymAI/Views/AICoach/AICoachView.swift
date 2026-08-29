@@ -85,6 +85,33 @@ struct AICoachView: View {
                         .padding(.top, 16)
                     }
                     
+                    // Context-Aware Prompts (Visible when no conversation history)
+                    if messages.count == 1 {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 12) {
+                                ForEach(["💪 Tạo lịch tập ngực", "📊 Dinh dưỡng cho BMI 23.5", "🏃‍♂️ Mẹo fix form Deadlift"], id: \.self) { prompt in
+                                    Button(action: {
+                                        messageText = prompt
+                                    }) {
+                                        Text(prompt)
+                                            .font(.system(size: 12, weight: .bold, design: .default))
+                                            .padding(.horizontal, 16)
+                                            .padding(.vertical, 10)
+                                            .glassCard(cornerRadius: 16, scheme: colorScheme)
+                                            .foregroundColor(.primary)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 16)
+                                                    .stroke(Theme.primaryAccent(for: colorScheme).opacity(0.3), lineWidth: 1)
+                                            )
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 24)
+                            .padding(.bottom, 8)
+                        }
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    }
+                    
                     // Input Bar
                     HStack(spacing: 12) {
                         TextField("Ask about workout/nutrition...", text: $messageText)

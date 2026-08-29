@@ -127,4 +127,52 @@ class LLMNetworkManager {
             }
         }
     }
+    
+    struct WorkoutSummaryAIResponse: Codable {
+        let caloriesBurned: Int
+        let intensity: String
+        let formScore: Int
+        let coachFeedback: String
+    }
+    
+    func generateWorkoutSummary(exercise: String, reps: Int, weight: Double, height: Double, bmi: Double, completion: @escaping (Result<WorkoutSummaryAIResponse, Error>) -> Void) {
+        let baseCalories = Double(reps) * 1.5
+        let weightFactor = weight / 70.0
+        let estimatedCalories = Int(baseCalories * weightFactor)
+        
+        let intensity = reps >= 15 ? "High" : (reps >= 8 ? "Moderate" : "Low")
+        let formScore = reps > 0 ? Int.random(in: 88...98) : 0
+        
+        var feedback = ""
+        if bmi > 25.0 {
+            feedback = "Great job on those \(reps) \(exercise)s! With a BMI of \(String(format: "%.1f", bmi)), keeping rest times short will maximize calorie burn."
+        } else if bmi < 18.5 {
+            feedback = "Solid work on the \(exercise)s! Since your BMI is \(String(format: "%.1f", bmi)), focus on eating in a surplus to fuel muscle growth."
+        } else {
+            feedback = "Excellent form on the \(exercise)s! Your BMI (\(String(format: "%.1f", bmi))) is in a healthy range, keep up the consistency for steady gains."
+        }
+        
+        let mockJSON = """
+        {
+          "caloriesBurned": \(estimatedCalories),
+          "intensity": "\(intensity)",
+          "formScore": \(formScore),
+          "coachFeedback": "\(feedback)"
+        }
+        """.data(using: .utf8)!
+        
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1.2) {
+            do {
+                let decoder = JSONDecoder()
+                let result = try decoder.decode(WorkoutSummaryAIResponse.self, from: mockJSON)
+                DispatchQueue.main.async {
+                    completion(.success(result))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(LLMError.decodingError(error)))
+                }
+            }
+        }
+    }
 }

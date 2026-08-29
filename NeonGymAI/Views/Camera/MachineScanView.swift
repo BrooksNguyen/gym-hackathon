@@ -1,6 +1,8 @@
 import SwiftUI
 import UIKit
 
+private let themeAccent = Theme.primaryAccent(for: .dark)
+
 struct MachineScanView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var camera = CameraManager()
@@ -43,7 +45,7 @@ struct MachineScanView: View {
 
                 if capturedImage == nil {
                     Text(statusMessage)
-                        .font(Theme.digitalFont)
+                        .font(Theme.secondaryText)
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
@@ -55,8 +57,8 @@ struct MachineScanView: View {
                 } else if let scanError {
                     errorCard(message: scanError)
                 } else {
-                    Text("Ready to scan this machine")
-                        .font(Theme.digitalFont)
+                    Text("Ready to scan")
+                        .font(Theme.secondaryText)
                         .foregroundColor(.white)
                         .padding(.horizontal, 16)
                         .padding(.vertical, 10)
@@ -84,22 +86,21 @@ struct MachineScanView: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark")
-                    .font(.headline)
+                    .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.white)
-                    .padding(12)
-                    .background(.black.opacity(0.65), in: Circle())
+                    .frame(width: 40, height: 40)
+                    .background(Color.white.opacity(0.2), in: Circle())
             }
 
             Spacer()
 
             VStack(alignment: .trailing, spacing: 3) {
                 Text("MACHINE SCAN")
-                    .font(.caption.weight(.bold))
-                    .tracking(1.5)
-                    .foregroundColor(Theme.neonCyan)
-                Text(capturedImage == nil ? "AI AGENT READY" : "FRAME CAPTURED")
-                    .font(.caption2.monospaced())
-                    .foregroundColor(.white.opacity(0.75))
+                    .font(Theme.tertiaryText)
+                    .foregroundColor(themeAccent)
+                Text(capturedImage == nil ? "AI READY" : "CAPTURED")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundColor(.white.opacity(0.6))
             }
         }
         .padding(.top, 12)
@@ -109,13 +110,13 @@ struct MachineScanView: View {
         GeometryReader { proxy in
             ZStack {
                 RoundedRectangle(cornerRadius: 28)
-                    .stroke(Theme.neonCyan.opacity(0.9), style: StrokeStyle(lineWidth: 2, dash: [12, 8]))
+                    .stroke(themeAccent.opacity(0.7), style: StrokeStyle(lineWidth: 2, dash: [12, 8]))
                     .frame(width: proxy.size.width * 0.82, height: proxy.size.height * 0.45)
                     .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
 
                 Image(systemName: "viewfinder")
                     .font(.system(size: 80, weight: .thin))
-                    .foregroundColor(Theme.neonCyan.opacity(0.8))
+                    .foregroundColor(themeAccent.opacity(0.6))
                     .position(x: proxy.size.width / 2, y: proxy.size.height / 2)
             }
         }
@@ -125,39 +126,39 @@ struct MachineScanView: View {
         VStack(spacing: 16) {
             Image(systemName: "camera.fill")
                 .font(.system(size: 46))
-                .foregroundColor(Theme.neonCyan)
+                .foregroundColor(themeAccent)
             Text("Camera access is required")
-                .font(Theme.titleFont)
+                .font(Theme.primaryText)
                 .foregroundColor(.white)
-            Text(camera.errorMessage ?? "Allow camera access in Settings, then return to NeonGymAI.")
+            Text(camera.errorMessage ?? "Allow camera access in Settings, then return to Gymini.")
                 .multilineTextAlignment(.center)
                 .foregroundColor(.gray)
-                .font(Theme.digitalFont)
+                .font(Theme.secondaryText)
         }
         .padding(30)
     }
 
     private var recommendationCard: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label("DEMO AI RECOMMENDATION", systemImage: "sparkles")
-                .font(.caption.weight(.bold))
-                .foregroundColor(Theme.neonCyan)
+            Label("AI RECOMMENDATION", systemImage: "sparkles")
+                .font(Theme.tertiaryText)
+                .foregroundColor(themeAccent)
             Text("Squat station")
-                .font(.title2.weight(.bold))
+                .font(Theme.primaryText)
                 .foregroundColor(.white)
             Text("Primary muscles: quads, glutes, hamstrings")
-                .font(.subheadline)
+                .font(Theme.secondaryText)
                 .foregroundColor(.white.opacity(0.75))
-            Text("Suggested plan: 4 sets x 12 reps")
-                .font(Theme.digitalFont)
-                .foregroundColor(Theme.neonGreen)
+            Text("Suggested plan: 4 sets × 12 reps")
+                .font(Theme.secondaryText)
+                .foregroundColor(themeAccent)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(18)
         .background(.black.opacity(0.8), in: RoundedRectangle(cornerRadius: 18))
         .overlay {
             RoundedRectangle(cornerRadius: 18)
-                .stroke(Theme.neonCyan.opacity(0.65), lineWidth: 1)
+                .stroke(themeAccent.opacity(0.4), lineWidth: 1)
         }
     }
 
@@ -172,12 +173,13 @@ struct MachineScanView: View {
             HStack(spacing: 10) {
                 Image(systemName: capturedImage == nil ? "camera.fill" : "arrow.clockwise")
                 Text(capturedImage == nil ? "Scan Machine" : "Scan Another")
-                    .font(.headline)
+                    .font(.system(size: 16, weight: .bold))
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .foregroundColor(.black)
-            .background(Theme.neonCyan, in: RoundedRectangle(cornerRadius: 16))
+            .foregroundColor(.white)
+            .background(themeAccent, in: RoundedRectangle(cornerRadius: 16))
+            .shadow(color: themeAccent.opacity(0.3), radius: 8, y: 4)
         }
         .disabled(!camera.permissionGranted || !camera.isRunning || isAnalyzing)
         .opacity(camera.permissionGranted && camera.isRunning && !isAnalyzing ? 1 : 0.45)
@@ -186,14 +188,13 @@ struct MachineScanView: View {
     private var analyzingCard: some View {
         HStack(spacing: 12) {
             ProgressView()
-                .tint(Theme.neonCyan)
+                .tint(themeAccent)
             VStack(alignment: .leading, spacing: 4) {
-                Text("ANALYZING MACHINE")
-                    .font(.caption.weight(.bold))
-                    .tracking(1.1)
-                    .foregroundColor(Theme.neonCyan)
-                Text("Gemini is identifying the equipment and its main muscles.")
-                    .font(.subheadline)
+                Text("ANALYZING")
+                    .font(Theme.tertiaryText)
+                    .foregroundColor(themeAccent)
+                Text("Identifying the equipment and target muscles…")
+                    .font(Theme.secondaryText)
                     .foregroundColor(.white.opacity(0.8))
             }
         }
@@ -206,27 +207,26 @@ struct MachineScanView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 14) {
                 HStack {
-                    Label("GEMINI MACHINE ANALYSIS", systemImage: "sparkles")
-                        .font(.caption.weight(.bold))
-                        .foregroundColor(Theme.neonCyan)
+                    Label("MACHINE ANALYSIS", systemImage: "sparkles")
+                        .font(Theme.tertiaryText)
+                        .foregroundColor(themeAccent)
                     Spacer()
                     Text("\(Int((min(max(result.confidence, 0), 1) * 100).rounded()))% match")
-                        .font(.caption2.monospaced())
-                        .foregroundColor(.white.opacity(0.7))
+                        .font(.caption2.weight(.semibold))
+                        .foregroundColor(.white.opacity(0.6))
                 }
 
                 Text(result.machineName)
-                    .font(.title2.weight(.bold))
+                    .font(Theme.primaryText)
                     .foregroundColor(.white)
 
                 VStack(alignment: .leading, spacing: 8) {
                     Text("MAIN MUSCLES")
-                        .font(.caption.weight(.bold))
-                        .tracking(1.1)
-                        .foregroundColor(.white.opacity(0.6))
+                        .font(Theme.tertiaryText)
+                        .foregroundColor(.white.opacity(0.5))
                     Text(result.targetMuscles.joined(separator: " • "))
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundColor(Theme.neonGreen)
+                        .font(Theme.secondaryText)
+                        .foregroundColor(themeAccent)
                 }
 
                 Divider().overlay(.white.opacity(0.2))
@@ -239,8 +239,8 @@ struct MachineScanView: View {
                 instructionSection(title: "SAFETY NOTES", icon: "exclamationmark.triangle", items: result.safetyNotes)
 
                 Text("Suggested target: \(result.recommendedReps) reps")
-                    .font(Theme.digitalFont)
-                    .foregroundColor(Theme.neonCyan)
+                    .font(Theme.secondaryText)
+                    .foregroundColor(themeAccent)
                 Text(result.coachAdvice)
                     .font(.footnote)
                     .foregroundColor(.white.opacity(0.8))
@@ -253,16 +253,15 @@ struct MachineScanView: View {
         .background(.black.opacity(0.84), in: RoundedRectangle(cornerRadius: 18))
         .overlay {
             RoundedRectangle(cornerRadius: 18)
-                .stroke(Theme.neonCyan.opacity(0.65), lineWidth: 1)
+                .stroke(themeAccent.opacity(0.4), lineWidth: 1)
         }
     }
 
     private var storyboardSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Label("VISUAL INSTRUCTIONS", systemImage: "photo.on.rectangle.angled")
-                .font(.caption.weight(.bold))
-                .tracking(1.1)
-                .foregroundColor(.white.opacity(0.6))
+                .font(Theme.tertiaryText)
+                .foregroundColor(.white.opacity(0.5))
 
             if let storyboardImage {
                 ZStack(alignment: .bottom) {
@@ -276,7 +275,7 @@ struct MachineScanView: View {
                     HStack(spacing: 0) {
                         ForEach(1...3, id: \.self) { number in
                             Text("STEP \(number)")
-                                .font(.caption2.monospaced().weight(.bold))
+                                .font(.caption2.weight(.bold))
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 6)
@@ -287,12 +286,12 @@ struct MachineScanView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 14))
                 .overlay {
                     RoundedRectangle(cornerRadius: 14)
-                        .stroke(Theme.neonCyan.opacity(0.45), lineWidth: 1)
+                        .stroke(themeAccent.opacity(0.3), lineWidth: 1)
                 }
             } else if isGeneratingStoryboard {
                 VStack(spacing: 10) {
                     ProgressView()
-                        .tint(Theme.neonCyan)
+                        .tint(themeAccent)
                     Text("Generating your 3-step visual guide…")
                         .font(.footnote)
                         .foregroundColor(.white.opacity(0.78))
@@ -317,17 +316,16 @@ struct MachineScanView: View {
     private func instructionSection(title: String, icon: String, items: [String]) -> some View {
         VStack(alignment: .leading, spacing: 8) {
             Label(title, systemImage: icon)
-                .font(.caption.weight(.bold))
-                .tracking(1.1)
-                .foregroundColor(.white.opacity(0.6))
+                .font(Theme.tertiaryText)
+                .foregroundColor(.white.opacity(0.5))
 
             ForEach(Array(items.enumerated()), id: \.offset) { index, item in
                 HStack(alignment: .top, spacing: 8) {
                     Text("\(index + 1)")
                         .font(.caption.weight(.bold))
-                        .foregroundColor(Theme.neonCyan)
+                        .foregroundColor(themeAccent)
                         .frame(width: 20, height: 20)
-                        .background(Theme.neonCyan.opacity(0.14), in: Circle())
+                        .background(themeAccent.opacity(0.14), in: Circle())
                     Text(item)
                         .font(.footnote)
                         .foregroundColor(.white.opacity(0.86))

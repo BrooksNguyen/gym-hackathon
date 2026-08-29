@@ -1,24 +1,56 @@
 import Foundation
 
+struct MachineAnalysisResponse: Codable {
+    let exerciseName: String
+    let targetMuscles: [String]
+    let recommendedReps: Int
+}
+
 class LLMNetworkManager {
     static let shared = LLMNetworkManager()
     
-    // System prompt for machine scanning
     let scanMachinePrompt = """
     You are an expert AI Gym Coach. Analyze the provided image of a gym machine.
-    Return a STRICT JSON response with this schema:
+    Return a STRICT JSON response exactly matching this schema:
     {
-      "machine_name": "String",
-      "primary_muscles": ["String"],
-      "secondary_muscles": ["String"],
-      "setup_instructions": "String",
-      "recommended_sets_reps": "String"
+      "exerciseName": "String",
+      "targetMuscles": ["String"],
+      "recommendedReps": 12
     }
     Do not output any markdown or additional text. Just the raw JSON.
     """
     
-    func scanMachine(imageData: Data, completion: @escaping (Result<String, Error>) -> Void) {
-        // TODO: Implement network call to the LLM API (e.g. OpenAI GPT-4o Vision or Claude 3.5)
-        // using URLSession and the system prompt above.
+    enum LLMError: Error {
+        case invalidURL
+        case noData
+        case decodingError(Error)
+        case apiError(String)
+    }
+    
+    func scanMachine(imageData: Data, completion: @escaping (Result<MachineAnalysisResponse, Error>) -> Void) {
+        // Mock implementation for Hackathon. In a real scenario, you'd send `imageData` 
+        // to an endpoint like OpenAI Vision or Gemini Vision.
+        let mockJSON = """
+        {
+          "exerciseName": "Leg Extension",
+          "targetMuscles": ["Quadriceps"],
+          "recommendedReps": 12
+        }
+        """.data(using: .utf8)!
+        
+        // Simulating network delay
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1.5) {
+            do {
+                let decoder = JSONDecoder()
+                let result = try decoder.decode(MachineAnalysisResponse.self, from: mockJSON)
+                DispatchQueue.main.async {
+                    completion(.success(result))
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    completion(.failure(LLMError.decodingError(error)))
+                }
+            }
+        }
     }
 }

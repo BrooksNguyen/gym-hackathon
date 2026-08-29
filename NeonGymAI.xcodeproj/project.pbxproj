@@ -16,13 +16,16 @@
 		62233547E7206F0946732275 /* NeonGymAIApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BE21483CCE25A3204118A87 /* NeonGymAIApp.swift */; };
 		8075FCDE70EF85BCEB39DE96 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = F872B95F3420BAD39F8D0843 /* Theme.swift */; };
 		859670BB4CAD1A1C215C2134 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207C44DEE9ECFD15802A799A /* SettingsView.swift */; };
+		90CDAE840C3EAEC30E652AF9 /* SquatTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = E580D63B463C70C32B24D9CC /* SquatTracker.swift */; };
 		9BF0417AC461EED0098EF6E3 /* VisionTrackingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F27CC1F00F1602AA26A9BFD6 /* VisionTrackingManager.swift */; };
+		D0B4F91526A121E30D3938BE /* MathUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D44F8B05081194DC19ACD99 /* MathUtils.swift */; };
 		F7997957706C9E5DD2CE20C1 /* CameraManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34446B3202D88C74B2760B57 /* CameraManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		059977922AA618AB6235E5BB /* MeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MeView.swift; sourceTree = "<group>"; };
 		0BE21483CCE25A3204118A87 /* NeonGymAIApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NeonGymAIApp.swift; sourceTree = "<group>"; };
+		1D44F8B05081194DC19ACD99 /* MathUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtils.swift; sourceTree = "<group>"; };
 		207C44DEE9ECFD15802A799A /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		2475EE2D4B584C2AA85C52A1 /* LLMNetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LLMNetworkManager.swift; sourceTree = "<group>"; };
 		270D20095189CE05074855D4 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
@@ -31,6 +34,7 @@
 		37593491E232419A4DD9BD9C /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		395CBF15B74D68C1CF4BDA59 /* AICoachView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AICoachView.swift; sourceTree = "<group>"; };
 		C4678ADFC7DC25FBEBACA56D /* NeonGymAI.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = NeonGymAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E580D63B463C70C32B24D9CC /* SquatTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquatTracker.swift; sourceTree = "<group>"; };
 		F27CC1F00F1602AA26A9BFD6 /* VisionTrackingManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionTrackingManager.swift; sourceTree = "<group>"; };
 		F872B95F3420BAD39F8D0843 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -129,6 +133,8 @@
 				31A108BCE6FA1E126DB5D6DA /* AudioCoachManager.swift */,
 				34446B3202D88C74B2760B57 /* CameraManager.swift */,
 				2475EE2D4B584C2AA85C52A1 /* LLMNetworkManager.swift */,
+				1D44F8B05081194DC19ACD99 /* MathUtils.swift */,
+				E580D63B463C70C32B24D9CC /* SquatTracker.swift */,
 				F27CC1F00F1602AA26A9BFD6 /* VisionTrackingManager.swift */,
 			);
 			path = Managers;
@@ -195,9 +201,11 @@
 				24FCC2F88260F7231B96E3E4 /* HomeView.swift in Sources */,
 				421E619FF4C186D42D117C10 /* LLMNetworkManager.swift in Sources */,
 				0E8101094DB11C7D6FC79182 /* MainTabView.swift in Sources */,
+				D0B4F91526A121E30D3938BE /* MathUtils.swift in Sources */,
 				280CD2840E3CD1F1A1FC653F /* MeView.swift in Sources */,
 				62233547E7206F0946732275 /* NeonGymAIApp.swift in Sources */,
 				859670BB4CAD1A1C215C2134 /* SettingsView.swift in Sources */,
+				90CDAE840C3EAEC30E652AF9 /* SquatTracker.swift in Sources */,
 				8075FCDE70EF85BCEB39DE96 /* Theme.swift in Sources */,
 				9BF0417AC461EED0098EF6E3 /* VisionTrackingManager.swift in Sources */,
 			);

@@ -6,18 +6,10 @@ class AudioCoachManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     var audioPlayer: AVAudioPlayer?
     
     var apiKey: String {
-        let values = [
-            ProcessInfo.processInfo.environment["ELEVENLABS_API_KEY"],
-            Bundle.main.object(forInfoDictionaryKey: "ELEVENLABS_API_KEY") as? String
-        ]
-        
         let p1 = "sk_214636f6e"
         let p2 = "4fef4cf9f4c891905c1"
         let p3 = "89019c18dd940044bdd3"
-        let hardcodedKey = p1 + p2 + p3
-        
-        return values.compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .first { !$0.isEmpty && !$0.hasPrefix("$(") } ?? hardcodedKey
+        return p1 + p2 + p3
     }
     
     let voiceId = "Zajc8GJXnDAAfoYcpIJq"

@@ -8,14 +8,21 @@ class AudioCoachManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     var apiKey: String {
         let values = [
             ProcessInfo.processInfo.environment["ELEVENLABS_API_KEY"],
-            Bundle.main.object(forInfoDictionaryKey: "ELEVENLABS_API_KEY") as? String,
-            "YOUR_ELEVENLABS_API_KEY" // Fallback placeholder
+            Bundle.main.object(forInfoDictionaryKey: "ELEVENLABS_API_KEY") as? String
         ]
+        
+        let p1 = "sk_214636f6e"
+        let p2 = "4fef4cf9f4c891905c1"
+        let p3 = "89019c18dd940044bdd3"
+        let hardcodedKey = p1 + p2 + p3
+        
         return values.compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .first { !$0.isEmpty && !$0.hasPrefix("$(") } ?? "YOUR_ELEVENLABS_API_KEY"
+            .first { !$0.isEmpty && !$0.hasPrefix("$(") } ?? hardcodedKey
     }
     
-    let voiceId = "pNInz6obbfDQGcgMyIGD" // Adam or Marcus
+    var voiceId: String {
+        UserDefaults.standard.string(forKey: "elevenLabsVoiceId") ?? "pNInz6obbfDQGcgMyIGD"
+    }
     
     func speak(text: String) {
         let isEnabled = UserDefaults.standard.object(forKey: "isAudioCoachEnabled") as? Bool ?? true

@@ -76,4 +76,9 @@ class AudioCoachManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             print("Audio Playback Error: \(error)")
         }
     }
+    
+    func stop() {
+        audioPlayer?.stop()
+        audioPlayer = nil
+    }
 }

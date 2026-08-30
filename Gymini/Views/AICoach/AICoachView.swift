@@ -107,7 +107,7 @@ struct AICoachView: View {
                                 ForEach(messages) { message in
                                     HStack {
                                         if message.isUser {
-                                            Spacer()
+                                            Spacer(minLength: 50)
                                             Text(message.text)
                                                 .font(Theme.secondaryText)
                                                 .padding()
@@ -144,9 +144,8 @@ struct AICoachView: View {
                                                     .font(Theme.secondaryText)
                                                     .padding()
                                                     .glassCard(cornerRadius: 20, scheme: colorScheme)
-                                                    .cornerRadius(4, corners: [.bottomLeft])
                                             }
-                                            Spacer()
+                                            Spacer(minLength: 50)
                                         }
                                     }
                                     .padding(.horizontal, 24)
@@ -254,6 +253,16 @@ struct AICoachView: View {
                                     )
                             )
                             .font(Theme.secondaryText)
+                        
+                        Button(action: {
+                            AudioCoachManager.shared.stop()
+                        }) {
+                            Image(systemName: "speaker.slash.fill")
+                                .font(.title3)
+                                .foregroundColor(.red.opacity(0.8))
+                                .padding(16)
+                                .glassCard(cornerRadius: 24, scheme: colorScheme)
+                        }
                         
                         Button(action: {
                             showingVoiceHint = true

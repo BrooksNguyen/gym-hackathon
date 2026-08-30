@@ -370,6 +370,7 @@ struct AICoachView: View {
                     AudioCoachManager.shared.speak(text: summary)
                 }
             } catch {
+                print("Apple Intelligence Error: \(error)")
                 await MainActor.run {
                     let fallbackText = fallbackReply(for: prompt)
                     withAnimation {

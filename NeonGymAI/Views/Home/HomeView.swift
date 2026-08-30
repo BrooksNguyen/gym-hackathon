@@ -204,9 +204,11 @@ struct HomeView: View {
                     .foregroundColor(.white)
                     
                     VStack(spacing: 4) {
-                        Text("Scan Machine")
+                        Text("Machine Scanner")
                             .font(.system(size: 16, weight: .bold))
                             .foregroundColor(.white)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.8)
                         Text("Find workouts for any machine")
                             .font(.system(size: 10))
                             .foregroundColor(.gray)

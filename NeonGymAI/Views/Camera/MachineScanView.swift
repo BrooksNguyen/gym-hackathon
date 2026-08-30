@@ -6,6 +6,8 @@ private let themeAccent = Theme.primaryAccent(for: .dark)
 struct MachineScanView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var camera = CameraManager()
+    @AppStorage("hasSeenScanTutorial") private var hasSeenScanTutorial = false
+    @State private var showTutorial = true
     @State private var capturedImage: UIImage?
     @State private var analysisResult: MachineAnalysisResponse?
     @State private var isAnalyzing = false
@@ -70,6 +72,21 @@ struct MachineScanView: View {
                     .padding(.bottom, 22)
             }
             .padding(.horizontal, 20)
+            
+            if !hasSeenScanTutorial {
+                TutorialOverlayView(
+                    steps: [
+                        "Point the camera at any gym machine.",
+                        "Tap the scan button to let AI identify it and generate your workout."
+                    ],
+                    isPresented: $showTutorial
+                )
+                .onChange(of: showTutorial) { newValue in
+                    if !newValue {
+                        hasSeenScanTutorial = true
+                    }
+                }
+            }
         }
         .preferredColorScheme(.dark)
         .onAppear { camera.start(position: .back) }

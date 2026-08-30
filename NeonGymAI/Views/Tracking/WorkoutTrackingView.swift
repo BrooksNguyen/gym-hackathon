@@ -5,6 +5,8 @@ struct WorkoutTrackingView: View {
     @Environment(\.dismiss) private var dismiss
     @StateObject private var camera = CameraManager()
     @StateObject private var tracker = VisionTrackingManager()
+    @AppStorage("hasSeenTrackingTutorial") private var hasSeenTrackingTutorial = false
+    @State private var showTutorial = true
     @State private var cameraPosition: AVCaptureDevice.Position = .front
     @State private var flashRep: Int? = nil
     @State private var showFlash: Bool = false
@@ -53,6 +55,21 @@ struct WorkoutTrackingView: View {
             }
             .padding(.horizontal, 24)
             .padding(.vertical, 20)
+            
+            if !hasSeenTrackingTutorial {
+                TutorialOverlayView(
+                    steps: [
+                        "Step back so your full body is in frame.",
+                        "Start your exercise. AI will track your reps and form in real-time."
+                    ],
+                    isPresented: $showTutorial
+                )
+                .onChange(of: showTutorial) { newValue in
+                    if !newValue {
+                        hasSeenTrackingTutorial = true
+                    }
+                }
+            }
             
             // Flashing Rep Overlay
             if showFlash, let rep = flashRep {

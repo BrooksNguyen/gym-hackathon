@@ -45,6 +45,8 @@ struct SettingsView: View {
                                 }
                                 .pickerStyle(MenuPickerStyle())
                                 .tint(Theme.secondaryAccent(for: colorScheme))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                             }
                             
                             Divider().background(Color.gray.opacity(0.2))
@@ -59,6 +61,8 @@ struct SettingsView: View {
                                 }
                                 .pickerStyle(MenuPickerStyle())
                                 .tint(Theme.secondaryAccent(for: colorScheme))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.8)
                             }
                         }
                         

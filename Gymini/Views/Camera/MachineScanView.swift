@@ -396,6 +396,10 @@ struct MachineScanView: View {
                 case .success(let response):
                     analysisResult = response
                     requestStoryboard(for: response)
+                    
+                    // Audio Coach feedback for Machine Scanner
+                    let shortSummary = "Identified \(response.machineName). Target muscles: \(response.targetMuscles.prefix(2).joined(separator: " and ")). Let's do \(response.recommendedReps) reps."
+                    AudioCoachManager.shared.speak(text: shortSummary)
                 case .failure(let error):
                     scanError = message(for: error)
                 }

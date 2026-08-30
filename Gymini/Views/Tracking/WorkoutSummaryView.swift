@@ -117,6 +117,11 @@ struct WorkoutSummaryView: View {
                 isLoading = false
                 if case .success(let response) = result {
                     summaryResponse = response
+                    
+                    // Generate short summary (max 2 sentences) for Audio Coach
+                    let sentences = response.coachFeedback.components(separatedBy: ". ")
+                    let summary = sentences.prefix(2).joined(separator: ". ") + (sentences.count > 2 ? "." : "")
+                    AudioCoachManager.shared.speak(text: summary)
                 }
             }
         }

@@ -75,6 +75,8 @@ class AudioCoachManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             try AVAudioSession.sharedInstance().setActive(true)
             
             audioPlayer = try AVAudioPlayer(data: audioData)
+            audioPlayer?.volume = 1.0
+            audioPlayer?.prepareToPlay()
             audioPlayer?.delegate = self
             audioPlayer?.play()
         } catch {

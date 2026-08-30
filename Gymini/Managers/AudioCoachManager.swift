@@ -20,9 +20,7 @@ class AudioCoachManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             .first { !$0.isEmpty && !$0.hasPrefix("$(") } ?? hardcodedKey
     }
     
-    var voiceId: String {
-        UserDefaults.standard.string(forKey: "elevenLabsVoiceId") ?? "pNInz6obbfDQGcgMyIGD"
-    }
+    let voiceId = "Zajc8GJXnDAAfoYcpIJq"
     
     func speak(text: String) {
         let isEnabled = UserDefaults.standard.object(forKey: "isAudioCoachEnabled") as? Bool ?? true

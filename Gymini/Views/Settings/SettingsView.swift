@@ -10,19 +10,12 @@ struct SettingsView: View {
     @AppStorage("rest_timer_enabled") private var restTimerEnabled = true
     @AppStorage("units_metric") private var unitsMetric = true
     @AppStorage("isAudioCoachEnabled") private var isAudioCoachEnabled = true
-    @AppStorage("elevenLabsVoiceId") private var selectedVoiceId = "pNInz6obbfDQGcgMyIGD"
     @State private var selectedLanguage = "English"
     @State private var showResetAlert = false
     @State private var showDeleteAlert = false
     @State private var showSettingsAlert = false
     
     let languages = ["English", "Vietnamese"]
-    let elevenLabsVoices = [
-        ("Adam (Deep Male)", "pNInz6obbfDQGcgMyIGD"),
-        ("Antoni (Mature Male)", "ErXwobaYiN019PkySvjV"),
-        ("Rachel (Calm Female)", "21m00Tcm4TlvDq8ikWAM"),
-        ("Domi (Energetic Female)", "AZnzlk1XvdvUeBnXmlld")
-    ]
     let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
     let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
     
@@ -86,25 +79,6 @@ struct SettingsView: View {
                                 }
                             }
                             .tint(Theme.primaryAccent(for: colorScheme))
-                            
-                            if isAudioCoachEnabled {
-                                Divider().background(Color.gray.opacity(0.2))
-                                
-                                HStack {
-                                    Text("Coach Voice")
-                                        .font(Theme.secondaryText)
-                                    Spacer()
-                                    Picker("Voice", selection: $selectedVoiceId) {
-                                        ForEach(elevenLabsVoices, id: \.1) { voice in
-                                            Text(voice.0).tag(voice.1)
-                                        }
-                                    }
-                                    .pickerStyle(MenuPickerStyle())
-                                    .tint(Theme.secondaryAccent(for: colorScheme))
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.8)
-                                }
-                            }
                             
                             Divider().background(Color.gray.opacity(0.2))
                             

@@ -599,4 +599,63 @@ class LLMNetworkManager {
             }
         }.resume()
     }
+    
+    func chat(prompt: String, systemInstruction: String, completion: @escaping (Result<String, Error>) -> Void) {
+        guard let apiKey = geminiAPIKey else {
+            DispatchQueue.main.async { completion(.failure(LLMError.missingAPIKey)) }
+            return
+        }
+        
+        let fullPrompt = "\(systemInstruction)\n\nUSER INPUT: \(prompt)"
+        
+        let requestBody: [String: Any] = [
+            "contents": [
+                ["parts": [["text": fullPrompt]]]
+            ]
+        ]
+        
+        guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=\(apiKey)") else {
+            DispatchQueue.main.async { completion(.failure(LLMError.invalidURL)) }
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: requestBody)
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async { completion(.failure(error)) }
+                return
+            }
+            
+            guard let data = data else {
+                DispatchQueue.main.async { completion(.failure(LLMError.noData)) }
+                return
+            }
+            
+            do {
+                struct GeminiResponse: Decodable {
+                    struct Candidate: Decodable {
+                        struct Content: Decodable {
+                            struct Part: Decodable { let text: String }
+                            let parts: [Part]
+                        }
+                        let content: Content
+                    }
+                    let candidates: [Candidate]
+                }
+                
+                let geminiRes = try JSONDecoder().decode(GeminiResponse.self, from: data)
+                if let text = geminiRes.candidates.first?.content.parts.first?.text {
+                    DispatchQueue.main.async { completion(.success(text)) }
+                } else {
+                    DispatchQueue.main.async { completion(.failure(LLMError.invalidResponse)) }
+                }
+            } catch {
+                DispatchQueue.main.async { completion(.failure(LLMError.decodingError(error))) }
+            }
+        }.resume()
+    }
 }

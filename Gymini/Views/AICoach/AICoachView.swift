@@ -339,52 +339,51 @@ struct AICoachView: View {
                 }
                 
                 guard let activeSession = session else {
-                    // Fallback if model not available
-                    await MainActor.run {
-                        let fallbackText = fallbackReply(for: prompt)
-                        withAnimation {
-                            messages.append(Message(text: fallbackText, isUser: false))
-                            isGenerating = false
-                            isSending = false
-                        }
-                        
-                        let sentences = fallbackText.components(separatedBy: ". ")
-                        let summary = sentences.prefix(2).joined(separator: ". ") + (sentences.count > 2 ? "." : "")
-                        AudioCoachManager.shared.speak(text: summary)
-                    }
+                    // Fallback to Gemini if Apple Intelligence is unavailable
+                    fallbackToGemini(prompt: prompt)
                     return
                 }
                 
                 let response = try await activeSession.respond(to: prompt)
                 
                 await MainActor.run {
-                    withAnimation {
-                        messages.append(Message(text: response.content, isUser: false))
-                        isGenerating = false
-                        isSending = false
-                    }
-                    
-                    // Generate short summary (max 2 sentences) for Audio Coach to prevent latency
-                    let sentences = response.content.components(separatedBy: ". ")
-                    let summary = sentences.prefix(2).joined(separator: ". ") + (sentences.count > 2 ? "." : "")
-                    AudioCoachManager.shared.speak(text: summary)
+                    handleAIResponse(response.content)
                 }
             } catch {
                 print("Apple Intelligence Error: \(error)")
-                await MainActor.run {
-                    let fallbackText = fallbackReply(for: prompt)
-                    withAnimation {
-                        messages.append(Message(text: fallbackText, isUser: false))
-                        isGenerating = false
-                        isSending = false
-                    }
-                    
-                    let sentences = fallbackText.components(separatedBy: ". ")
-                    let summary = sentences.prefix(2).joined(separator: ". ") + (sentences.count > 2 ? "." : "")
-                    AudioCoachManager.shared.speak(text: summary)
+                fallbackToGemini(prompt: prompt)
+            }
+        }
+    }
+    
+    private func fallbackToGemini(prompt: String) {
+        LLMNetworkManager.shared.chat(prompt: prompt, systemInstruction: systemPrompt) { result in
+            switch result {
+            case .success(let text):
+                DispatchQueue.main.async {
+                    handleAIResponse(text)
+                }
+            case .failure(let error):
+                print("Gemini Fallback Error: \(error)")
+                let fallbackText = fallbackReply(for: prompt)
+                DispatchQueue.main.async {
+                    handleAIResponse(fallbackText)
                 }
             }
         }
+    }
+    
+    private func handleAIResponse(_ text: String) {
+        withAnimation {
+            messages.append(Message(text: text, isUser: false))
+            isGenerating = false
+            isSending = false
+        }
+        
+        // Generate short summary (max 2 sentences) for Audio Coach to prevent latency
+        let sentences = text.components(separatedBy: ". ")
+        let summary = sentences.prefix(2).joined(separator: ". ") + (sentences.count > 2 ? "." : "")
+        AudioCoachManager.shared.speak(text: summary)
     }
 
     private func fallbackReply(for prompt: String) -> String {

@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct NeonGymAIApp: App {
+struct GyminiApp: App {
     @AppStorage("isDarkMode") private var isDarkMode = true
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     

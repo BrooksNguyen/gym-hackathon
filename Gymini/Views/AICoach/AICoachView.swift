@@ -5,6 +5,7 @@ struct AICoachView: View {
     @Environment(\.colorScheme) var colorScheme
     @StateObject private var healthState = HealthStateManager.shared
     @StateObject private var profile = ProfileManager.shared
+    @AppStorage("isAudioCoachEnabled") private var isAudioCoachEnabled = true
     @State private var messageText = ""
     @State private var isSending = false
     @State private var showingVoiceHint = false
@@ -255,11 +256,14 @@ struct AICoachView: View {
                             .font(Theme.secondaryText)
                         
                         Button(action: {
-                            AudioCoachManager.shared.stop()
+                            isAudioCoachEnabled.toggle()
+                            if !isAudioCoachEnabled {
+                                AudioCoachManager.shared.stop()
+                            }
                         }) {
-                            Image(systemName: "speaker.slash.fill")
+                            Image(systemName: isAudioCoachEnabled ? "speaker.wave.2.fill" : "speaker.slash.fill")
                                 .font(.title3)
-                                .foregroundColor(.red.opacity(0.8))
+                                .foregroundColor(isAudioCoachEnabled ? Theme.secondaryAccent(for: colorScheme) : .red.opacity(0.8))
                                 .padding(16)
                                 .glassCard(cornerRadius: 24, scheme: colorScheme)
                         }

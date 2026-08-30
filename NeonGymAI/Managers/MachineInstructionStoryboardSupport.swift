@@ -1,8 +1,77 @@
 import Foundation
 
+struct MachineScanImageDimensions: Equatable {
+    let width: Int
+    let height: Int
+}
+
+enum MachineScanImageSizing {
+    static func targetDimensions(
+        width: Int,
+        height: Int,
+        maxLongEdge: Int = 1280
+    ) -> MachineScanImageDimensions {
+        guard width > 0, height > 0, maxLongEdge > 0 else {
+            return MachineScanImageDimensions(width: 0, height: 0)
+        }
+
+        let scale = min(1, Double(maxLongEdge) / Double(max(width, height)))
+        return MachineScanImageDimensions(
+            width: Int((Double(width) * scale).rounded()),
+            height: Int((Double(height) * scale).rounded())
+        )
+    }
+}
+
+enum GeminiMachineScanAPIRequest {
+    static func makePayload(
+        model: String,
+        prompt: String,
+        imageData: Data,
+        schema: [String: Any]
+    ) throws -> Data {
+        let body: [String: Any] = [
+            "model": model,
+            "store": false,
+            "input": [
+                ["type": "text", "text": prompt],
+                [
+                    "type": "image",
+                    "data": imageData.base64EncodedString(),
+                    "mime_type": "image/jpeg"
+                ]
+            ],
+            "generation_config": [
+                "thinking_level": "low"
+            ],
+            "response_format": [
+                "type": "text",
+                "mime_type": "application/json",
+                "schema": schema
+            ]
+        ]
+
+        return try JSONSerialization.data(withJSONObject: body)
+    }
+}
+
+enum MachineScanFallbackPolicy {
+    static func nextModelIndex(afterFailureAt modelIndex: Int, modelCount: Int) -> Int? {
+        let nextIndex = modelIndex + 1
+        return nextIndex < modelCount ? nextIndex : nil
+    }
+}
+
+enum StoryboardImageFallbackPolicy {
+    static func nextModelIndex(afterFailureAt modelIndex: Int, modelCount: Int) -> Int? {
+        let nextIndex = modelIndex + 1
+        return nextIndex < modelCount ? nextIndex : nil
+    }
+}
+
 enum MachineInstructionSteps {
     enum NormalizationError: Error {
-        case requiresThreeSteps
+        case requiresTwoSteps
     }
 
     static func normalized(_ instructions: [String]) throws -> [String] {
@@ -10,26 +79,30 @@ enum MachineInstructionSteps {
             .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
             .filter { !$0.isEmpty }
 
-        guard cleaned.count >= 3 else {
-            throw NormalizationError.requiresThreeSteps
+        guard cleaned.count >= 2 else {
+            throw NormalizationError.requiresTwoSteps
         }
 
-        return Array(cleaned.prefix(3))
+        return Array(cleaned.prefix(2))
     }
 }
 
 struct MachineInstructionStoryboardRequest {
     let machineName: String
     let steps: [String]
+    let targetMuscles: [String]
 
-    init(machineName: String, instructions: [String]) {
+    init(machineName: String, instructions: [String], targetMuscles: [String]) {
         self.machineName = machineName.trimmingCharacters(in: .whitespacesAndNewlines)
         self.steps = Array(
             instructions
                 .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }
-                .prefix(3)
+                .prefix(2)
         )
+        self.targetMuscles = targetMuscles
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
     }
 
     var prompt: String {
@@ -38,16 +111,20 @@ struct MachineInstructionStoryboardRequest {
             .joined(separator: "\n")
 
         return """
-        Create one clean 16:9 fitness instruction storyboard containing exactly three equal panels.
+        Create one clean 16:9 fitness instruction storyboard containing exactly two equal panels.
 
         MACHINE: \(machineName)
         \(panels)
+        TARGET MUSCLES: \(targetMuscles.joined(separator: ", "))
 
         VISUAL REQUIREMENTS:
-        - Show the same adult athlete and the same \(machineName) in all three panels.
+        - Show the same adult athlete and the same \(machineName) in both panels.
         - Show the full machine, the athlete's full body, and clearly readable joint positions.
-        - Use a consistent side or three-quarter camera angle that best demonstrates safe form.
-        - Use a clean, high-contrast fitness-manual illustration style on a simple neutral background.
+        - Use a consistent side or three-quarter camera angle that clearly shows the start and finish positions.
+        - The left panel must show the starting position described in Panel 1. The right panel must show the finishing position described in Panel 2.
+        - Separate the two panels with a clear vertical divider.
+        - Use a monochrome, high-contrast fitness-manual illustration style on a simple neutral background.
+        - Highlight the target muscles in red. Keep every other muscle neutral gray.
         - Make the movement progression anatomically plausible and mechanically safe.
         - Do not include text, letters, numbers, captions, logos, watermarks, arrows, or extra panels.
         """
@@ -80,15 +157,15 @@ enum StoryboardImageData {
 
 enum GeminiStoryboardAPIRequest {
     enum RequestError: Error {
-        case requiresThreeSteps
+        case requiresTwoSteps
     }
 
     static func makePayload(
         model: String,
         request: MachineInstructionStoryboardRequest
     ) throws -> Data {
-        guard request.steps.count == 3 else {
-            throw RequestError.requiresThreeSteps
+        guard request.steps.count == 2 else {
+            throw RequestError.requiresTwoSteps
         }
 
         let body: [String: Any] = [
@@ -100,11 +177,15 @@ enum GeminiStoryboardAPIRequest {
             "response_format": [
                 "type": "image",
                 "aspect_ratio": "16:9",
-                "image_size": "1K"
+                "image_size": imageSize(for: model)
             ]
         ]
 
         return try JSONSerialization.data(withJSONObject: body)
+    }
+
+    private static func imageSize(for model: String) -> String {
+        model == "gemini-3.1-flash-lite-image" ? "1K" : "512"
     }
 }
 
@@ -204,6 +285,25 @@ struct MachineInstructionStoryboardCache {
         )
     }
 
+    func remove(for machineName: String) throws {
+        for fileExtension in ["png", "jpg", "webp", "image"] {
+            let url = fileURL(for: machineName, fileExtension: fileExtension)
+            guard fileManager.fileExists(atPath: url.path) else { continue }
+            try fileManager.removeItem(at: url)
+        }
+    }
+
+    static func identifier(
+        machineName: String,
+        instructions: [String],
+        targetMuscles: [String]
+    ) -> String {
+        ([machineName] + instructions + targetMuscles)
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .joined(separator: " | ")
+    }
+
     private func fileURL(for machineName: String, fileExtension: String) -> URL {
         rootDirectory
             .appendingPathComponent(cacheKey(for: machineName))
@@ -215,7 +315,8 @@ struct MachineInstructionStoryboardCache {
             .lowercased()
             .components(separatedBy: CharacterSet.alphanumerics.inverted)
             .filter { !$0.isEmpty }
-        return components.isEmpty ? "unknown-machine" : components.joined(separator: "-")
+        let machineKey = components.isEmpty ? "unknown-machine" : components.joined(separator: "-")
+        return "two-panel-\(machineKey)"
     }
 
     private func fileExtension(for mimeType: String) -> String {

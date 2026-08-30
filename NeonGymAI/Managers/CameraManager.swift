@@ -68,10 +68,22 @@ final class CameraManager: NSObject, ObservableObject {
         frameQueue.sync { [self] in
             guard let latestPixelBuffer else { return nil }
             let image = CIImage(cvPixelBuffer: latestPixelBuffer)
-            guard let cgImage = ciContext.createCGImage(image, from: image.extent) else {
+            let dimensions = MachineScanImageSizing.targetDimensions(
+                width: Int(image.extent.width.rounded()),
+                height: Int(image.extent.height.rounded())
+            )
+            let scale = min(
+                1,
+                CGFloat(dimensions.width) / max(image.extent.width, 1)
+            )
+            let uploadImage = scale < 1
+                ? image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+                : image
+
+            guard let cgImage = ciContext.createCGImage(uploadImage, from: uploadImage.extent) else {
                 return nil
             }
-            return UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.86)
+            return UIImage(cgImage: cgImage).jpegData(compressionQuality: 0.72)
         }
     }
 

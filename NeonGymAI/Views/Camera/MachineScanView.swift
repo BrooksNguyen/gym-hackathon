@@ -11,6 +11,7 @@ struct MachineScanView: View {
     @State private var storyboardImage: UIImage?
     @State private var isGeneratingStoryboard = false
     @State private var storyboardUnavailable = false
+    @State private var storyboardFailureMessage: String?
     @State private var scanRequestID = UUID()
     @State private var storyboardRequestID = UUID()
     @State private var statusMessage = "Center the machine inside the frame"
@@ -204,52 +205,52 @@ struct MachineScanView: View {
 
     private func recommendationCard(for result: MachineAnalysisResponse) -> some View {
         ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 14) {
-                HStack {
-                    Label("GEMINI MACHINE ANALYSIS", systemImage: "sparkles")
-                        .font(.caption.weight(.bold))
-                        .foregroundColor(Theme.neonCyan)
-                    Spacer()
-                    Text("\(Int((min(max(result.confidence, 0), 1) * 100).rounded()))% match")
-                        .font(.caption2.monospaced())
-                        .foregroundColor(.white.opacity(0.7))
-                }
-
+            VStack(alignment: .leading, spacing: 18) {
                 Text(result.machineName)
-                    .font(.title2.weight(.bold))
+                    .font(.title.weight(.bold))
                     .foregroundColor(.white)
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("MAIN MUSCLES")
-                        .font(.caption.weight(.bold))
-                        .tracking(1.1)
-                        .foregroundColor(.white.opacity(0.6))
-                    Text(result.targetMuscles.joined(separator: " • "))
-                        .font(.subheadline.weight(.semibold))
-                        .foregroundColor(Theme.neonGreen)
+                HStack(alignment: .center, spacing: 18) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("TARGET MUSCLES")
+                            .font(.caption.weight(.bold))
+                            .tracking(1.1)
+                            .foregroundColor(.white.opacity(0.6))
+                        Text(result.targetMuscles.joined(separator: " • "))
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(Theme.neonGreen)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    Spacer(minLength: 0)
+
+                    VStack(spacing: 2) {
+                        Text("TARGET")
+                            .font(.caption2.weight(.bold))
+                            .tracking(1)
+                            .foregroundColor(.white.opacity(0.62))
+                        Text("\(result.recommendedReps)")
+                            .font(.system(size: 52, weight: .black, design: .rounded))
+                            .foregroundColor(Theme.neonCyan)
+                        Text("REPS")
+                            .font(.caption2.weight(.bold))
+                            .tracking(1)
+                            .foregroundColor(.white.opacity(0.76))
+                    }
+                    .frame(minWidth: 92)
+                    .padding(.vertical, 8)
+                    .background(Theme.neonCyan.opacity(0.12), in: RoundedRectangle(cornerRadius: 14))
                 }
 
                 Divider().overlay(.white.opacity(0.2))
 
-                storyboardSection
-
-                Divider().overlay(.white.opacity(0.2))
-
-                instructionSection(title: "HOW TO USE IT", icon: "list.number", items: result.instructions)
-                instructionSection(title: "SAFETY NOTES", icon: "exclamationmark.triangle", items: result.safetyNotes)
-
-                Text("Suggested target: \(result.recommendedReps) reps")
-                    .font(Theme.digitalFont)
-                    .foregroundColor(Theme.neonCyan)
-                Text(result.coachAdvice)
-                    .font(.footnote)
-                    .foregroundColor(.white.opacity(0.8))
+                storyboardSection(for: result)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(18)
         }
         .frame(maxWidth: .infinity)
-        .frame(maxHeight: 430)
+        .frame(maxHeight: 500)
         .background(.black.opacity(0.84), in: RoundedRectangle(cornerRadius: 18))
         .overlay {
             RoundedRectangle(cornerRadius: 18)
@@ -257,9 +258,9 @@ struct MachineScanView: View {
         }
     }
 
-    private var storyboardSection: some View {
+    private func storyboardSection(for result: MachineAnalysisResponse) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label("VISUAL INSTRUCTIONS", systemImage: "photo.on.rectangle.angled")
+            Label("HOW IT MOVES", systemImage: "figure.strengthtraining.traditional")
                 .font(.caption.weight(.bold))
                 .tracking(1.1)
                 .foregroundColor(.white.opacity(0.6))
@@ -272,10 +273,12 @@ struct MachineScanView: View {
                         .frame(maxWidth: .infinity)
                         .aspectRatio(16 / 9, contentMode: .fit)
                         .clipped()
+                        .accessibilityLabel("\(result.machineName) visual guide")
+                        .accessibilityHint("The left panel shows the start position and the right panel shows the finish position. Target muscles are highlighted in red.")
 
                     HStack(spacing: 0) {
-                        ForEach(1...3, id: \.self) { number in
-                            Text("STEP \(number)")
+                        ForEach(["START", "FINISH"], id: \.self) { label in
+                            Text(label)
                                 .font(.caption2.monospaced().weight(.bold))
                                 .foregroundColor(.white)
                                 .frame(maxWidth: .infinity)
@@ -293,7 +296,7 @@ struct MachineScanView: View {
                 VStack(spacing: 10) {
                     ProgressView()
                         .tint(Theme.neonCyan)
-                    Text("Generating your 3-step visual guide…")
+                    Text("Generating your visual guide…")
                         .font(.footnote)
                         .foregroundColor(.white.opacity(0.78))
                 }
@@ -301,36 +304,25 @@ struct MachineScanView: View {
                 .aspectRatio(16 / 9, contentMode: .fit)
                 .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 14))
             } else if storyboardUnavailable {
-                Label(
-                    "Visual guide is unavailable. Follow the written steps below.",
-                    systemImage: "photo.badge.exclamationmark"
-                )
-                .font(.footnote)
-                .foregroundColor(.white.opacity(0.72))
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(12)
-                .background(.white.opacity(0.08), in: RoundedRectangle(cornerRadius: 12))
-            }
-        }
-    }
+                VStack(spacing: 10) {
+                    if let storyboardFailureMessage {
+                        Text(storyboardFailureMessage)
+                            .font(.caption)
+                            .foregroundColor(.white.opacity(0.72))
+                            .multilineTextAlignment(.center)
+                            .lineLimit(4)
+                    }
 
-    private func instructionSection(title: String, icon: String, items: [String]) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Label(title, systemImage: icon)
-                .font(.caption.weight(.bold))
-                .tracking(1.1)
-                .foregroundColor(.white.opacity(0.6))
-
-            ForEach(Array(items.enumerated()), id: \.offset) { index, item in
-                HStack(alignment: .top, spacing: 8) {
-                    Text("\(index + 1)")
-                        .font(.caption.weight(.bold))
-                        .foregroundColor(Theme.neonCyan)
-                        .frame(width: 20, height: 20)
-                        .background(Theme.neonCyan.opacity(0.14), in: Circle())
-                    Text(item)
-                        .font(.footnote)
-                        .foregroundColor(.white.opacity(0.86))
+                    Button {
+                        requestStoryboard(for: result, forceRefresh: true)
+                    } label: {
+                        Label("Retry visual guide", systemImage: "arrow.clockwise")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(.white.opacity(0.1), in: RoundedRectangle(cornerRadius: 12))
+                    }
                 }
             }
         }
@@ -363,6 +355,7 @@ struct MachineScanView: View {
         storyboardImage = nil
         isGeneratingStoryboard = false
         storyboardUnavailable = false
+        storyboardFailureMessage = nil
         let requestID = UUID()
         scanRequestID = requestID
         storyboardRequestID = UUID()
@@ -395,22 +388,26 @@ struct MachineScanView: View {
         storyboardImage = nil
         isGeneratingStoryboard = false
         storyboardUnavailable = false
+        storyboardFailureMessage = nil
         scanRequestID = UUID()
         storyboardRequestID = UUID()
         isAnalyzing = false
         statusMessage = "Center the machine inside the frame"
     }
 
-    private func requestStoryboard(for result: MachineAnalysisResponse) {
+    private func requestStoryboard(for result: MachineAnalysisResponse, forceRefresh: Bool = false) {
         let requestID = UUID()
         storyboardRequestID = requestID
         storyboardImage = nil
         storyboardUnavailable = false
+        storyboardFailureMessage = nil
         isGeneratingStoryboard = true
 
         LLMNetworkManager.shared.generateMachineInstructionStoryboard(
             machineName: result.machineName,
-            instructions: result.instructions
+            instructions: result.instructions,
+            targetMuscles: result.targetMuscles,
+            forceRefresh: forceRefresh
         ) { response in
             guard storyboardRequestID == requestID else { return }
 
@@ -420,11 +417,15 @@ struct MachineScanView: View {
                 case .success(let imageData):
                     if let image = UIImage(data: imageData) {
                         storyboardImage = image
+                    } else if !forceRefresh {
+                        requestStoryboard(for: result, forceRefresh: true)
                     } else {
                         storyboardUnavailable = true
+                        storyboardFailureMessage = "The visual guide returned an image this phone could not display."
                     }
-                case .failure:
+                case .failure(let error):
                     storyboardUnavailable = true
+                    storyboardFailureMessage = error.localizedDescription
                 }
             }
         }

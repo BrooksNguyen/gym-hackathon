@@ -17,8 +17,7 @@ class LLMNetworkManager {
     static let shared = LLMNetworkManager()
 
     private let machineScanModels = ["gemini-3.7-flash", "gemini-3.6-flash"]
-    private let storyboardImageModel = "gemini-3.1-flash-image"
-    private let maxRetriesPerModel = 1
+    private let storyboardImageModels = ["gemini-3.1-flash-image", "gemini-3.1-flash-lite-image"]
     private let storyboardCache = MachineInstructionStoryboardCache()
     
     enum LLMError: LocalizedError {
@@ -41,7 +40,7 @@ class LLMNetworkManager {
             case .invalidResponse:
                 return "Gemini returned an empty or unreadable scan result."
             case .invalidStoryboardSteps:
-                return "Three instruction steps are required to create the visual guide."
+                return "Two movement phases are required to create the visual guide."
             case .decodingError(let error):
                 return "Gemini returned data the app could not read: \(error.localizedDescription)"
             case .apiError(let message):
@@ -74,7 +73,7 @@ class LLMNetworkManager {
         1. Identify the equipment category, for example bench press, rowing machine, lat pulldown, leg press, cable machine, treadmill, or exercise bench.
         2. Prefer "Unknown gym machine" over guessing when the machine is not clearly visible.
         3. List the main muscle groups trained by that machine.
-        4. Give exactly three concise instructions for adjusting and using the machine safely.
+        4. Give exactly two concise movement phases: the starting position and the finishing position.
         5. Include safety notes about posture, load selection, and stopping if pain occurs.
         6. Recommend a reasonable rep target based on the user's goal and energy. If energy is below 40%, recommend a deload.
         7. Set confidence between 0 and 1, where 1 means the machine is clearly identifiable.
@@ -113,7 +112,6 @@ class LLMNetworkManager {
             prompt: scanMachinePrompt,
             schema: schema,
             modelIndex: 0,
-            attempt: 0,
             completion: completion
         )
     }
@@ -121,9 +119,19 @@ class LLMNetworkManager {
     func generateMachineInstructionStoryboard(
         machineName: String,
         instructions: [String],
+        targetMuscles: [String],
+        forceRefresh: Bool = false,
         completion: @escaping (Result<Data, Error>) -> Void
     ) {
-        if let cachedImage = storyboardCache.load(for: machineName) {
+        let cacheIdentifier = MachineInstructionStoryboardCache.identifier(
+            machineName: machineName,
+            instructions: instructions,
+            targetMuscles: targetMuscles
+        )
+
+        if forceRefresh {
+            try? storyboardCache.remove(for: cacheIdentifier)
+        } else if let cachedImage = storyboardCache.load(for: cacheIdentifier) {
             DispatchQueue.main.async { completion(.success(cachedImage)) }
             return
         }
@@ -135,31 +143,48 @@ class LLMNetworkManager {
 
         let storyboardRequest = MachineInstructionStoryboardRequest(
             machineName: machineName,
-            instructions: instructions
+            instructions: instructions,
+            targetMuscles: targetMuscles
         )
 
-        let payload: Data
-        do {
-            payload = try GeminiStoryboardAPIRequest.makePayload(
-                model: storyboardImageModel,
-                request: storyboardRequest
-            )
-        } catch GeminiStoryboardAPIRequest.RequestError.requiresThreeSteps {
+        guard storyboardRequest.steps.count == 2 else {
             DispatchQueue.main.async { completion(.failure(LLMError.invalidStoryboardSteps)) }
-            return
-        } catch {
-            DispatchQueue.main.async { completion(.failure(LLMError.decodingError(error))) }
             return
         }
 
+        performStoryboardGeneration(
+            request: storyboardRequest,
+            cacheIdentifier: cacheIdentifier,
+            apiKey: apiKey,
+            modelIndex: 0,
+            completion: completion
+        )
+    }
+
+    private func performStoryboardGeneration(
+        request storyboardRequest: MachineInstructionStoryboardRequest,
+        cacheIdentifier: String,
+        apiKey: String,
+        modelIndex: Int,
+        completion: @escaping (Result<Data, Error>) -> Void
+    ) {
         guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/interactions") else {
             DispatchQueue.main.async { completion(.failure(LLMError.invalidURL)) }
             return
         }
 
+        let model = storyboardImageModels[modelIndex]
+        let payload: Data
+        do {
+            payload = try GeminiStoryboardAPIRequest.makePayload(model: model, request: storyboardRequest)
+        } catch {
+            DispatchQueue.main.async { completion(.failure(LLMError.decodingError(error))) }
+            return
+        }
+
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.timeoutInterval = 75
+        request.timeoutInterval = 45
         request.httpBody = payload
         request.setValue(apiKey, forHTTPHeaderField: "x-goog-api-key")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -173,7 +198,18 @@ class LLMNetworkManager {
             }
 
             if let error {
-                finish(.failure(error))
+                if self.isTransient(error: error) {
+                    self.scheduleStoryboardFallback(
+                        request: storyboardRequest,
+                        cacheIdentifier: cacheIdentifier,
+                        apiKey: apiKey,
+                        modelIndex: modelIndex,
+                        lastError: error,
+                        completion: completion
+                    )
+                } else {
+                    finish(.failure(error))
+                }
                 return
             }
 
@@ -185,14 +221,33 @@ class LLMNetworkManager {
             guard (200...299).contains(httpResponse.statusCode) else {
                 let message = data.flatMap { String(data: $0, encoding: .utf8) }
                     ?? "No error details returned"
-                finish(.failure(LLMError.apiError(
+                let apiError = LLMError.apiError(
                     "Gemini image generation returned HTTP \(httpResponse.statusCode): \(message)"
-                )))
+                )
+                if self.isTransient(statusCode: httpResponse.statusCode) {
+                    self.scheduleStoryboardFallback(
+                        request: storyboardRequest,
+                        cacheIdentifier: cacheIdentifier,
+                        apiKey: apiKey,
+                        modelIndex: modelIndex,
+                        lastError: apiError,
+                        completion: completion
+                    )
+                } else {
+                    finish(.failure(apiError))
+                }
                 return
             }
 
             guard let data else {
-                finish(.failure(LLMError.noData))
+                self.scheduleStoryboardFallback(
+                    request: storyboardRequest,
+                    cacheIdentifier: cacheIdentifier,
+                    apiKey: apiKey,
+                    modelIndex: modelIndex,
+                    lastError: LLMError.noData,
+                    completion: completion
+                )
                 return
             }
 
@@ -201,13 +256,47 @@ class LLMNetworkManager {
                 try? self.storyboardCache.store(
                     image.data,
                     mimeType: image.mimeType,
-                    for: machineName
+                    for: cacheIdentifier
                 )
                 finish(.success(image.data))
             } catch {
-                finish(.failure(LLMError.decodingError(error)))
+                self.scheduleStoryboardFallback(
+                    request: storyboardRequest,
+                    cacheIdentifier: cacheIdentifier,
+                    apiKey: apiKey,
+                    modelIndex: modelIndex,
+                    lastError: LLMError.decodingError(error),
+                    completion: completion
+                )
             }
         }.resume()
+    }
+
+    private func scheduleStoryboardFallback(
+        request: MachineInstructionStoryboardRequest,
+        cacheIdentifier: String,
+        apiKey: String,
+        modelIndex: Int,
+        lastError: Error,
+        completion: @escaping (Result<Data, Error>) -> Void
+    ) {
+        guard let nextModelIndex = StoryboardImageFallbackPolicy.nextModelIndex(
+            afterFailureAt: modelIndex,
+            modelCount: storyboardImageModels.count
+        ) else {
+            DispatchQueue.main.async { completion(.failure(lastError)) }
+            return
+        }
+
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.15) { [weak self] in
+            self?.performStoryboardGeneration(
+                request: request,
+                cacheIdentifier: cacheIdentifier,
+                apiKey: apiKey,
+                modelIndex: nextModelIndex,
+                completion: completion
+            )
+        }
     }
 
     private func performMachineScan(
@@ -216,7 +305,6 @@ class LLMNetworkManager {
         prompt: String,
         schema: [String: Any],
         modelIndex: Int,
-        attempt: Int,
         completion: @escaping (Result<MachineAnalysisResponse, Error>) -> Void
     ) {
         guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/interactions") else {
@@ -225,23 +313,6 @@ class LLMNetworkManager {
         }
 
         let model = machineScanModels[modelIndex]
-        let requestBody: [String: Any] = [
-            "model": model,
-            "store": false,
-            "input": [
-                ["type": "text", "text": prompt],
-                [
-                    "type": "image",
-                    "data": imageData.base64EncodedString(),
-                    "mime_type": "image/jpeg"
-                ]
-            ],
-            "response_format": [
-                "type": "text",
-                "mime_type": "application/json",
-                "schema": schema
-            ]
-        ]
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -251,7 +322,12 @@ class LLMNetworkManager {
         request.setValue("2026-05-20", forHTTPHeaderField: "Api-Revision")
 
         do {
-            request.httpBody = try JSONSerialization.data(withJSONObject: requestBody)
+            request.httpBody = try GeminiMachineScanAPIRequest.makePayload(
+                model: model,
+                prompt: prompt,
+                imageData: imageData,
+                schema: schema
+            )
         } catch {
             DispatchQueue.main.async { completion(.failure(LLMError.decodingError(error))) }
             return
@@ -272,7 +348,6 @@ class LLMNetworkManager {
                         prompt: prompt,
                         schema: schema,
                         modelIndex: modelIndex,
-                        attempt: attempt,
                         lastError: error,
                         completion: completion
                     )
@@ -297,7 +372,6 @@ class LLMNetworkManager {
                         prompt: prompt,
                         schema: schema,
                         modelIndex: modelIndex,
-                        attempt: attempt,
                         lastError: apiError,
                         completion: completion
                     )
@@ -352,35 +426,24 @@ class LLMNetworkManager {
         prompt: String,
         schema: [String: Any],
         modelIndex: Int,
-        attempt: Int,
         lastError: Error,
         completion: @escaping (Result<MachineAnalysisResponse, Error>) -> Void
     ) {
-        let nextModelIndex: Int
-        let nextAttempt: Int
-        let delay: TimeInterval
-
-        if attempt < maxRetriesPerModel {
-            nextModelIndex = modelIndex
-            nextAttempt = attempt + 1
-            delay = 1.5
-        } else if modelIndex + 1 < machineScanModels.count {
-            nextModelIndex = modelIndex + 1
-            nextAttempt = 0
-            delay = 0.5
-        } else {
+        guard let nextModelIndex = MachineScanFallbackPolicy.nextModelIndex(
+            afterFailureAt: modelIndex,
+            modelCount: machineScanModels.count
+        ) else {
             DispatchQueue.main.async { completion(.failure(lastError)) }
             return
         }
 
-        DispatchQueue.global().asyncAfter(deadline: .now() + delay) { [weak self] in
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.25) { [weak self] in
             self?.performMachineScan(
                 imageData: imageData,
                 apiKey: apiKey,
                 prompt: prompt,
                 schema: schema,
                 modelIndex: nextModelIndex,
-                attempt: nextAttempt,
                 completion: completion
             )
         }

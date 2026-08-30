@@ -39,15 +39,14 @@ struct SettingsView: View {
                                 Text("Language")
                                     .font(Theme.secondaryText)
                                 Spacer()
-                                Picker("Language", selection: $selectedLanguage) {
+                                Picker("", selection: $selectedLanguage) {
                                     ForEach(languages, id: \.self) { language in
                                         Text(language).tag(language)
                                     }
                                 }
+                                .labelsHidden()
                                 .pickerStyle(MenuPickerStyle())
                                 .tint(Theme.secondaryAccent(for: colorScheme))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
                             }
                             
                             Divider().background(Color.gray.opacity(0.2))
@@ -56,14 +55,13 @@ struct SettingsView: View {
                                 Text("Units")
                                     .font(Theme.secondaryText)
                                 Spacer()
-                                Picker("Units", selection: $unitsMetric) {
+                                Picker("", selection: $unitsMetric) {
                                     Text("Metric (kg/cm)").tag(true)
                                     Text("Imperial (lb/in)").tag(false)
                                 }
+                                .labelsHidden()
                                 .pickerStyle(MenuPickerStyle())
                                 .tint(Theme.secondaryAccent(for: colorScheme))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.8)
                             }
                         }
                         

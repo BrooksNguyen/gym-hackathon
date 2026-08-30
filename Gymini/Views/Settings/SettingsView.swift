@@ -76,9 +76,16 @@ struct SettingsView: View {
                         
                         // Workout Section
                         settingsSection(title: "Workout") {
-                            Toggle("Audio Coach (ElevenLabs)", isOn: $isAudioCoachEnabled)
-                                .font(Theme.secondaryText)
-                                .tint(Theme.primaryAccent(for: colorScheme))
+                            Toggle(isOn: $isAudioCoachEnabled) {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Audio Coach")
+                                        .font(Theme.secondaryText)
+                                    Text("Powered by ElevenLabs")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                            .tint(Theme.primaryAccent(for: colorScheme))
                             
                             if isAudioCoachEnabled {
                                 Divider().background(Color.gray.opacity(0.2))
@@ -219,7 +226,7 @@ struct SettingsView: View {
                         .padding(.bottom, 40)
                     }
                     .padding(.horizontal, 24)
-                    .padding(.top, 24)
+                    .padding(.top, 14)
                 }
             }
             .navigationTitle("Settings")

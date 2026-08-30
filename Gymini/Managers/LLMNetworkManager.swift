@@ -508,36 +508,95 @@ class LLMNetworkManager {
         let intensity = reps >= 15 ? "High" : (reps >= 8 ? "Moderate" : "Low")
         let formScore = reps > 0 ? Int.random(in: 88...98) : 0
         
-        var feedback = ""
-        if bmi > 25.0 {
-            feedback = "Great job on those \(reps) \(exercise)s! With a BMI of \(String(format: "%.1f", bmi)), keeping rest times short will maximize calorie burn."
-        } else if bmi < 18.5 {
-            feedback = "Solid work on the \(exercise)s! Since your BMI is \(String(format: "%.1f", bmi)), focus on eating in a surplus to fuel muscle growth."
-        } else {
-            feedback = "Excellent form on the \(exercise)s! Your BMI (\(String(format: "%.1f", bmi))) is in a healthy range, keep up the consistency for steady gains."
+        // If reps == 0, skip API call and return immediately
+        if reps == 0 {
+            let fallbackResponse = WorkoutSummaryAIResponse(
+                caloriesBurned: 0,
+                intensity: "None",
+                formScore: 0,
+                coachFeedback: "It looks like you didn't do any reps. Don't worry, everyone starts somewhere! Ready to try again?"
+            )
+            DispatchQueue.main.async { completion(.success(fallbackResponse)) }
+            return
         }
         
-        let mockJSON = """
+        guard let apiKey = geminiAPIKey else {
+            DispatchQueue.main.async { completion(.failure(LLMError.missingAPIKey)) }
+            return
+        }
+        
+        let prompt = """
+        You are a highly motivating AI fitness coach. The user just completed a set of \(exercise).
+        - Reps completed: \(reps)
+        - BMI: \(String(format: "%.1f", bmi))
+        
+        Analyze this mini-workout and provide a short, encouraging feedback message (max 2 sentences).
+        Tailor it to their performance. Since this is a computer vision tracked workout, assume their form was mostly good but give a generic, helpful tip about \(exercise).
+        
+        Return ONLY valid JSON matching this exact schema:
         {
           "caloriesBurned": \(estimatedCalories),
           "intensity": "\(intensity)",
           "formScore": \(formScore),
-          "coachFeedback": "\(feedback)"
+          "coachFeedback": "Your encouraging 2-sentence feedback here"
         }
-        """.data(using: .utf8)!
+        """
         
-        DispatchQueue.global().asyncAfter(deadline: .now() + 1.2) {
-            do {
-                let decoder = JSONDecoder()
-                let result = try decoder.decode(WorkoutSummaryAIResponse.self, from: mockJSON)
-                DispatchQueue.main.async {
-                    completion(.success(result))
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    completion(.failure(LLMError.decodingError(error)))
-                }
-            }
+        guard let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=\(apiKey)") else {
+            DispatchQueue.main.async { completion(.failure(LLMError.invalidURL)) }
+            return
         }
+        
+        let requestBody: [String: Any] = [
+            "contents": [
+                ["parts": [["text": prompt]]]
+            ],
+            "generationConfig": [
+                "response_mime_type": "application/json"
+            ]
+        ]
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try? JSONSerialization.data(withJSONObject: requestBody)
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                DispatchQueue.main.async { completion(.failure(error)) }
+                return
+            }
+            
+            guard let data = data else {
+                DispatchQueue.main.async { completion(.failure(LLMError.noData)) }
+                return
+            }
+            
+            do {
+                // Gemini returns { "candidates": [ { "content": { "parts": [ { "text": "{ JSON }" } ] } } ] }
+                struct GeminiResponse: Decodable {
+                    struct Candidate: Decodable {
+                        struct Content: Decodable {
+                            struct Part: Decodable { let text: String }
+                            let parts: [Part]
+                        }
+                        let content: Content
+                    }
+                    let candidates: [Candidate]
+                }
+                
+                let geminiRes = try JSONDecoder().decode(GeminiResponse.self, from: data)
+                guard let text = geminiRes.candidates.first?.content.parts.first?.text,
+                      let jsonData = text.data(using: .utf8) else {
+                    DispatchQueue.main.async { completion(.failure(LLMError.invalidResponse)) }
+                    return
+                }
+                
+                let result = try JSONDecoder().decode(WorkoutSummaryAIResponse.self, from: jsonData)
+                DispatchQueue.main.async { completion(.success(result)) }
+            } catch {
+                DispatchQueue.main.async { completion(.failure(LLMError.decodingError(error))) }
+            }
+        }.resume()
     }
 }

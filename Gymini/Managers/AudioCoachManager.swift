@@ -5,7 +5,16 @@ class AudioCoachManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     static let shared = AudioCoachManager()
     var audioPlayer: AVAudioPlayer?
     
-    let apiKey = "YOUR_ELEVENLABS_API_KEY"
+    var apiKey: String {
+        let values = [
+            ProcessInfo.processInfo.environment["ELEVENLABS_API_KEY"],
+            Bundle.main.object(forInfoDictionaryKey: "ELEVENLABS_API_KEY") as? String,
+            "YOUR_ELEVENLABS_API_KEY" // Fallback placeholder
+        ]
+        return values.compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .first { !$0.isEmpty && !$0.hasPrefix("$(") } ?? "YOUR_ELEVENLABS_API_KEY"
+    }
+    
     let voiceId = "pNInz6obbfDQGcgMyIGD" // Adam or Marcus
     
     func speak(text: String) {

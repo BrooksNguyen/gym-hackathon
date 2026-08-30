@@ -62,7 +62,7 @@
 		95F36357E1C10F358D89E8FA /* SkeletonOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonOverlay.swift; sourceTree = "<group>"; };
 		A945E1E470525CB47E986B7A /* MathUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MathUtils.swift; sourceTree = "<group>"; };
 		ACD317C580CC22D29503DD56 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
-		AFFF589483C9592F8278B50A /* Gymini.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Gymini.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AFFF589483C9592F8278B50A /* Gymini.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Gymini.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B50A7C5D72D5477D63A1481A /* GyminiIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GyminiIntents.swift; sourceTree = "<group>"; };
 		C6EE9B7B9D56690C24ACAF2E /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C8AD4ED8CAFE67FFF1DA4D1C /* AudioCoachManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioCoachManager.swift; sourceTree = "<group>"; };
@@ -271,8 +271,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
-				TargetAttributes = {
-				};
 			};
 			buildConfigurationList = 98386A79F8754343A3DB8700 /* Build configuration list for PBXProject "Gymini" */;
 			developmentRegion = en;
@@ -408,6 +406,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Gymini/Preview Content\"";
+				DEVELOPMENT_TEAM = 485SZ2RQ6T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;
@@ -500,6 +499,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Gymini/Preview Content\"";
+				DEVELOPMENT_TEAM = 485SZ2RQ6T;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CADisableMinimumFrameDurationOnPhone = YES;

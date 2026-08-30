@@ -9,8 +9,11 @@ class AudioCoachManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
     let voiceId = "pNInz6obbfDQGcgMyIGD" // Adam or Marcus
     
     func speak(text: String) {
-        let isEnabled = UserDefaults.standard.bool(forKey: "isAudioCoachEnabled")
-        guard isEnabled else { return }
+        let isEnabled = UserDefaults.standard.object(forKey: "isAudioCoachEnabled") as? Bool ?? true
+        guard isEnabled else { 
+            print("AudioCoach is disabled in Settings.")
+            return 
+        }
         
         let url = URL(string: "https://api.elevenlabs.io/v1/text-to-speech/\(voiceId)")!
         var request = URLRequest(url: url)
@@ -30,8 +33,19 @@ class AudioCoachManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
         request.httpBody = try? JSONSerialization.data(withJSONObject: parameters)
         
         URLSession.shared.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                print("ElevenLabs Error: \(error?.localizedDescription ?? "Unknown")")
+            if let error = error {
+                print("ElevenLabs Error: \(error.localizedDescription)")
+                return
+            }
+            
+            guard let httpResponse = response as? HTTPURLResponse else {
+                print("Invalid HTTP response")
+                return
+            }
+            
+            guard let data = data, httpResponse.statusCode == 200 else {
+                let errorBody = String(data: data ?? Data(), encoding: .utf8) ?? "Unknown"
+                print("ElevenLabs API failed with status \(httpResponse.statusCode). Body: \(errorBody)")
                 return
             }
             

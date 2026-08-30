@@ -79,6 +79,7 @@ class AudioCoachManager: NSObject, ObservableObject, AVAudioPlayerDelegate {
             audioPlayer?.prepareToPlay()
             audioPlayer?.delegate = self
             audioPlayer?.play()
+            print("Audio is playing")
         } catch {
             print("Audio Playback Error: \(error)")
         }

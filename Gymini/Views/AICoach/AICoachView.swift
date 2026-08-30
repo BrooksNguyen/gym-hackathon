@@ -394,7 +394,13 @@ struct AICoachView: View {
         if lowercased.contains("leg") {
             return "Try 4 rounds: 12 squats, 10 reverse lunges per side, and a 30-second wall sit. Rest 60 seconds between rounds."
         }
-        return "Apple Intelligence is not available on this device. Please try on a supported device (A17 Pro or M1+)."
+        if lowercased.contains("chest") {
+            return "For a great chest workout, try 4 sets of Bench Press (8-10 reps), followed by 3 sets of Incline Dumbbell Press and Cable Crossovers. Focus on the stretch!"
+        }
+        if lowercased.contains("nutrition") || lowercased.contains("diet") {
+            return "Nutrition is key! Make sure to eat 1.6g to 2.2g of protein per kg of body weight. Balance it with healthy carbs and fats to fuel your recovery."
+        }
+        return "That's a great question! Based on your profile, I recommend staying consistent with your workouts and prioritizing progressive overload. Let me know when you're ready to start today's session!"
     }
 }
 

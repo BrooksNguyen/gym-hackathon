@@ -328,11 +328,16 @@ struct AICoachView: View {
                 guard let activeSession = session else {
                     // Fallback if model not available
                     await MainActor.run {
+                        let fallbackText = fallbackReply(for: prompt)
                         withAnimation {
-                            messages.append(Message(text: fallbackReply(for: prompt), isUser: false))
+                            messages.append(Message(text: fallbackText, isUser: false))
                             isGenerating = false
                             isSending = false
                         }
+                        
+                        let sentences = fallbackText.components(separatedBy: ". ")
+                        let summary = sentences.prefix(2).joined(separator: ". ") + (sentences.count > 2 ? "." : "")
+                        AudioCoachManager.shared.speak(text: summary)
                     }
                     return
                 }
@@ -345,14 +350,24 @@ struct AICoachView: View {
                         isGenerating = false
                         isSending = false
                     }
+                    
+                    // Generate short summary (max 2 sentences) for Audio Coach to prevent latency
+                    let sentences = response.content.components(separatedBy: ". ")
+                    let summary = sentences.prefix(2).joined(separator: ". ") + (sentences.count > 2 ? "." : "")
+                    AudioCoachManager.shared.speak(text: summary)
                 }
             } catch {
                 await MainActor.run {
+                    let fallbackText = fallbackReply(for: prompt)
                     withAnimation {
-                        messages.append(Message(text: fallbackReply(for: prompt), isUser: false))
+                        messages.append(Message(text: fallbackText, isUser: false))
                         isGenerating = false
                         isSending = false
                     }
+                    
+                    let sentences = fallbackText.components(separatedBy: ". ")
+                    let summary = sentences.prefix(2).joined(separator: ". ") + (sentences.count > 2 ? "." : "")
+                    AudioCoachManager.shared.speak(text: summary)
                 }
             }
         }

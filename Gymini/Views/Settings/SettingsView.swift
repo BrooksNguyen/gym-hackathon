@@ -9,6 +9,7 @@ struct SettingsView: View {
     @AppStorage("haptic_feedback") private var hapticFeedback = true
     @AppStorage("rest_timer_enabled") private var restTimerEnabled = true
     @AppStorage("units_metric") private var unitsMetric = true
+    @AppStorage("isAudioCoachEnabled") private var isAudioCoachEnabled = true
     @State private var selectedLanguage = "English"
     @State private var showResetAlert = false
     @State private var showDeleteAlert = false
@@ -68,7 +69,13 @@ struct SettingsView: View {
                         
                         // Workout Section
                         settingsSection(title: "Workout") {
-                            Toggle("Rest Timer", isOn: $restTimerEnabled)
+                            Toggle("Audio Coach (ElevenLabs)", isOn: $isAudioCoachEnabled)
+                                .font(Theme.secondaryText)
+                                .tint(Theme.primaryAccent(for: colorScheme))
+                            
+                            Divider().background(Color.gray.opacity(0.2))
+                            
+                            Toggle("Auto Rest Timer", isOn: $restTimerEnabled)
                                 .font(Theme.secondaryText)
                                 .tint(Theme.primaryAccent(for: colorScheme))
                             
